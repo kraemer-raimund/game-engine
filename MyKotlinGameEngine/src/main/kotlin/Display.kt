@@ -2,7 +2,9 @@ package com.rk.mykotlingameengine
 
 import java.awt.Canvas
 import java.awt.Dimension
+import java.lang.Exception
 import javax.swing.JFrame
+import kotlin.system.exitProcess
 
 class Display(private val frame: JFrame) : Canvas() {
 
@@ -19,8 +21,32 @@ class Display(private val frame: JFrame) : Canvas() {
         }
     }
 
-    fun showGameWindow() {
-        frame.show()
+    private var isRunning: Boolean = false
+    private var thread: Thread? = null
+
+    fun start() {
+        if (isRunning) { return }
+        isRunning = true
+        thread = Thread(::run).apply { start() }
+    }
+
+    private fun stop() {
+        if (!isRunning) { return }
+        isRunning = false
+
+        try {
+            thread?.join()
+        } catch (e: Exception) {
+            print(e)
+        } finally {
+            exitProcess(0)
+        }
+    }
+
+    private fun run() {
+        while (isRunning) {
+            println("running")
+        }
     }
 
     companion object {
@@ -28,5 +54,4 @@ class Display(private val frame: JFrame) : Canvas() {
         private const val HEIGHT = 600
         private const val TITLE = "MyKotlinGameEngine"
     }
-
 }

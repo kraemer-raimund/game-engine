@@ -4,6 +4,6 @@ import javax.swing.JFrame
 
 fun main() {
     val frame = JFrame()
-    val gameWindow = Display(frame)
-    gameWindow.showGameWindow()
+    val display = Display(frame)
+    display.start()
 }
