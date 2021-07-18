@@ -1,5 +1,6 @@
 package com.rk.mykotlingameengine
 
+import com.rk.mykotlingameengine.graphics.Renderer
 import java.awt.Canvas
 import java.awt.Dimension
 import java.lang.Exception
@@ -7,6 +8,10 @@ import javax.swing.JFrame
 import kotlin.system.exitProcess
 
 class Display(private val frame: JFrame) : Canvas() {
+
+    private var isRunning: Boolean = false
+    private val thread: Thread
+    private val renderer: Renderer
 
     init {
         frame.apply {
@@ -19,15 +24,14 @@ class Display(private val frame: JFrame) : Canvas() {
             isVisible = true
             defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         }
+        thread = Thread(::run)
+        renderer = Renderer(WIDTH, HEIGHT)
     }
-
-    private var isRunning: Boolean = false
-    private var thread: Thread? = null
 
     fun start() {
         if (isRunning) { return }
         isRunning = true
-        thread = Thread(::run).apply { start() }
+        thread.start()
     }
 
     private fun stop() {
@@ -45,8 +49,17 @@ class Display(private val frame: JFrame) : Canvas() {
 
     private fun run() {
         while (isRunning) {
-            println("running")
+            tick()
+            render()
         }
+    }
+
+    private fun tick() {
+        println("tick")
+    }
+
+    private fun render() {
+        println("render")
     }
 
     companion object {
