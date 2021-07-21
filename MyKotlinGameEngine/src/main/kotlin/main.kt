@@ -1,8 +1,10 @@
 package com.rk.mykotlingameengine
 
 import com.rk.mykotlingameengine.core.Engine
+import com.rk.mykotlingameengine.game.ExampleGame
 
 fun main() {
-    val engine = Engine()
+    val game = ExampleGame()
+    val engine = Engine(game)
     engine.start()
 }

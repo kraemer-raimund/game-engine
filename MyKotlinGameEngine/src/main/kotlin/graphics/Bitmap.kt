@@ -1,6 +1,6 @@
 package com.rk.mykotlingameengine.graphics
 
-class Bitmap(width: Int = 0, height: Int = 0) {
+class Bitmap(val width: Int, val height: Int) {
 
-    private var pixels: Array<Int> = Array(width * height) { 0 }
+    val pixels: Array<Int> = Array(width * height) { 0 }
 }
