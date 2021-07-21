@@ -7,7 +7,10 @@ class Engine {
 
     private val defaultScreenDimension = Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(TITLE, defaultScreenDimension)
-    private val gameLoop = GameLoop()
+    private val gameLoop = GameLoop(
+        onTick = { println("tick") },
+        onRender = { println("render") },
+    )
 
     fun start() {
         gameLoop.start()

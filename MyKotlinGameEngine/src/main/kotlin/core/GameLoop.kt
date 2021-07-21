@@ -2,7 +2,7 @@ package com.rk.mykotlingameengine.core
 
 import com.rk.mykotlingameengine.graphics.Renderer
 
-class GameLoop {
+class GameLoop(val onTick: () -> Unit, val onRender: () -> Unit) {
 
     private var isRunning: Boolean = false
     private val thread: Thread
@@ -21,11 +21,11 @@ class GameLoop {
     }
 
     @Synchronized
-    private fun stop() {
+    fun stop() {
         if (!isRunning) { return }
         isRunning = false
         try {
-            thread?.join()
+            thread.join()
         } catch (e: Exception) {
             print(e)
         }
@@ -33,16 +33,8 @@ class GameLoop {
 
     private fun run() {
         while (isRunning) {
-            tick()
-            render()
+            onTick()
+            onRender()
         }
-    }
-
-    private fun tick() {
-        println("tick")
-    }
-
-    private fun render() {
-        println("render")
     }
 }
