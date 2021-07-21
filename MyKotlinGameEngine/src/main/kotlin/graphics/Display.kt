@@ -6,6 +6,9 @@ import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import javax.swing.JFrame
 
+/**
+ * The window with the rendered pixels visible to the player.
+ */
 class Display(title: String, dimension: Dimension) : Canvas() {
 
     private val frame = JFrame()
