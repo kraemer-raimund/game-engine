@@ -1,6 +1,8 @@
 package com.rk.mykotlingameengine.graphics
 
-class Renderer(width: Int = 0, height: Int = 0) {
+class Renderer {
 
-    private var pixels: Array<Int> = Array(width * height) { 0 }
+    fun render() {
+        
+    }
 }

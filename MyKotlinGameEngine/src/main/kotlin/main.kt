@@ -1,9 +1,8 @@
 package com.rk.mykotlingameengine
 
-import javax.swing.JFrame
+import com.rk.mykotlingameengine.core.Engine
 
 fun main() {
-    val frame = JFrame()
-    val display = Display(frame)
-    display.start()
+    val engine = Engine()
+    engine.start()
 }
