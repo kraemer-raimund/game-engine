@@ -9,12 +9,12 @@ import javax.swing.JFrame
 /**
  * The window with the rendered pixels visible to the player.
  */
-class Display(title: String, dimension: Dimension) : Canvas() {
+class Display(title: String, screenSize: ScreenSize) : Canvas() {
 
     private val frame = JFrame()
     private val bufferedImage = BufferedImage(
-        dimension.width,
-        dimension.height,
+        screenSize.width,
+        screenSize.height,
         BufferedImage.TYPE_INT_RGB
     )
     private val pixels = bufferedImage.run {
@@ -27,7 +27,7 @@ class Display(title: String, dimension: Dimension) : Canvas() {
             add(this@Display)
             pack()
             this.title = title
-            size = dimension
+            size = Dimension(screenSize.width, screenSize.height)
             setLocationRelativeTo(null)
             isResizable = true
             isVisible = true

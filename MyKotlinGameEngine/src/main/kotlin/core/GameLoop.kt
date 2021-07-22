@@ -1,16 +1,12 @@
 package com.rk.mykotlingameengine.core
 
-import com.rk.mykotlingameengine.graphics.Renderer
-
 class GameLoop(val onTick: () -> Unit, val onRender: () -> Unit) {
 
     private var isRunning: Boolean = false
     private val thread: Thread
-    private val renderer: Renderer
 
     init {
         thread = Thread(::run)
-        renderer = Renderer()
     }
 
     @Synchronized

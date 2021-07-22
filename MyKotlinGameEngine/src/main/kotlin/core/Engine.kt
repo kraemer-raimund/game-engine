@@ -1,35 +1,24 @@
 package com.rk.mykotlingameengine.core
 
-import com.rk.mykotlingameengine.graphics.Bitmap
 import com.rk.mykotlingameengine.graphics.Display
 import com.rk.mykotlingameengine.graphics.Renderer
-import java.awt.Dimension
-import kotlin.random.Random
+import com.rk.mykotlingameengine.graphics.ScreenSize
 
 class Engine(private val game: IGame) {
 
-    private val defaultScreenDimension = Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    private val display = Display(TITLE, defaultScreenDimension)
-    private val renderer = Renderer()
-    private val screen = Bitmap(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
+    private val display = Display(TITLE, defaultScreenSize)
+    private val renderer = Renderer(defaultScreenSize)
     private val gameLoop = GameLoop(
         onTick = game::tick,
         onRender = {
-            renderer.draw(screen, generateRandomSprite(), 0, 0)
+            val screen = renderer.render(game)
             display.displayPixels(screen)
         }
     )
 
     fun start() {
         gameLoop.start()
-    }
-
-    private fun generateRandomSprite(): Bitmap {
-        val sprite = Bitmap(256, 256)
-        for (i in 0 until sprite.width * sprite.height) {
-            sprite.pixels[i] = Random.nextInt()
-        }
-        return sprite
     }
 
     companion object {
