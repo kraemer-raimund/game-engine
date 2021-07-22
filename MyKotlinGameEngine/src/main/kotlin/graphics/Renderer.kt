@@ -49,7 +49,10 @@ class Renderer(screenSize: ScreenSize) {
 
                 val indexInCanvas = xOnCanvas + canvas.width * yOnCanvas
                 val indexInSprite = xOnSprite + sprite.width * yOnSprite
-                canvas.pixels[indexInCanvas] = sprite.pixels[indexInSprite]
+                val pixel = sprite.pixels[indexInSprite]
+                if (pixel > 0) {
+                    canvas.pixels[indexInCanvas] = pixel
+                }
             }
         }
     }
