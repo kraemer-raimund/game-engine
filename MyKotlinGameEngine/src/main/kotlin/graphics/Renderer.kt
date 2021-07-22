@@ -1,15 +1,33 @@
 package com.rk.mykotlingameengine.graphics
 
 import com.rk.mykotlingameengine.core.IGame
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.random.Random
 
-class Renderer(private val screenSize: ScreenSize) {
+class Renderer(screenSize: ScreenSize) {
+
+    private val screen = Bitmap(screenSize.width, screenSize.height)
+    private val startTimeSeconds = System.currentTimeMillis() / 1000.0
+    private val elapsedTimeSeconds get() = (System.currentTimeMillis() / 1000.0) - startTimeSeconds
+
+    private val sprite1 = generateRandomSprite()
+    private val sprite2 = generateRandomSprite()
+    private val sprite3 = generateRandomSprite()
 
     fun render(game: IGame): Bitmap {
-        val screen = Bitmap(screenSize.width, screenSize.height)
-        draw(screen, generateRandomSprite(), -10, -200)
-        draw(screen, generateRandomSprite(), 240, 150)
-        draw(screen, generateRandomSprite(), 300, 300)
+        val frequencyInHertz = 0.5
+        val magnitude = 100
+        val x = (
+            sin(elapsedTimeSeconds * frequencyInHertz * 2 * PI) * magnitude
+                ).toInt()
+        val y = (
+            cos(elapsedTimeSeconds * frequencyInHertz * 2 * PI) * magnitude
+                ).toInt()
+        draw(screen, sprite1, x, y)
+        draw(screen, sprite2, -x + 100, y + 200)
+        draw(screen, sprite3, x + 250, -y + 100)
         return screen
     }
 
@@ -18,7 +36,7 @@ class Renderer(private val screenSize: ScreenSize) {
      */
     private fun draw(canvas: Bitmap, sprite: Bitmap, spriteOffsetX: Int, spriteOffsetY: Int) {
         for (yOnSprite in 0 until sprite.height) {
-            val yOnCanvas = spriteOffsetY + yOnSprite;
+            val yOnCanvas = spriteOffsetY + yOnSprite
             if (yOnCanvas !in 0 until canvas.height) {
                 continue
             }
