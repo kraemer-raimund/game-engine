@@ -9,8 +9,15 @@ class Engine(private val game: IGame) {
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(TITLE, defaultScreenSize)
     private val renderer = Renderer(defaultScreenSize)
+
+    private val gameTime = GameTime()
+    private val fpsCounter = FpsCounter()
     private val gameLoop = GameLoop(
-        onTick = game::tick,
+        onTick = {
+            gameTime.onTick()
+            fpsCounter.onTick()
+            game.onTick()
+        },
         onRender = {
             val screen = renderer.render(game)
             display.displayPixels(screen)
