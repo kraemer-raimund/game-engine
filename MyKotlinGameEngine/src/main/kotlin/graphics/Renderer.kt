@@ -2,9 +2,6 @@ package com.rk.mykotlingameengine.graphics
 
 import com.rk.mykotlingameengine.core.GameTime
 import com.rk.mykotlingameengine.core.IGame
-import kotlin.math.PI
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.random.Random
 
 class Renderer(screenSize: ScreenSize) {
@@ -12,25 +9,18 @@ class Renderer(screenSize: ScreenSize) {
     private val screen = Bitmap(screenSize.width, screenSize.height)
 
     private val sprite1 = generateRandomSprite()
-    private val sprite2 = generateRandomSprite()
-    private val sprite3 = generateRandomSprite()
 
     fun render(game: IGame): Bitmap {
         clear(screen)
 
-        for (i in 0 until 100) {
-            val frequencyInHertz = 0.5
-            val magnitudeX = 200
-            val magnitudeY = 100
-            val x = (
-                    sin((GameTime.elapsedTime + 0.015 * i) * frequencyInHertz * 2 * PI) * magnitudeX
-                    ).toInt()
-            val y = (
-                    cos((GameTime.elapsedTime + 0.015 * i) * frequencyInHertz * 2 * PI) * magnitudeY
-                    ).toInt()
-            draw(screen, sprite1, x, y)
-            draw(screen, sprite2, -x + 300, y + 250)
-            draw(screen, sprite3, x + 250, -y + 100)
+        val numberOfSprites = (screen.width / sprite1.width) + 2
+
+        for (i in 0 until numberOfSprites) {
+            val speed = 200.0f
+            val totalWidth = numberOfSprites * sprite1.width
+            val x = (GameTime.elapsedTime * speed + i * sprite1.width) % totalWidth - sprite1.width
+            val y = (screen.height - sprite1.height) / 2
+            draw(screen, sprite1, x.toInt(), y)
         }
 
         return screen
