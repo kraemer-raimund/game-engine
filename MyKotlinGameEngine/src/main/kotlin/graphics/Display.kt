@@ -51,8 +51,8 @@ class Display(title: String, screenSize: ScreenSize) : Canvas() {
                 bufferedImage,
                 0,
                 0,
-                bitmap.width,
-                bitmap.height,
+                width,
+                height,
                 null
             )
             dispose()
