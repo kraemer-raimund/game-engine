@@ -22,5 +22,6 @@ class Vector3f(val x: Float, val y: Float, val z: Float) {
         val right = Vector3f(1f, 0f, 0f)
         val up = Vector3f(0f, 1f, 0f)
         val forward = Vector3f(0f, 0f, 1f)
+        val zero = Vector3f(0f, 0f, 0f)
     }
 }

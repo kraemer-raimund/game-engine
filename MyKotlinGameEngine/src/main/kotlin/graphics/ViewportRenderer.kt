@@ -2,7 +2,6 @@ package com.rk.mykotlingameengine.graphics
 
 import com.rk.mykotlingameengine.core.GameTime
 import com.rk.mykotlingameengine.core.IGame
-import com.rk.mykotlingameengine.math.Vector3f
 import com.rk.mykotlingameengine.math.clamp
 import kotlin.math.*
 
@@ -17,11 +16,8 @@ class ViewportRenderer {
     private fun renderFloorAndCeiling(game: IGame, viewport: Bitmap, zBuffer: Buffer2D) {
         val floorBitmap = game.floorTexture.bitmap
 
-        val cameraPosition = Vector3f(
-            sin(GameTime.elapsedTime * 2) * 10,
-            cos(GameTime.elapsedTime * 15) * 2,
-            GameTime.elapsedTime * 20
-        )
+        val camera = game.playerCamera
+        val cameraPosition = camera.owner.transform.position
 
         val rotY = sin(GameTime.elapsedTime * 0.5f) * 2f
 
@@ -29,18 +25,6 @@ class ViewportRenderer {
         // usage, and https://en.wikipedia.org/wiki/Rotation_matrix for formula.
         val rotYCos = cos(rotY)
         val rotYSin = sin(rotY)
-
-        // Basically the camera lens. Think "how quickly does the depth
-        // grow from the edges to the center of the screen".
-        val depthScale = 30.0f
-
-        // Basically the FOV, but as a scalar rather than an angle.
-        // Think "how closely are parallel lines in the 3D world represented
-        // by parallel lines on screen".
-        val horizontalFovScale = 1.0f
-
-        // The hypothetical infinite distance at the exact screen center.
-        val maxDepth = 10000.0f
 
         for (yViewPort in 0 until viewport.height) {
             // The vertical distance from the screen center for the current pixel.
@@ -56,9 +40,15 @@ class ViewportRenderer {
             // smaller distance from the screen center.
             // The screen center can be offset to correspond to vertical camera movement.
             val zGlobal = when {
-                yDeltaNormalized < 0 -> min(maxDepth, abs((depthScale + cameraPosition.y) / yDeltaNormalized))
-                yDeltaNormalized > 0 -> min(maxDepth, abs((depthScale - cameraPosition.y) / yDeltaNormalized))
-                else -> maxDepth
+                yDeltaNormalized < 0 -> min(
+                    camera.maxDepth,
+                    abs((camera.lens + cameraPosition.y) / yDeltaNormalized)
+                )
+                yDeltaNormalized > 0 -> min(
+                    camera.maxDepth,
+                    abs((camera.lens - cameraPosition.y) / yDeltaNormalized)
+                )
+                else -> camera.maxDepth
             }
 
             for (xViewport in 0 until viewport.width) {
@@ -71,7 +61,7 @@ class ViewportRenderer {
                 // center.
                 // Think "how many virtual 1 cm cubes would fit into this physical 1 cm
                 // on screen".
-                val xGlobal = xDeltaNormalized * zGlobal * horizontalFovScale
+                val xGlobal = xDeltaNormalized * zGlobal * camera.horizontalFovMultiplier
 
                 // Applying the rotation. See https://en.wikipedia.org/wiki/Rotation_matrix
                 // for formula and explanation.
