@@ -1,14 +1,14 @@
 package com.rk.mykotlingameengine.core
 
-import com.rk.mykotlingameengine.graphics.Display
-import com.rk.mykotlingameengine.graphics.Renderer
-import com.rk.mykotlingameengine.graphics.ScreenSize
+import com.rk.mykotlingameengine.graphics.*
 
 class Engine(private val game: IGame) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(TITLE, defaultScreenSize)
-    private val renderer = Renderer(defaultScreenSize)
+    private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
+    private val viewportRenderer = ViewportRenderer()
+    private val spriteRenderer = SpriteRenderer()
 
     private val gameTime = GameTime()
     private val fpsCounter = FpsCounter()
@@ -19,7 +19,9 @@ class Engine(private val game: IGame) {
             game.onTick()
         },
         onRender = {
-            val screen = renderer.render(game)
+            screen.clear()
+            viewportRenderer.render(screen, game)
+            spriteRenderer.render(screen, game)
             display.displayPixels(screen)
         }
     )
