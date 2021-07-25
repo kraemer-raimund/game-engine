@@ -1,9 +1,11 @@
 package com.rk.mykotlingameengine.graphics
 
-import com.rk.mykotlingameengine.core.GameTime
 import com.rk.mykotlingameengine.core.IGame
 import com.rk.mykotlingameengine.math.clamp
-import kotlin.math.*
+import kotlin.math.abs
+import kotlin.math.cos
+import kotlin.math.min
+import kotlin.math.sin
 
 class ViewportRenderer {
 
@@ -16,15 +18,14 @@ class ViewportRenderer {
     private fun renderFloorAndCeiling(game: IGame, viewport: Bitmap, zBuffer: Buffer2D) {
         val floorBitmap = game.floorTexture.bitmap
 
-        val camera = game.playerCamera
+        val camera = game.activeCamera
         val cameraPosition = camera.owner.transform.position
-
-        val rotY = sin(GameTime.elapsedTime * 0.5f) * 2f
+        val cameraRotationY = camera.owner.transform.rotationEuler.y
 
         // Precalculating these since they don't change per pixel. See below for
         // usage, and https://en.wikipedia.org/wiki/Rotation_matrix for formula.
-        val rotYCos = cos(rotY)
-        val rotYSin = sin(rotY)
+        val rotYCos = cos(cameraRotationY)
+        val rotYSin = sin(cameraRotationY)
 
         for (yViewPort in 0 until viewport.height) {
             // The vertical distance from the screen center for the current pixel.

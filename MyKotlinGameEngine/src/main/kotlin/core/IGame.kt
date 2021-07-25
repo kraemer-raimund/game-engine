@@ -5,7 +5,7 @@ import com.rk.mykotlingameengine.graphics.Texture
 interface IGame {
 
     val floorTexture: Texture
-    val playerCamera: Camera
+    val activeCamera: Camera
 
     fun onTick()
 }
