@@ -2,6 +2,7 @@ package com.rk.mykotlingameengine.graphics
 
 import com.rk.mykotlingameengine.core.GameTime
 import com.rk.mykotlingameengine.core.IGame
+import com.rk.mykotlingameengine.math.Vector3f
 import com.rk.mykotlingameengine.math.clamp
 import kotlin.math.*
 
@@ -9,13 +10,17 @@ class ViewportRenderer {
 
     fun render(viewPort: Bitmap, game: IGame) {
         val zBuffer = Buffer2D(viewPort.width, viewPort.height)
-        renderFloor(game, viewPort, zBuffer)
+        renderFloorAndCeiling(game, viewPort, zBuffer)
         postProcess(viewPort, zBuffer)
     }
 
-    private fun renderFloor(game: IGame, viewport: Bitmap, zBuffer: Buffer2D) {
+    private fun renderFloorAndCeiling(game: IGame, viewport: Bitmap, zBuffer: Buffer2D) {
         val floorBitmap = game.floorTexture.bitmap
-        val verticalCameraOffset = sin(GameTime.elapsedTime * 2) * 10
+        val cameraOffset = Vector3f(
+            sin(GameTime.elapsedTime * 2) * 10,
+            cos(GameTime.elapsedTime * 2) * 10,
+            cos(GameTime.elapsedTime * 2) * 10,
+        )
 
         // Basically the camera lens. Think "how quickly does the depth
         // grow from the edges to the center of the screen".
@@ -43,8 +48,8 @@ class ViewportRenderer {
             // smaller distance from the screen center.
             // The screen center can be offset to correspond to vertical camera movement.
             val zGlobal = when {
-                yDeltaNormalized < 0 -> min(maxDepth, abs((depthScale + verticalCameraOffset) / yDeltaNormalized))
-                yDeltaNormalized > 0 -> min(maxDepth, abs((depthScale - verticalCameraOffset) / yDeltaNormalized))
+                yDeltaNormalized < 0 -> min(maxDepth, abs((depthScale + cameraOffset.y) / yDeltaNormalized))
+                yDeltaNormalized > 0 -> min(maxDepth, abs((depthScale - cameraOffset.y) / yDeltaNormalized))
                 else -> maxDepth
             }
 
@@ -60,8 +65,8 @@ class ViewportRenderer {
                 // on screen".
                 val xGlobal = xDeltaNormalized * zGlobal * horizontalFovScale
 
-                val xInCurrentSquare = xGlobal.toInt() and floorBitmap.width - 1
-                val yInCurrentSquare = zGlobal.toInt() and floorBitmap.height - 1
+                val xInCurrentSquare = (xGlobal + cameraOffset.x).toInt() and floorBitmap.width - 1
+                val yInCurrentSquare = (zGlobal + cameraOffset.z).toInt() and floorBitmap.height - 1
 
                 val pixel = floorBitmap.pixels[xInCurrentSquare + yInCurrentSquare * floorBitmap.width]
                 viewport.pixels[xViewport + yViewPort * viewport.width] = pixel
