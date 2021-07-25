@@ -16,11 +16,19 @@ class ViewportRenderer {
 
     private fun renderFloorAndCeiling(game: IGame, viewport: Bitmap, zBuffer: Buffer2D) {
         val floorBitmap = game.floorTexture.bitmap
-        val cameraOffset = Vector3f(
+
+        val cameraPosition = Vector3f(
             sin(GameTime.elapsedTime * 2) * 10,
-            cos(GameTime.elapsedTime * 2) * 10,
-            cos(GameTime.elapsedTime * 2) * 10,
+            cos(GameTime.elapsedTime * 15) * 2,
+            GameTime.elapsedTime * 20
         )
+
+        val rotY = sin(GameTime.elapsedTime * 0.5f) * 2f
+
+        // Precalculating these since they don't change per pixel. See below for
+        // usage, and https://en.wikipedia.org/wiki/Rotation_matrix for formula.
+        val rotYCos = cos(rotY)
+        val rotYSin = sin(rotY)
 
         // Basically the camera lens. Think "how quickly does the depth
         // grow from the edges to the center of the screen".
@@ -48,8 +56,8 @@ class ViewportRenderer {
             // smaller distance from the screen center.
             // The screen center can be offset to correspond to vertical camera movement.
             val zGlobal = when {
-                yDeltaNormalized < 0 -> min(maxDepth, abs((depthScale + cameraOffset.y) / yDeltaNormalized))
-                yDeltaNormalized > 0 -> min(maxDepth, abs((depthScale - cameraOffset.y) / yDeltaNormalized))
+                yDeltaNormalized < 0 -> min(maxDepth, abs((depthScale + cameraPosition.y) / yDeltaNormalized))
+                yDeltaNormalized > 0 -> min(maxDepth, abs((depthScale - cameraPosition.y) / yDeltaNormalized))
                 else -> maxDepth
             }
 
@@ -65,10 +73,18 @@ class ViewportRenderer {
                 // on screen".
                 val xGlobal = xDeltaNormalized * zGlobal * horizontalFovScale
 
-                val xInCurrentSquare = (xGlobal + cameraOffset.x).toInt() and floorBitmap.width - 1
-                val yInCurrentSquare = (zGlobal + cameraOffset.z).toInt() and floorBitmap.height - 1
+                // Applying the rotation. See https://en.wikipedia.org/wiki/Rotation_matrix
+                // for formula and explanation.
+                val xAfterRotation = xGlobal * rotYCos - zGlobal * rotYSin
+                val zAfterRotation = xGlobal * rotYSin + zGlobal * rotYCos
 
-                val pixel = floorBitmap.pixels[xInCurrentSquare + yInCurrentSquare * floorBitmap.width]
+                val xWithOffset = xAfterRotation + cameraPosition.x
+                val zWithOffset = zAfterRotation + cameraPosition.z
+
+                val xInCurrentSquare = xWithOffset.toInt() and floorBitmap.width - 1
+                val zInCurrentSquare = zWithOffset.toInt() and floorBitmap.height - 1
+
+                val pixel = floorBitmap.pixels[xInCurrentSquare + zInCurrentSquare * floorBitmap.width]
                 viewport.pixels[xViewport + yViewPort * viewport.width] = pixel
                 zBuffer.pixels[xViewport + yViewPort * viewport.width] = zGlobal
             }
