@@ -9,10 +9,10 @@ import kotlin.math.sin
 
 class ViewportRenderer {
 
-    fun render(viewPort: Bitmap, game: IGame) {
-        val zBuffer = Buffer2D(viewPort.width, viewPort.height)
-        renderFloorAndCeiling(game, viewPort, zBuffer)
-        postProcess(viewPort, zBuffer)
+    fun render(viewport: Bitmap, game: IGame) {
+        val zBuffer = Buffer2D(viewport.width, viewport.height)
+        renderFloorAndCeiling(game, viewport, zBuffer)
+        postProcess(viewport, zBuffer)
     }
 
     private fun renderFloorAndCeiling(game: IGame, viewport: Bitmap, zBuffer: Buffer2D) {
@@ -82,16 +82,16 @@ class ViewportRenderer {
         }
     }
 
-    private fun postProcess(viewPort: Bitmap, zBuffer: Buffer2D) {
-        shadeWithDepth(viewPort, zBuffer)
+    private fun postProcess(viewport: Bitmap, zBuffer: Buffer2D) {
+        shadeWithDepth(viewport, zBuffer)
     }
 
-    private fun shadeWithDepth(viewPort: Bitmap, zBuffer: Buffer2D) {
+    private fun shadeWithDepth(viewport: Bitmap, zBuffer: Buffer2D) {
         // How strong is the hypothetical light which is attached to the camera?
         val lightIntensity = 5000.0f
 
-        for (i in 0 until viewPort.pixels.size) {
-            val color = viewPort.pixels[i]
+        for (i in 0 until viewport.pixels.size) {
+            val color = viewport.pixels[i]
             val r = (color shr 16) and 0xFF
             val g = (color shr 8) and 0xFF
             val b = (color) and 0xFF
@@ -112,7 +112,7 @@ class ViewportRenderer {
             val bShaded = (b * brightness).toInt()
 
             val resultingPixel = (rShaded shl 16) + (gShaded shl 8) + bShaded
-            viewPort.pixels[i] = resultingPixel
+            viewport.pixels[i] = resultingPixel
         }
     }
 }
