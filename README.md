@@ -28,4 +28,4 @@ The MIT License. Please refer to the license file.
 If you find a bug or have a feature request, it is appreciated
 if you open an issue. You may also create a pull request, but
 to avoid the risk of the pull request not being accepted I
-recommended to always open an issue first.
+recommend to always open an issue first.
