@@ -8,12 +8,12 @@ class GameTime {
 
     companion object {
         /**
-         * Timestamp at the start of the game in seconds.
+         * Timestamp at the start of the game in milliseconds.
          */
         private val startTimeMillis = System.currentTimeMillis()
 
         /**
-         * Current timestamp in seconds.
+         * Current timestamp in milliseconds.
          */
         private val currentTimeMillis get() = System.currentTimeMillis()
 
