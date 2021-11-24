@@ -4,6 +4,7 @@ class GameTime {
 
     fun onTick() {
         deltaTime = (currentTimeMillis - previousFrameTimeMillis) / 1000.0f
+        previousFrameTimeMillis = currentTimeMillis
     }
 
     companion object {
