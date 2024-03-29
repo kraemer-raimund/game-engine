@@ -4,7 +4,7 @@ A so far unnamed game engine built from scratch in Kotlin, reinventing many
 wheels for fun and learning.
 
 **Work in progress.** This project is far from stable (and likely never will
-be), as I use for experimentation and learning.
+be), as I use it for experimentation and learning.
 
 The goal is to create a simple game engine from scratch, intentionally without
 using any graphics libraries like OpenGL or any frameworks besides basic
