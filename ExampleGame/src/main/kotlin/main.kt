@@ -1,7 +1,6 @@
-package com.rk.mykotlingameengine
+package com.rk.examplegame
 
 import com.rk.mykotlingameengine.core.Engine
-import com.rk.mykotlingameengine.game.ExampleGame
 
 fun main() {
     val game = ExampleGame()

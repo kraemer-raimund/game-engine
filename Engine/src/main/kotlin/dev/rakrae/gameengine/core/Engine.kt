@@ -1,6 +1,6 @@
-package com.rk.mykotlingameengine.core
+package dev.rakrae.gameengine.core
 
-import com.rk.mykotlingameengine.graphics.*
+import dev.rakrae.gameengine.graphics.*
 
 class Engine(private val game: IGame) {
 

@@ -2,7 +2,7 @@ plugins {
     kotlin("jvm") version "1.9.23"
 }
 
-group = "me.kraem"
+group = "dev.rakrae.gameengine"
 version = "1.0-SNAPSHOT"
 
 repositories {
@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    implementation(project(":GameEngine"))
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
@@ -17,5 +18,5 @@ tasks.test {
     useJUnitPlatform()
 }
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(20)
 }

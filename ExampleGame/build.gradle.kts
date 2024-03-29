@@ -10,6 +10,7 @@ repositories {
 }
 
 dependencies {
+    project(":MyKotlinGameEngine")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 

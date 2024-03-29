@@ -1,12 +1,12 @@
-package com.rk.mykotlingameengine.game
+package dev.rakrae.gameengine.samplegame
 
-import com.rk.mykotlingameengine.core.*
-import com.rk.mykotlingameengine.graphics.Texture
-import com.rk.mykotlingameengine.math.Vector3f
+import dev.rakrae.gameengine.core.*
+import dev.rakrae.gameengine.graphics.Texture
+import dev.rakrae.gameengine.math.Vector3f
 import kotlin.math.cos
 import kotlin.math.sin
 
-class ExampleGame : IGame {
+class SampleGame : IGame {
 
     override val floorTexture = Texture("textures/floor.png")
     private var lastFpsTimestamp = GameTime.elapsedTime
