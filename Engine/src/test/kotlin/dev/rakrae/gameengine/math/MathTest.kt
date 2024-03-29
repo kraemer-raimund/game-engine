@@ -11,4 +11,11 @@ internal class MathTest {
 
         assertEquals(clamped, 42.0f)
     }
+
+    @Test
+    fun `clamping value less than min value results in min value`() {
+        val clamped = clamp(13.0f, 30.0f, 50.0f)
+
+        assertEquals(clamped, 30.0f)
+    }
 }
