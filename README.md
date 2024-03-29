@@ -11,14 +11,6 @@ It intentionally reinvents many wheels, doing some things less efficiently than 
 be necessary in order to learn more about lower level aspects which are usually
 abstracted away by libraries and hardware, e. g. rendering, linear algebra, etc.
 
-# Inspiration
-
-Some of the rendering techniques are learned from a game jam live stream
-from 2011 by Minecraft creator Notch, although heavily modified and less
-"game jamy". The live stream can be found on YouTube as an archived
-reupload named ["Notch Coding Prelude of the Chambered"](https://www.youtube.com/watch?v=GQO3SSlsgJM).
-I highly recommend this and his other game jam series as a learning resource.
-
 # License
 
 The MIT License. Please refer to the license file.

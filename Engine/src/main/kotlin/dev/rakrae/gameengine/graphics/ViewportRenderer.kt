@@ -7,6 +7,21 @@ import kotlin.math.cos
 import kotlin.math.min
 import kotlin.math.sin
 
+/**
+ * Renders the scene into the viewport to be displayed on screen.
+ *
+ * ### Inspiration
+ * The main rendering technique used here is similar to [Mode 7](https://en.wikipedia.org/wiki/Mode_7),
+ * a sort of "fake 3D" that was originally created for early game consoles.
+ * The particular implementation is mainly inspired by a game jam live stream
+ * from 2011 by Minecraft creator Notch, although heavily modified and less
+ * "game jamy". The live stream can be found on YouTube as an archived
+ * re-upload named ["Notch Coding Prelude of the Chambered"](https://www.youtube.com/watch?v=GQO3SSlsgJM).
+ * I highly recommend this and his other game jam series as a learning resource.
+ *
+ * This might be heavily changed or wholly replaced over time as I experiment
+ * with different rendering techniques.
+ */
 class ViewportRenderer {
 
     fun render(viewport: Bitmap, game: IGame) {
