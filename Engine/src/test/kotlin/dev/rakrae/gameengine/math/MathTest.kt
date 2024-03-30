@@ -29,5 +29,11 @@ internal class MathTest {
             val clamped = clamp(1337.0f, 30.0f, 50.0f)
             assertThat(clamped).isEqualTo(50.0f)
         }
+
+        @Test
+        fun `below negative lower bound results in that negative lower bound`() {
+            val clamped = clamp(-900000.0f, -100.0f, 50000.0f)
+            assertThat(clamped).isEqualTo(-100.0f)
+        }
     }
 }
