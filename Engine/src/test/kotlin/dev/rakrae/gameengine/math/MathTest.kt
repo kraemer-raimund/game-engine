@@ -23,5 +23,11 @@ internal class MathTest {
             val clamped = clamp(13.0f, 30.0f, 50.0f)
             assertEquals(30.0f, clamped)
         }
+
+        @Test
+        fun `greater than max value results in max value`() {
+            val clamped = clamp(1337.0f, 30.0f, 50.0f)
+            assertEquals(50.0f, clamped)
+        }
     }
 }
