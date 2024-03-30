@@ -1,9 +1,9 @@
 package dev.rakrae.gameengine.math
 
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
-import kotlin.test.Test
-import kotlin.test.assertEquals
+import org.junit.jupiter.api.Test
 
 @DisplayName("Math")
 internal class MathTest {
@@ -15,19 +15,19 @@ internal class MathTest {
         @Test
         fun `within range preserves the value`() {
             val clamped = clamp(42.0f, 30.0f, 50.0f)
-            assertEquals(42.0f, clamped)
+            assertThat(clamped).isEqualTo(42.0f)
         }
 
         @Test
         fun `less than min value results in min value`() {
             val clamped = clamp(13.0f, 30.0f, 50.0f)
-            assertEquals(30.0f, clamped)
+            assertThat(clamped).isEqualTo(30.0f)
         }
 
         @Test
         fun `greater than max value results in max value`() {
             val clamped = clamp(1337.0f, 30.0f, 50.0f)
-            assertEquals(50.0f, clamped)
+            assertThat(clamped).isEqualTo(50.0f)
         }
     }
 }
