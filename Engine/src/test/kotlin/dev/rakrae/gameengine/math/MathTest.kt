@@ -15,13 +15,13 @@ internal class MathTest {
         @Test
         fun `within range preserves the value`() {
             val clamped = clamp(42.0f, 30.0f, 50.0f)
-            assertEquals(clamped, 42.0f)
+            assertEquals(42.0f, clamped)
         }
 
         @Test
         fun `less than min value results in min value`() {
             val clamped = clamp(13.0f, 30.0f, 50.0f)
-            assertEquals(clamped, 30.0f)
+            assertEquals(30.0f, clamped)
         }
     }
 }
