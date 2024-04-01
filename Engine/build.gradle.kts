@@ -12,6 +12,7 @@ repositories {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.assertj:assertj-core:3.25.3")
+    testImplementation("com.tngtech.archunit:archunit-junit5:1.2.1")
 }
 
 tasks.test {
