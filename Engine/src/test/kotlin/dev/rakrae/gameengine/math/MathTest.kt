@@ -34,6 +34,26 @@ internal class MathTest {
     }
 
     @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class Max {
+
+        private fun maxTestArguments() : Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(13f, 37f, 37f),
+                Arguments.of(500f, -500f, 500f),
+                Arguments.of(0f, -0f, 0f),
+                Arguments.of(-0f, 0f, -0f)
+            )
+        }
+
+        @ParameterizedTest
+        @MethodSource("maxTestArguments")
+        fun `returns the larger value`(v1: Float, v2: Float, expected: Float) {
+            assertThat(max(v1, v2)).isEqualTo(expected)
+        }
+    }
+
+    @Nested
     @DisplayName("clamping value")
     inner class Clamp {
 
