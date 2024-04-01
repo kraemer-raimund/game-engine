@@ -4,9 +4,34 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.Arguments
+import org.junit.jupiter.params.provider.MethodSource
+import java.util.stream.Stream
 
 @DisplayName("Math")
 internal class MathTest {
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class Min {
+
+        private fun minTestArguments() : Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(13f, 37f, 13f),
+                Arguments.of(500f, -500f, -500f),
+                Arguments.of(0f, -0f, 0f),
+                Arguments.of(-0f, 0f, -0f)
+            )
+        }
+
+        @ParameterizedTest
+        @MethodSource("minTestArguments")
+        fun `returns the smaller value`(v1: Float, v2: Float, expected: Float) {
+            assertThat(min(v1, v2)).isEqualTo(expected)
+        }
+    }
 
     @Nested
     @DisplayName("clamping value")
