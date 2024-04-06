@@ -8,6 +8,15 @@ fun abs(v: Float): Float {
     return if (v < 0) -v else v
 }
 
+fun signum(v: Float): Float {
+    return when {
+        v == 0f -> 0f
+        v.isNaN() -> Float.NaN
+        v > 0 -> 1f
+        else -> -1f
+    }
+}
+
 fun min(v1: Float, v2: Float): Float {
     return if (v2 < v1) v2 else v1
 }

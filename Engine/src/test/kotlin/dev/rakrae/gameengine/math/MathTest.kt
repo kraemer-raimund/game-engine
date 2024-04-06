@@ -51,6 +51,31 @@ internal class MathTest {
     }
 
     @Nested
+    inner class Signum {
+
+        @Test
+        fun `positive values have signum positive one`() {
+            assertThat(signum(123.456f)).isEqualTo(1f)
+        }
+
+        @Test
+        fun `negative values have signum negative one`() {
+            assertThat(signum(-69.42f)).isEqualTo(-1f)
+        }
+
+        @Test
+        fun `zero remains zero`() {
+            assertThat(signum(0f)).isEqualTo(0f)
+            assertThat(signum(-0f)).isEqualTo(0f)
+        }
+
+        @Test
+        fun `nan remains nan`() {
+            assertThat(signum(Float.NaN)).isNaN()
+        }
+    }
+
+    @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class Min {
 
