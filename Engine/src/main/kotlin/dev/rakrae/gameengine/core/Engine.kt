@@ -1,13 +1,15 @@
 package dev.rakrae.gameengine.core
 
-import dev.rakrae.gameengine.graphics.*
+import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.Display
+import dev.rakrae.gameengine.graphics.ScreenSize
+import dev.rakrae.gameengine.graphics.SpriteRenderer
 
 class Engine(private val game: IGame) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(TITLE, defaultScreenSize)
     private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
-    private val viewportRenderer = ViewportRenderer()
     private val spriteRenderer = SpriteRenderer()
 
     private val gameTime = GameTime()
@@ -20,7 +22,6 @@ class Engine(private val game: IGame) {
         },
         onRender = {
             screen.clear()
-            viewportRenderer.render(screen, game)
             spriteRenderer.render(screen, game)
             display.displayPixels(screen)
         }
