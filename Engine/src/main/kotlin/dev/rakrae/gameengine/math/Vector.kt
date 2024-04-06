@@ -1,5 +1,7 @@
 package dev.rakrae.gameengine.math
 
+class Vec2f(val x: Float, val y: Float)
+
 class Vec3f(val x: Float, val y: Float, val z: Float) {
 
     operator fun plus(vector: Vec3f): Vec3f {
@@ -25,3 +27,5 @@ class Vec3f(val x: Float, val y: Float, val z: Float) {
         val zero = Vec3f(0f, 0f, 0f)
     }
 }
+
+class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
