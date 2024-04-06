@@ -1,5 +1,9 @@
 package dev.rakrae.gameengine.math
 
+fun abs(v: Int): Int {
+    return if (v < 0) -v else v
+}
+
 fun abs(v: Float): Float {
     return if (v < 0) -v else v
 }
