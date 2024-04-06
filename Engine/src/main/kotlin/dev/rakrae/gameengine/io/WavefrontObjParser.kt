@@ -45,7 +45,7 @@ class WavefrontObjParser {
             val values = line
                 .split(" ")
                 .map { it.trim() }
-                .drop(1) // values[0] is the line marker, e.g. "v", "vt", etc.
+                .drop(1) // Skip the line marker, like "v", "vt", etc.
 
             when  {
                 line.startsWith("v ") -> vertexPositions.add(parseVertexCoordinates(values))
