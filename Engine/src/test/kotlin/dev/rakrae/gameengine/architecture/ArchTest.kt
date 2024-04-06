@@ -4,9 +4,13 @@ import com.tngtech.archunit.junit.AnalyzeClasses
 import com.tngtech.archunit.junit.ArchTest
 import com.tngtech.archunit.lang.ArchRule
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses
+import com.tngtech.archunit.library.GeneralCodingRules
 
-@AnalyzeClasses(packages = ["dev.rakrae.gameengine.math"])
-class MathArchTest {
+@AnalyzeClasses(packages = ["dev.rakrae.gameengine"])
+class ArchTest {
+
+    @ArchTest
+    private val noGenericExceptions: ArchRule = GeneralCodingRules.NO_CLASSES_SHOULD_THROW_GENERIC_EXCEPTIONS
 
     /**
      * We want to intentionally reinvent some wheels, including creating our
@@ -14,7 +18,7 @@ class MathArchTest {
      * when we need it.
      */
     @ArchTest
-    val mathShouldNotDependOnStandardLibraryMath: ArchRule =
-        noClasses().that().resideInAPackage("dev.rakrae.gameengine.math")
+    val noMathFromStandardLibrary: ArchRule =
+        noClasses().that().resideInAPackage("dev.rakrae.gameengine.*")
             .should().dependOnClassesThat().haveNameMatching("java.lang.Math")
 }
