@@ -2,11 +2,11 @@ package dev.rakrae.gameengine.math
 
 class Vec3f(val x: Float, val y: Float, val z: Float) {
 
-    operator fun plus(vector3f: Vec3f): Vec3f {
+    operator fun plus(vector: Vec3f): Vec3f {
         return Vec3f(
-            x + vector3f.x,
-            y + vector3f.y,
-            z + vector3f.z
+            x + vector.x,
+            y + vector.y,
+            z + vector.z
         )
     }
 
