@@ -15,6 +15,27 @@ internal class MathTest {
 
     @Nested
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
+    inner class Abs {
+
+        private fun absTestArguments() : Stream<Arguments> {
+            return Stream.of(
+                Arguments.of(-1.23f, 1.23f),
+                Arguments.of(-10000.42f, 10000.42f),
+                Arguments.of(2500f, 2500f),
+                Arguments.of(0f, 0f),
+                Arguments.of(-0f, 0f)
+            )
+        }
+
+        @ParameterizedTest
+        @MethodSource("absTestArguments")
+        fun `returns the absolute value`(v: Float, expected: Float) {
+            assertThat(abs(v)).isEqualTo(expected)
+        }
+    }
+
+    @Nested
+    @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class Min {
 
         private fun minTestArguments() : Stream<Arguments> {
