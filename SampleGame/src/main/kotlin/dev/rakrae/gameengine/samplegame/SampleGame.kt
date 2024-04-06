@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.samplegame
 
 import dev.rakrae.gameengine.core.*
 import dev.rakrae.gameengine.graphics.Texture
-import dev.rakrae.gameengine.math.Vector3f
+import dev.rakrae.gameengine.math.Vec3f
 import kotlin.math.cos
 import kotlin.math.sin
 
@@ -20,12 +20,12 @@ class SampleGame : IGame {
         }
 
         activeCamera.owner.transform.apply {
-            position = Vector3f(
+            position = Vec3f(
                 sin(GameTime.elapsedTime * 2) * 10,
                 cos(GameTime.elapsedTime * 15) * 2,
                 GameTime.elapsedTime * 20
             )
-            rotationEuler = Vector3f.up * sin(GameTime.elapsedTime * 0.5f) * 2f
+            rotationEuler = Vec3f.up * sin(GameTime.elapsedTime * 0.5f) * 2f
         }
     }
 }
