@@ -119,15 +119,19 @@ class WavefrontObjParser {
         return PolygonFace(
             values.map {
                 val indices = it.split("/")
-                VertexIndices(
-                    posIndex = indices[0].toInt(),
-                    // UV index is optional and may be omitted like so "7//1" (specifying only vertex position index
-                    // and normal index), or by specifying only the vertex position index (e.g., "7").
-                    // We use -1 to indicate an invalid/missing index.
-                    uvIndex = if (indices.size >= 2 && indices[1].isNotBlank()) indices[1].toInt() else -1,
-                    // Normal index is optional. We use -1 to indicate an invalid/missing index.
-                    normalIndex = if (indices.size >= 3) indices[2].toInt() else -1
-                )
+
+                val posIndex = indices[0].toInt()
+
+                // UV index is optional and may be omitted like so "7//1" (specifying only vertex position index
+                // and normal index), or by specifying only the vertex position index (e.g., "7").
+                // We use -1 to indicate an invalid/missing index.
+                val uvIndex = if (indices.size >= 2 && indices[1].isNotBlank()) indices[1].toInt() else -1
+
+                // Normal index is optional. We use -1 to indicate an invalid/missing index.
+                val normalIndex = if (indices.size >= 3) indices[2].toInt() else -1
+
+                // Correct for 1-based indices used in the Wavefront OBJ format.
+                VertexIndices(posIndex - 1, uvIndex - 1, normalIndex - 1)
             }
         )
     }
