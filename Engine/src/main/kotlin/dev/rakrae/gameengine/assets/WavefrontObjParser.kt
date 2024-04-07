@@ -77,8 +77,8 @@ class WavefrontObjParser {
             val vertices = face.vertices.map {
                 Vertex(
                     vertexPositions[it.posIndex],
-                    uvs[it.uvIndex],
-                    normals[it.normalIndex]
+                    uvs.getOrElse(it.uvIndex) { Vec3f.zero },
+                    normals.getOrElse(it.normalIndex) { Vec3f.zero }
                 )
             }
             Triangle(vertices[0], vertices[1], vertices[2])
@@ -130,8 +130,13 @@ class WavefrontObjParser {
                 // Normal index is optional. We use -1 to indicate an invalid/missing index.
                 val normalIndex = if (indices.size >= 3) indices[2].toInt() else -1
 
-                // Correct for 1-based indices used in the Wavefront OBJ format.
-                VertexIndices(posIndex - 1, uvIndex - 1, normalIndex - 1)
+                // Correct for 1-based indices used in the Wavefront OBJ format, unless they are
+                // already -1 to indicate a missing index.
+                VertexIndices(
+                    posIndex - 1,
+                    if (uvIndex >= 0) uvIndex - 1 else -1,
+                    if (normalIndex >= 0) normalIndex - 1 else -1
+                )
             }
         )
     }

@@ -1,8 +1,8 @@
 package dev.rakrae.gameengine.math
 
-class Vec2f(val x: Float, val y: Float)
+data class Vec2f(val x: Float, val y: Float)
 
-class Vec3f(val x: Float, val y: Float, val z: Float) {
+data class Vec3f(val x: Float, val y: Float, val z: Float) {
 
     operator fun plus(vector: Vec3f): Vec3f {
         return Vec3f(
@@ -28,4 +28,4 @@ class Vec3f(val x: Float, val y: Float, val z: Float) {
     }
 }
 
-class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
+data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
