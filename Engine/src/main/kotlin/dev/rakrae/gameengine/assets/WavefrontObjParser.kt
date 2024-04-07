@@ -5,12 +5,11 @@ import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
-import java.io.File
 
 class WavefrontObjParser {
 
     /**
-     * Parse a mesh from a Wavefront OBJ file. This file format is relatively
+     * Parse a mesh from a string in Wavefront OBJ format. This file format is relatively
      * easy to parse:
      *
      * ## Vertices
@@ -32,15 +31,15 @@ class WavefrontObjParser {
      * Furthermore, it encodes texture (UV) coordinates, vertex normals, and some more data in a
      * similar way.
      */
-    fun parse(file: File): Mesh {
+    fun parse(wavefrontObj: String): Mesh {
         val vertexPositions = mutableListOf<VertexPosition>()
         val uvs = mutableListOf<TextureCoordinates>()
         val normals = mutableListOf<VertexNormal>()
         val faces = mutableListOf<PolygonFace>()
 
-        file.forEachLine { rawLine ->
+        wavefrontObj.lineSequence().forEach { rawLine ->
             val line = rawLine.trim()
-            if (line.isBlank() || line.isComment()) return@forEachLine
+            if (line.isBlank() || line.isComment()) return@forEach
 
             val values = line
                 .split(" ")
