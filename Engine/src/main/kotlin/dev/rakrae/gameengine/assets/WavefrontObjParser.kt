@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.io
+package dev.rakrae.gameengine.assets
 
 import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
