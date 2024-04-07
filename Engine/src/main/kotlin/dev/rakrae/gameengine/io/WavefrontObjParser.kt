@@ -47,7 +47,7 @@ class WavefrontObjParser {
                 .map { it.trim() }
                 .drop(1) // Skip the line marker, like "v", "vt", etc.
 
-            when  {
+            when {
                 line.startsWith("v ") -> vertexPositions.add(parseVertexCoordinates(values))
                 line.startsWith("vt ") -> uvs.add(parseTextureCoordinates(values))
                 line.startsWith("vn ") -> normals.add(parseVertexNormal(values))
@@ -73,7 +73,8 @@ class WavefrontObjParser {
         return faces.map { face ->
             if (face.vertices.size != 3) throw WavefrontObjParseException(
                 "Non-triangulated polygon encountered while parsing Wavefront OBJ file. While non-triangle polygons " +
-                        "are allowed by the file format, the current parser implementation assumes triangles only.")
+                        "are allowed by the file format, the current parser implementation assumes triangles only."
+            )
             val vertices = face.vertices.map {
                 Vertex(
                     vertexPositions[it.posIndex],
@@ -139,8 +140,6 @@ class WavefrontObjParser {
     private fun String.isComment(): Boolean {
         return this.startsWith("#")
     }
-
-    class WavefrontObjParseException(message: String) : RuntimeException(message)
 }
 
 private typealias VertexPosition = Vec4f
@@ -149,3 +148,5 @@ private typealias VertexNormal = Vec3f
 
 private class VertexIndices(val posIndex: Int, val uvIndex: Int, val normalIndex: Int)
 private class PolygonFace(val vertices: List<VertexIndices>)
+
+class WavefrontObjParseException(message: String) : RuntimeException(message)
