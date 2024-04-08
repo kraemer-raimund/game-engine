@@ -2,14 +2,15 @@ package dev.rakrae.gameengine.samplegame
 
 import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.core.Game
-import dev.rakrae.gameengine.graphics.Mesh
 
 class SampleGame : Game {
 
-    private val chessPieces = AssetLoader().loadMesh("/assets/chesspieces/chess-piece-3d-models.obj")
+    override val title = "Chess (Sample Game)"
 
-    override val meshes: Sequence<Mesh>
-        get() = sequenceOf(chessPieces)
+    override val meshes by lazy {
+        val chessPieces = AssetLoader().loadMesh("/assets/chesspieces/chess-piece-3d-models.obj")
+        sequenceOf(chessPieces)
+    }
 
     override fun onTick() {
     }

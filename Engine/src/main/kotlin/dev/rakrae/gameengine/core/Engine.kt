@@ -5,7 +5,7 @@ import dev.rakrae.gameengine.graphics.*
 class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    private val display = Display(TITLE, defaultScreenSize)
+    private val display = Display(game.title, defaultScreenSize)
     private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
     private val rasterizer = Rasterizer()
     private val spriteRenderer = SpriteRenderer()
@@ -35,6 +35,5 @@ class Engine(game: Game) {
     companion object {
         private const val DEFAULT_WIDTH = 800
         private const val DEFAULT_HEIGHT = 800
-        private const val TITLE = "MyKotlinGameEngine"
     }
 }
