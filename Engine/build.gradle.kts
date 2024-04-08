@@ -5,16 +5,16 @@ plugins {
 group = "dev.rakrae.gameengine"
 version = "1.0-SNAPSHOT"
 
-val junitVersion = "5.10.2"
-
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    val junitVersion = "5.10.2"
+    val junitPlatformVersion = "1.10.2"
+    testImplementation("org.junit.jupiter:junit-jupiter:$junitVersion")
     testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    testImplementation("org.junit.platform:junit-platform-suite:$junitPlatformVersion")
     testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.2.1")
 }
@@ -22,6 +22,7 @@ dependencies {
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(20)
 }
