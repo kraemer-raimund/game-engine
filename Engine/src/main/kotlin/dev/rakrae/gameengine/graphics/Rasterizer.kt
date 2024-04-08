@@ -14,12 +14,12 @@ class Rasterizer {
                 val lineEnd = vertices[(i + 1) % 3].position
                 drawLine(
                     from = Vec2f(
-                        (lineStart.z + 1) * image.width / 8f,
-                        (lineStart.y + 1) * image.height / 8f
+                        (lineStart.z + 1) * image.width / 6f,
+                        (lineStart.y + 1) * image.height / 6f
                     ),
                     to = Vec2f(
-                        (lineEnd.z + 1) * image.width / 8f,
-                        (lineEnd.y + 1) * image.height / 8f
+                        (lineEnd.z + 1) * image.width / 6f,
+                        (lineEnd.y + 1) * image.height / 6f
                     ),
                     image = image
                 )
