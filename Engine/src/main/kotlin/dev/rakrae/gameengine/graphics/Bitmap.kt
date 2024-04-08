@@ -11,6 +11,10 @@ class Bitmap(val width: Int, val height: Int) {
         }
     }
 
+    fun getPixel(x: Int, y: Int): Int {
+        return pixels[x + y * width]
+    }
+
     fun clear() {
         for (i in 0 until width * height) {
             pixels[i] = 0

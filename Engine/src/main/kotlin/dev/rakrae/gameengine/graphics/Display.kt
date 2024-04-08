@@ -42,8 +42,9 @@ class Display(title: String, screenSize: ScreenSize) : Canvas() {
             return
         }
 
-        for (i in 0 until bitmap.width * bitmap.height) {
-            pixels[i] = bitmap.pixels[i]
+        val flippedVertically = flipVertically(bitmap)
+        for (i in 0 until flippedVertically.width * flippedVertically.height) {
+            pixels[i] = flippedVertically.pixels[i]
         }
 
         bufferStrategy.drawGraphics.apply {
@@ -59,6 +60,20 @@ class Display(title: String, screenSize: ScreenSize) : Canvas() {
         }
 
         bufferStrategy.show()
+    }
+
+    /**
+     * AWT considers the y-axis to go top-down, but all of our calculations in 2D/screen coordinates
+     * assume the y-axis to got bottom-up.
+     */
+    private fun flipVertically(bitmap: Bitmap): Bitmap {
+        val flipped = Bitmap(bitmap.width, bitmap.height)
+        for (x in 0..<bitmap.width) {
+            for (y in 0..<bitmap.height) {
+                flipped.setPixelIfInBounds(x, flipped.height - y, bitmap.getPixel(x, y))
+            }
+        }
+        return flipped
     }
 
     companion object {
