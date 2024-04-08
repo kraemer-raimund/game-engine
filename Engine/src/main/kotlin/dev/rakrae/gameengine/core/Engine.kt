@@ -20,7 +20,9 @@ class Engine(game: Game) {
         },
         onRender = {
             screen.clear()
-            rasterizer.render(screen)
+            for (mesh in game.meshes) {
+                rasterizer.render(mesh, screen)
+            }
             spriteRenderer.render(screen)
             display.displayPixels(screen)
         }

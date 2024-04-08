@@ -4,10 +4,27 @@ import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.abs
 import dev.rakrae.gameengine.math.signum
 
-internal class Rasterizer {
+class Rasterizer {
 
-    fun render(image: Bitmap) {
-        drawLine(Vec2f(13f, 37f), Vec2f(150f, 550f), image)
+    fun render(mesh: Mesh, image: Bitmap) {
+        for (triangle in mesh.triangles) {
+            val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
+            for (i in 0..2) {
+                val lineStart = vertices[i].position
+                val lineEnd = vertices[(i + 1) % 3].position
+                drawLine(
+                    from = Vec2f(
+                        (lineStart.z + 1) * image.width / 8f,
+                        (lineStart.y + 1) * image.height / 8f
+                    ),
+                    to = Vec2f(
+                        (lineEnd.z + 1) * image.width / 8f,
+                        (lineEnd.y + 1) * image.height / 8f
+                    ),
+                    image = image
+                )
+            }
+        }
     }
 
     /**
@@ -25,7 +42,7 @@ internal class Rasterizer {
         var y = from.y.toInt()
 
         while (true) {
-            image.pixels[x + y * image.width] = 0xDDD
+            image.setPixelIfInBounds(x, y, 0xDDDDDD)
             if (x == to.x.toInt() && y == to.y.toInt()) break
             // The threshold is at half a pixel. We can multiply everything by 2 to avoid the
             // expensive division since the sign of the accumulated error will remain the same.
