@@ -8,22 +8,24 @@ class Rasterizer {
 
     fun render(mesh: Mesh, image: Bitmap) {
         for (triangle in mesh.triangles) {
-            val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
-            for (i in 0..2) {
-                val lineStart = vertices[i].position
-                val lineEnd = vertices[(i + 1) % 3].position
-                drawLine(
-                    from = Vec2f(
-                        (lineStart.z + 1) * image.width / 6f,
-                        (lineStart.y + 1) * image.height / 6f
-                    ),
-                    to = Vec2f(
-                        (lineEnd.z + 1) * image.width / 6f,
-                        (lineEnd.y + 1) * image.height / 6f
-                    ),
-                    image = image
-                )
-            }
+            drawWireframe(triangle, image)
+        }
+    }
+
+    private fun drawWireframe(triangle: Triangle, image: Bitmap) {
+        val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
+        for (i in 0..2) {
+            val lineStartWorld = vertices[i].position
+            val lineEndWorld = vertices[(i + 1) % 3].position
+            val lineStartScreen = Vec2f(
+                (lineStartWorld.z + 1) * image.width / 6f,
+                (lineStartWorld.y + 1) * image.height / 6f
+            )
+            val lineEndScreen = Vec2f(
+                (lineEndWorld.z + 1) * image.width / 6f,
+                (lineEndWorld.y + 1) * image.height / 6f
+            )
+            drawLine(lineStartScreen, lineEndScreen, image)
         }
     }
 
