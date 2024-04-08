@@ -17,6 +17,14 @@ fun signum(v: Float): Float {
     }
 }
 
+fun signum(v: Int): Int {
+    return when {
+        v == 0 -> 0
+        v > 0 -> 1
+        else -> -1
+    }
+}
+
 fun min(v1: Float, v2: Float): Float {
     return if (v2 < v1) v2 else v1
 }

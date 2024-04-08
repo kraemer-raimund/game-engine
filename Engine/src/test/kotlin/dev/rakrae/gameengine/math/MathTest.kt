@@ -17,7 +17,7 @@ internal class MathTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class Abs {
 
-        private fun absFloatTestArguments() : Stream<Arguments> {
+        private fun absFloatTestArguments(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(-1.23f, 1.23f),
                 Arguments.of(-10000.42f, 10000.42f),
@@ -33,7 +33,7 @@ internal class MathTest {
             assertThat(abs(v)).isEqualTo(expected)
         }
 
-        private fun absIntTestArguments() : Stream<Arguments> {
+        private fun absIntTestArguments(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(-1, 1),
                 Arguments.of(-10000, 10000),
@@ -56,17 +56,21 @@ internal class MathTest {
         @Test
         fun `positive values have signum positive one`() {
             assertThat(signum(123.456f)).isEqualTo(1f)
+            assertThat(signum(123)).isEqualTo(1)
         }
 
         @Test
         fun `negative values have signum negative one`() {
             assertThat(signum(-69.42f)).isEqualTo(-1f)
+            assertThat(signum(-69)).isEqualTo(-1)
         }
 
         @Test
         fun `zero remains zero`() {
             assertThat(signum(0f)).isEqualTo(0f)
             assertThat(signum(-0f)).isEqualTo(0f)
+            assertThat(signum(0)).isEqualTo(0)
+            assertThat(signum(-0)).isEqualTo(0)
         }
 
         @Test
@@ -79,7 +83,7 @@ internal class MathTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class Min {
 
-        private fun minTestArguments() : Stream<Arguments> {
+        private fun minTestArguments(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(13f, 37f, 13f),
                 Arguments.of(500f, -500f, -500f),
@@ -99,7 +103,7 @@ internal class MathTest {
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class Max {
 
-        private fun maxTestArguments() : Stream<Arguments> {
+        private fun maxTestArguments(): Stream<Arguments> {
             return Stream.of(
                 Arguments.of(13f, 37f, 37f),
                 Arguments.of(500f, -500f, 500f),
