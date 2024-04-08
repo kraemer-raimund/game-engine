@@ -45,8 +45,8 @@ internal class MeshAssetLoadingTest {
             val mesh = wavefrontObjParser.parse(wavefrontObjString)
 
             assertAll(
-                { assertThat(mesh.trianges).hasSize(4) },
-                { assertThat(mesh.trianges[0].v1.position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) }
+                { assertThat(mesh.triangles).hasSize(4) },
+                { assertThat(mesh.triangles[0].v1.position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) }
             )
         }
     }
@@ -64,8 +64,8 @@ internal class MeshAssetLoadingTest {
             val mesh = assetLoader.loadMesh(wavefrontObjPath)
 
             assertAll(
-                { assertThat(mesh.trianges).hasSize(12) },
-                { assertThat(mesh.trianges[0].v1.position).isEqualTo(Vec4f(-1f, 1f, -1f, 1f)) }
+                { assertThat(mesh.triangles).hasSize(12) },
+                { assertThat(mesh.triangles[0].v1.position).isEqualTo(Vec4f(-1f, 1f, -1f, 1f)) }
             )
         }
     }
