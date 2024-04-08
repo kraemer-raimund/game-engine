@@ -1,22 +1,21 @@
 package dev.rakrae.gameengine.assetloading
 
+import dev.rakrae.gameengine.TestTag
+import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.assets.WavefrontObjParser
 import dev.rakrae.gameengine.math.Vec4f
 import org.assertj.core.api.Assertions.assertThat
-import org.junit.jupiter.api.DisplayName
-import org.junit.jupiter.api.Nested
-import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.*
 
 @DisplayName("Mesh asset loading")
 internal class MeshAssetLoadingTest {
 
     @Nested
-    @DisplayName("Parsing Wavefront OBJ")
+    @DisplayName("OBJ mesh parsing")
     inner class WavefrontObMeshParsingTest {
 
         @Test
-        fun `parses mesh from wavefront obj format`() {
+        fun `parses mesh from string in wavefront obj format`() {
             val wavefrontObjString = """
                 # some comment followed by empty line, both should be ignored
                 
@@ -46,9 +45,27 @@ internal class MeshAssetLoadingTest {
             val mesh = wavefrontObjParser.parse(wavefrontObjString)
 
             assertAll(
-                { assertThat(mesh).isNotNull },
                 { assertThat(mesh.trianges).hasSize(4) },
                 { assertThat(mesh.trianges[0].v1.position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) }
+            )
+        }
+    }
+
+    @Nested
+    @Tag(TestTag.INTEGRATION_TEST)
+    @DisplayName("OBJ mesh asset loading")
+    inner class WavefrontObjAssetLoadingTest {
+
+        @Test
+        fun `loads mesh from wavefront obj file`() {
+            val wavefrontObjPath = "/assetloading/cube.obj"
+
+            val assetLoader = AssetLoader()
+            val mesh = assetLoader.loadMesh(wavefrontObjPath)
+
+            assertAll(
+                { assertThat(mesh.trianges).hasSize(12) },
+                { assertThat(mesh.trianges[0].v1.position).isEqualTo(Vec4f(-1f, 1f, -1f, 1f)) }
             )
         }
     }

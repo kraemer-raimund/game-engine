@@ -1,28 +1,26 @@
 package dev.rakrae.gameengine.assets
 
 import dev.rakrae.gameengine.graphics.Mesh
-import java.io.File
 import java.io.IOException
 
 class AssetLoader {
 
     private val wavefrontObjParser = WavefrontObjParser()
 
-    fun loadMesh(file: File): Mesh {
-        if (!file.isFile) throw AssetLoadingException("Provided path is not a file: ${file.path}")
-
-        when (file.extension) {
-            "obj" -> return parseWavefrontObj(file)
-            else -> throw AssetLoadingException("Unable to load mesh from file: ${file.path}")
+    fun loadMesh(assetPath: String): Mesh {
+        val fileExtension = assetPath.substringAfterLast('.', "")
+        when (fileExtension) {
+            "obj" -> return parseWavefrontObj(assetPath)
+            else -> throw AssetLoadingException("Unable to load mesh from file: $assetPath")
         }
     }
 
-    private fun parseWavefrontObj(file: File): Mesh {
+    private fun parseWavefrontObj(assetPath: String): Mesh {
         try {
-            val wavefrontObjString = file.readText()
+            val wavefrontObjString = javaClass.getResource(assetPath)!!.readText()
             return wavefrontObjParser.parse(wavefrontObjString)
         } catch (e: WavefrontObjParseException) {
-            throw AssetLoadingException("Unable to load mesh from file: ${file.path}", cause = e)
+            throw AssetLoadingException("Unable to load mesh from file: $assetPath", cause = e)
         }
     }
 }
