@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.core
 
 import dev.rakrae.gameengine.graphics.*
 
-class Engine(private val game: IGame) {
+class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(TITLE, defaultScreenSize)
@@ -21,7 +21,7 @@ class Engine(private val game: IGame) {
         onRender = {
             screen.clear()
             rasterizer.render(screen)
-            spriteRenderer.render(screen, game)
+            spriteRenderer.render(screen)
             display.displayPixels(screen)
         }
     )

@@ -1,13 +1,8 @@
 package dev.rakrae.gameengine.graphics
 
-import dev.rakrae.gameengine.core.IGame
-import kotlin.random.Random
-
 class SpriteRenderer {
 
-    private val sprite1 = generateRandomSprite()
-
-    fun render(canvas: Bitmap, game: IGame) {
+    fun render(canvas: Bitmap) {
     }
 
     /**
@@ -34,13 +29,5 @@ class SpriteRenderer {
                 }
             }
         }
-    }
-
-    private fun generateRandomSprite(): Bitmap {
-        val sprite = Bitmap(64, 64)
-        for (i in 0 until sprite.width * sprite.height) {
-            sprite.pixels[i] = Random.nextInt()
-        }
-        return sprite
     }
 }
