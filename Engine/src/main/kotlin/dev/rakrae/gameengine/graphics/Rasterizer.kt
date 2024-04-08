@@ -29,6 +29,24 @@ class Rasterizer {
         }
     }
 
+    private fun drawFilled(triangle: List<Vec2i>, image: Bitmap) {
+        TODO("Not completely implemented, but not called yet.")
+        // Line sweeping algorithm.
+
+        // Sort vertices by y coordinate (i.e., vertically, lowest-to-highest).
+        val pixels = triangle.sortedBy { it.y }
+
+        // Determine height of the triangle: Difference between the highest and lowest points.
+        val triangleHeight = pixels[2].y - pixels[0].y
+
+        // Split the triangle horizontally into 2 segments, where the vertex between the lowest
+        // and the highest determines the splitting line.
+        val splittingHeight = pixels[1].y
+        for (y in pixels[0].y..<splittingHeight) {
+
+        }
+    }
+
     /**
      * Draw a line between two points into the image
      * using [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm).
