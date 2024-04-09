@@ -7,12 +7,11 @@ import dev.rakrae.gameengine.math.signum
 class Rasterizer {
 
     fun render(mesh: Mesh, image: Bitmap) {
+        val screenSize = Vec2i(image.width, image.height)
         for (triangle in mesh.triangles) {
-            drawWireframe(triangle, image)
-            drawFilled(
-                triangle = projectToScreenCoordinates(triangle, screenSize = Vec2i(image.width, image.height)),
-                image = image
-            )
+            val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, screenSize)
+            drawWireframe(triangleInScreenCoordinates, image)
+            drawFilled(triangleInScreenCoordinates, image)
         }
     }
 
@@ -26,28 +25,19 @@ class Rasterizer {
         }
     }
 
-    private fun drawWireframe(triangle: Triangle, image: Bitmap) {
-        val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
+    private fun drawWireframe(triangleScreenCoordinates: List<Vec2i>, image: Bitmap) {
         for (i in 0..2) {
-            val lineStartWorld = vertices[i].position
-            val lineEndWorld = vertices[(i + 1) % 3].position
-            val lineStartScreen = Vec2i(
-                ((lineStartWorld.z + 1) * image.width / 6f).toInt(),
-                ((lineStartWorld.y + 1) * image.height / 6f).toInt()
-            )
-            val lineEndScreen = Vec2i(
-                ((lineEndWorld.z + 1) * image.width / 6f).toInt(),
-                ((lineEndWorld.y + 1) * image.height / 6f).toInt()
-            )
-            drawLine(lineStartScreen, lineEndScreen, image)
+            val lineStart = triangleScreenCoordinates[i]
+            val lineEnd = triangleScreenCoordinates[(i + 1) % 3]
+            drawLine(lineStart, lineEnd, image)
         }
     }
 
-    private fun drawFilled(triangle: List<Vec2i>, image: Bitmap) {
+    private fun drawFilled(triangleScreenCoordinates: List<Vec2i>, image: Bitmap) {
         // Line sweeping algorithm.
 
         // Sort vertices by y coordinate (i.e., vertically, lowest-to-highest).
-        val pixels = triangle.sortedBy { it.y }
+        val pixels = triangleScreenCoordinates.sortedBy { it.y }
         val p0 = pixels[0]
         val p1 = pixels[1]
         val p2 = pixels[2]
