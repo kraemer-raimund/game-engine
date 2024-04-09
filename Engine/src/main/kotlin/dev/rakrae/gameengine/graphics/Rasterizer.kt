@@ -19,8 +19,8 @@ class Rasterizer {
         val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
         return vertices.map {
             Vec2i(
-                ((it.position.z + 1) * screenSize.x / 6f).toInt(),
-                ((it.position.y + 1) * screenSize.y / 6f).toInt()
+                ((it.position.z + 1) * screenSize.x / 4f).toInt(),
+                ((it.position.y + 0.5f) * screenSize.y / 4f).toInt()
             )
         }
     }
@@ -82,6 +82,46 @@ class Rasterizer {
             val vecShort = p0 + Vec2i(
                 ((p1 - p0).x * b).toInt(),
                 ((p1 - p0).y * b).toInt()
+            )
+
+            drawLine(vecLong, vecShort, image)
+        }
+
+        // Do the same for the second half of the triangle.
+        for (y in p1.y..<p2.y) {
+            val segmentHeight = p2.y - p1.y + 1
+
+            /**
+             * The ratio of the current y coordinate between the lowest and the highest points
+             * of the whole triangle. We use this ratio to scale a vector along the **longer** side
+             * of the triangle.
+             */
+            val a = (y - p0.y) / triangleHeight.toFloat()
+
+            /**
+             * The ratio of the current y coordinate between the middle corner of the triangle
+             * and the highest point.
+             */
+            val b = (y - p1.y) / segmentHeight.toFloat()
+
+            /**
+             * The vector along the longer side of the triangle, pointing from the lowest corner
+             * to the "current" y coordinate on the longer side, moving towards the top corner
+             * of the triangle as we increment y.
+             */
+            val vecLong = p0 + Vec2i(
+                ((p2 - p0).x * a).toInt(),
+                ((p2 - p0).y * a).toInt()
+            )
+
+            /**
+             * The vector along the shorter side of the triangle, pointing from the middle corner
+             * to the "current" y coordinate on the shorter side, moving towards the highest corner
+             * of the triangle as we increment y.
+             */
+            val vecShort = p1 + Vec2i(
+                ((p2 - p1).x * b).toInt(),
+                ((p2 - p1).y * b).toInt()
             )
 
             drawLine(vecLong, vecShort, image)
