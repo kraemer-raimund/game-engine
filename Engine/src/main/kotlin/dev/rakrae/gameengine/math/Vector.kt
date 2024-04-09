@@ -1,6 +1,11 @@
 package dev.rakrae.gameengine.math
 
-data class Vec2i(val x: Int, val y: Int)
+data class Vec2i(val x: Int, val y: Int) {
+
+    operator fun plus(vector: Vec2i): Vec2i {
+        return Vec2i(x + vector.x, y + vector.y)
+    }
+}
 
 data class Vec2f(val x: Float, val y: Float)
 
