@@ -23,9 +23,14 @@ class Rasterizer {
     private fun projectToScreenCoordinates(triangle: Triangle, screenSize: Vec2i): List<Vec2i> {
         val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
         return vertices.map {
-            val newAngle = atan2(it.position.z, it.position.x) + GameTime.elapsedTime
+            /*
+            https://en.wikipedia.org/wiki/Atan2
+            https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
+            `atan2(x, y)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
+             */
+            val newAngleRadians = atan2(it.position.z, it.position.x) + GameTime.elapsedTime
             val distance = sqrt(it.position.x.pow(2) + it.position.z.pow(2))
-            val x = distance * cos(newAngle)
+            val x = distance * cos(newAngleRadians)
             Vec2i(
                 ((x + 2.8f) * screenSize.x / 6f).toInt(),
                 ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
