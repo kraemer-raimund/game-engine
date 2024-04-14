@@ -40,4 +40,18 @@ internal class ColorTest {
     fun `converts to correct integer`(colorAsInt: Int, expected: Color) {
         assertThat(Color.from(colorAsInt.toUInt())).isEqualTo(expected)
     }
+
+    private fun colorToStringTestArguments(): Stream<Arguments> {
+        return Stream.of(
+            arguments(Color(0u, 0u, 0u, 0u), "Color(r=00, g=00, b=00, a=00)"),
+            arguments(Color(255u, 255u, 255u, 255u), "Color(r=FF, g=FF, b=FF, a=FF)"),
+            arguments(Color(0xDDu, 0x9Au, 0x22u, 0x0u), "Color(r=DD, g=9A, b=22, a=00)")
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("colorToStringTestArguments")
+    fun `converts to correct integer`(color: Color, expected: String) {
+        assertThat(color.toString()).isEqualTo(expected)
+    }
 }

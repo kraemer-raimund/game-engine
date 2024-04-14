@@ -12,6 +12,21 @@ data class Color(
             return (r.toUInt() shl 24) + (g.toUInt() shl 16) + (b.toUInt() shl 8) + a.toUInt()
         }
 
+    override fun toString(): String {
+        return "Color(" +
+                "r=${r.toTwoDigitHexString()}, " +
+                "g=${g.toTwoDigitHexString()}, " +
+                "b=${b.toTwoDigitHexString()}, " +
+                "a=${a.toTwoDigitHexString()})"
+    }
+
+    @OptIn(ExperimentalStdlibApi::class)
+    private fun UByte.toTwoDigitHexString(): String {
+        return this
+            .toHexString(HexFormat.UpperCase)
+            .padStart(2, '0')
+    }
+
     companion object {
         fun from(intValue: UInt): Color {
             return Color(
