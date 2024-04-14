@@ -55,7 +55,7 @@ internal class MeshAssetLoadingTest {
             assertAll(
                 { assertThat(mesh.triangles).hasSize(4) },
                 {
-                    assertThat(mesh.triangles[0].v1).isEqualTo(
+                    assertThat(mesh.triangles[0].v0).isEqualTo(
                         Vertex(
                             position = Vec4f(13.37f, -200f, 0f, 1f),
                             textureCoordinates = Vec3f(1f, 0.6f, 0f),
@@ -64,7 +64,7 @@ internal class MeshAssetLoadingTest {
                     )
                 },
                 {
-                    assertThat(mesh.triangles[0].v3).isEqualTo(
+                    assertThat(mesh.triangles[0].v2).isEqualTo(
                         Vertex(
                             position = Vec4f(13.37f, -200f, 0f, 1f),
                             textureCoordinates = Vec3f(0.7f, 0f, 0f),
@@ -73,7 +73,7 @@ internal class MeshAssetLoadingTest {
                     )
                 },
                 {
-                    assertThat(mesh.triangles[1].v1).isEqualTo(
+                    assertThat(mesh.triangles[1].v0).isEqualTo(
                         Vertex(
                             position = Vec4f(13.37f, -200f, 0f, 1f),
                             textureCoordinates = Vec3f(0f, 0f, 0f),
@@ -82,7 +82,7 @@ internal class MeshAssetLoadingTest {
                     )
                 },
                 {
-                    assertThat(mesh.triangles[2].v1).isEqualTo(
+                    assertThat(mesh.triangles[2].v0).isEqualTo(
                         Vertex(
                             position = Vec4f(0f, -0f, -42f, 1f),
                             textureCoordinates = Vec3f(0f, 0f, 0f),
@@ -91,7 +91,7 @@ internal class MeshAssetLoadingTest {
                     )
                 },
                 {
-                    assertThat(mesh.triangles[3].v2).isEqualTo(
+                    assertThat(mesh.triangles[3].v1).isEqualTo(
                         Vertex(
                             position = Vec4f(13.37f, -200f, 0f, 1f),
                             textureCoordinates = Vec3f(1f, 0.6f, 0f),
@@ -117,7 +117,7 @@ internal class MeshAssetLoadingTest {
 
             assertAll(
                 { assertThat(mesh.triangles).hasSize(12) },
-                { assertThat(mesh.triangles[0].v1.position).isEqualTo(Vec4f(-1f, 1f, -1f, 1f)) }
+                { assertThat(mesh.triangles[0].v0.position).isEqualTo(Vec4f(-1f, 1f, -1f, 1f)) }
             )
         }
     }

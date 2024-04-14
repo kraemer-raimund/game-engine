@@ -21,7 +21,7 @@ class Rasterizer {
     }
 
     private fun projectToScreenCoordinates(triangle: Triangle, screenSize: Vec2i): List<Vec2i> {
-        val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
+        val vertices = listOf(triangle.v0, triangle.v1, triangle.v2)
         return vertices.map {
             /*
             https://en.wikipedia.org/wiki/Atan2
