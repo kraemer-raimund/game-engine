@@ -1,8 +1,10 @@
 package dev.rakrae.gameengine.graphics
 
+import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.abs
 import dev.rakrae.gameengine.math.signum
+import kotlin.math.sin
 
 class Rasterizer {
 
@@ -18,9 +20,10 @@ class Rasterizer {
     private fun projectToScreenCoordinates(triangle: Triangle, screenSize: Vec2i): List<Vec2i> {
         val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
         return vertices.map {
+            val x = (it.position.z - 1.8f) * sin(GameTime.elapsedTime)
             Vec2i(
-                ((it.position.z + 1) * screenSize.x / 6f).toInt(),
-                ((it.position.y + 0.5f) * screenSize.y / 6f).toInt()
+                ((x + 2.8f) * screenSize.x / 6f).toInt(),
+                ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
             )
         }
     }
