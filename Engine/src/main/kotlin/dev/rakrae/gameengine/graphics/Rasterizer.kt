@@ -47,7 +47,7 @@ class Rasterizer {
 
         // Split the triangle horizontally into 2 segments, where the vertex between the lowest
         // and the highest determines the splitting line.
-        for (y in p0.y..<p1.y) {
+        for (y in p0.y..p1.y) {
             val segmentHeight = p1.y - p0.y + 1
 
             /**
@@ -88,7 +88,7 @@ class Rasterizer {
         }
 
         // Do the same for the second half of the triangle.
-        for (y in p1.y..<p2.y) {
+        for (y in p1.y..p2.y) {
             val segmentHeight = p2.y - p1.y + 1
 
             /**
