@@ -10,8 +10,8 @@ class Rasterizer {
         val screenSize = Vec2i(image.width, image.height)
         for (triangle in mesh.triangles) {
             val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, screenSize)
-            drawWireframe(triangleInScreenCoordinates, image)
-            drawFilled(triangleInScreenCoordinates, image)
+            val triangleColor = Color.from(triangle.hashCode().toUInt())
+            drawFilled(triangleInScreenCoordinates, triangleColor, image)
         }
     }
 
@@ -19,21 +19,21 @@ class Rasterizer {
         val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
         return vertices.map {
             Vec2i(
-                ((it.position.z + 1) * screenSize.x / 4f).toInt(),
-                ((it.position.y + 0.5f) * screenSize.y / 4f).toInt()
+                ((it.position.z + 1) * screenSize.x / 6f).toInt(),
+                ((it.position.y + 0.5f) * screenSize.y / 6f).toInt()
             )
         }
     }
 
-    private fun drawWireframe(triangleScreenCoordinates: List<Vec2i>, image: Bitmap) {
+    private fun drawWireframe(triangleScreenCoordinates: List<Vec2i>, color: Color, image: Bitmap) {
         for (i in 0..2) {
             val lineStart = triangleScreenCoordinates[i]
             val lineEnd = triangleScreenCoordinates[(i + 1) % 3]
-            drawLine(lineStart, lineEnd, image)
+            drawLine(lineStart, lineEnd, color, image)
         }
     }
 
-    private fun drawFilled(triangleScreenCoordinates: List<Vec2i>, image: Bitmap) {
+    private fun drawFilled(triangleScreenCoordinates: List<Vec2i>, color: Color, image: Bitmap) {
         // Line sweeping algorithm.
 
         // Sort vertices by y coordinate (i.e., vertically, lowest-to-highest).
@@ -84,7 +84,7 @@ class Rasterizer {
                 ((p1 - p0).y * b).toInt()
             )
 
-            drawLine(vecLong, vecShort, image)
+            drawLine(vecLong, vecShort, color, image)
         }
 
         // Do the same for the second half of the triangle.
@@ -124,7 +124,7 @@ class Rasterizer {
                 ((p2 - p1).y * b).toInt()
             )
 
-            drawLine(vecLong, vecShort, image)
+            drawLine(vecLong, vecShort, color, image)
         }
     }
 
@@ -132,7 +132,7 @@ class Rasterizer {
      * Draw a line between two points into the image
      * using [Bresenham's line algorithm](https://en.wikipedia.org/wiki/Bresenham%27s_line_algorithm).
      */
-    private fun drawLine(from: Vec2i, to: Vec2i, image: Bitmap) {
+    private fun drawLine(from: Vec2i, to: Vec2i, color: Color, image: Bitmap) {
         val distanceX = abs(to.x - from.x)
         val signX = signum(to.x - from.x)
         val distanceY = -abs(to.y - from.y)
@@ -143,7 +143,7 @@ class Rasterizer {
         var y = from.y
 
         while (true) {
-            image.setPixelIfInBounds(x, y, Color.from(0xDDDDDDu))
+            image.setPixelIfInBounds(x, y, color)
             if (x == to.x && y == to.y) break
             // The threshold is at half a pixel. We can multiply everything by 2 to avoid the
             // expensive division since the sign of the accumulated error will remain the same.
