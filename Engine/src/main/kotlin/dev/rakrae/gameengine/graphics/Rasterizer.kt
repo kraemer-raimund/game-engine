@@ -4,7 +4,10 @@ import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.abs
 import dev.rakrae.gameengine.math.signum
-import kotlin.math.sin
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 class Rasterizer {
 
@@ -20,7 +23,9 @@ class Rasterizer {
     private fun projectToScreenCoordinates(triangle: Triangle, screenSize: Vec2i): List<Vec2i> {
         val vertices = listOf(triangle.v1, triangle.v2, triangle.v3)
         return vertices.map {
-            val x = (it.position.z - 1.8f) * sin(GameTime.elapsedTime)
+            val newAngle = atan2(it.position.z, it.position.x) + GameTime.elapsedTime
+            val distance = sqrt(it.position.x.pow(2) + it.position.z.pow(2))
+            val x = distance * cos(newAngle)
             Vec2i(
                 ((x + 2.8f) * screenSize.x / 6f).toInt(),
                 ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
