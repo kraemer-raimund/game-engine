@@ -2,12 +2,8 @@ package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.Vec2i
-import dev.rakrae.gameengine.math.abs
-import dev.rakrae.gameengine.math.signum
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sqrt
+import java.lang.Integer.signum
+import kotlin.math.*
 
 class Rasterizer {
 
