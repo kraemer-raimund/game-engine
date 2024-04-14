@@ -13,7 +13,7 @@ import java.util.stream.Stream
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ColorTest {
 
-    private fun colorTestArguments(): Stream<Arguments> {
+    private fun colorToIntTestArguments(): Stream<Arguments> {
         return Stream.of(
             arguments(Color(0u, 0u, 0u, 0u), 0),
             arguments(Color(255u, 255u, 255u, 255u), UInt.MAX_VALUE.toInt()),
@@ -22,8 +22,22 @@ internal class ColorTest {
     }
 
     @ParameterizedTest
-    @MethodSource("colorTestArguments")
+    @MethodSource("colorToIntTestArguments")
     fun `converts to correct integer`(color: Color, expected: Int) {
         assertThat(color.intValue).isEqualTo(expected.toUInt())
+    }
+
+    private fun colorFromIntTestArguments(): Stream<Arguments> {
+        return Stream.of(
+            arguments(0, Color(0u, 0u, 0u, 0u)),
+            arguments(UInt.MAX_VALUE.toInt(), Color(255u, 255u, 255u, 255u)),
+            arguments(0xDD9A2200u.toInt(), Color(0xDDu, 0x9Au, 0x22u, 0x0u))
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("colorFromIntTestArguments")
+    fun `converts to correct integer`(colorAsInt: Int, expected: Color) {
+        assertThat(Color.from(colorAsInt.toUInt())).isEqualTo(expected)
     }
 }
