@@ -143,7 +143,7 @@ class Rasterizer {
         var y = from.y
 
         while (true) {
-            image.setPixelIfInBounds(x, y, 0xDDDDDD)
+            image.setPixelIfInBounds(x, y, Color.from(0xDDDDDDu))
             if (x == to.x && y == to.y) break
             // The threshold is at half a pixel. We can multiply everything by 2 to avoid the
             // expensive division since the sign of the accumulated error will remain the same.
