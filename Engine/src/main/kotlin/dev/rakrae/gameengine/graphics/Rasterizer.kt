@@ -22,7 +22,7 @@ class Rasterizer {
             /*
             https://en.wikipedia.org/wiki/Atan2
             https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
-            `atan2(x, y)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
+            `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
              */
             val newAngleRadians = atan2(it.position.z, it.position.x) + GameTime.elapsedTime
             val distance = sqrt(it.position.x.pow(2) + it.position.z.pow(2))
