@@ -110,6 +110,18 @@ internal class MeshAssetLoadingTest {
             assertThatExceptionOfType(WavefrontObjParseException::class.java)
                 .isThrownBy { WavefrontObjParser().parse("asdf") }
         }
+
+        @Test
+        fun `throws exception when triangle face does not have 3 vertices`() {
+            val wavefrontObjString = """
+                v 69 420 13.37
+                # Only one vertex for the triangle face, but 3 expected.
+                f 1
+            """.trimIndent()
+
+            assertThatExceptionOfType(WavefrontObjParseException::class.java)
+                .isThrownBy { WavefrontObjParser().parse(wavefrontObjString) }
+        }
     }
 
     @Nested
