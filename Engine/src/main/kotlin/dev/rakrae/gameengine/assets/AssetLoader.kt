@@ -19,7 +19,7 @@ class AssetLoader {
         try {
             val wavefrontObjString = javaClass.getResource(assetPath)!!.readText()
             return wavefrontObjParser.parse(wavefrontObjString)
-        } catch (e: WavefrontObjParseException) {
+        } catch (e: Throwable) {
             throw AssetLoadingException("Unable to load mesh from file: $assetPath", cause = e)
         }
     }

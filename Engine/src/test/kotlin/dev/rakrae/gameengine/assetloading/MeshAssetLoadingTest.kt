@@ -2,11 +2,13 @@ package dev.rakrae.gameengine.assetloading
 
 import dev.rakrae.gameengine.TestTag
 import dev.rakrae.gameengine.assets.AssetLoader
+import dev.rakrae.gameengine.assets.AssetLoadingException
 import dev.rakrae.gameengine.assets.WavefrontObjParser
 import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.assertThatExceptionOfType
 import org.junit.jupiter.api.*
 
 @DisplayName("Mesh asset loading")
@@ -119,6 +121,12 @@ internal class MeshAssetLoadingTest {
                 { assertThat(mesh.triangles).hasSize(12) },
                 { assertThat(mesh.triangles[0].v0.position).isEqualTo(Vec4f(-1f, 1f, -1f, 1f)) }
             )
+        }
+
+        @Test
+        fun `throws exception when file does not exist`() {
+            assertThatExceptionOfType(AssetLoadingException::class.java)
+                .isThrownBy { AssetLoader().loadMesh("/does-not-exist.obj") }
         }
     }
 }
