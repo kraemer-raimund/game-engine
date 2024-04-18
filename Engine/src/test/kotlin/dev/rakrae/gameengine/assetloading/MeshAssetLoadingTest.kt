@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.assetloading
 import dev.rakrae.gameengine.TestTag
 import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.assets.AssetLoadingException
+import dev.rakrae.gameengine.assets.WavefrontObjParseException
 import dev.rakrae.gameengine.assets.WavefrontObjParser
 import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
@@ -102,6 +103,12 @@ internal class MeshAssetLoadingTest {
                     )
                 }
             )
+        }
+
+        @Test
+        fun `throws exception in case of ill-formed wavefront obj input`() {
+            assertThatExceptionOfType(WavefrontObjParseException::class.java)
+                .isThrownBy { WavefrontObjParser().parse("asdf") }
         }
     }
 

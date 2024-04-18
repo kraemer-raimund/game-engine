@@ -51,6 +51,9 @@ class WavefrontObjParser {
                 line.startsWith("vt ") -> uvs.add(parseTextureCoordinates(values))
                 line.startsWith("vn ") -> normals.add(parseVertexNormal(values))
                 line.startsWith("f ") -> faces.add(parsePolygonFace(values))
+                line.startsWith("o") -> {} // The object's name; ignored for now.
+                line.startsWith("s") -> {} // Smoothing groups; ignored for now.
+                else -> throw WavefrontObjParseException("Ill-formed line encountered in Wavefront OBJ input:\n$line")
             }
         }
 
@@ -71,7 +74,7 @@ class WavefrontObjParser {
     ): List<Triangle> {
         return faces.map { face ->
             if (face.vertices.size != 3) throw WavefrontObjParseException(
-                "Non-triangulated polygon encountered while parsing Wavefront OBJ file. While non-triangle polygons " +
+                "Non-triangulated polygon encountered while parsing Wavefront OBJ. While non-triangle polygons " +
                         "are allowed by the file format, the current parser implementation assumes triangles only."
             )
             val vertices = face.vertices.map {
