@@ -34,14 +34,6 @@ class Rasterizer {
         }
     }
 
-    private fun drawWireframe(triangleScreenCoordinates: List<Vec2i>, color: Color, image: Bitmap) {
-        for (i in 0..2) {
-            val lineStart = triangleScreenCoordinates[i]
-            val lineEnd = triangleScreenCoordinates[(i + 1) % 3]
-            drawLine(lineStart, lineEnd, color, image)
-        }
-    }
-
     private fun drawFilled(triangleScreenCoordinates: List<Vec2i>, color: Color, image: Bitmap) {
         // Line sweeping algorithm.
 

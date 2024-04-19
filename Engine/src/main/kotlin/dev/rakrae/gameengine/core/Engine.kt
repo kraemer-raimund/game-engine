@@ -8,6 +8,7 @@ class Engine(game: Game) {
     private val display = Display(game.title, defaultScreenSize)
     private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
     private val rasterizer = Rasterizer()
+    private val wireframeRenderer = WireframeRenderer()
     private val spriteRenderer = SpriteRenderer()
 
     private val gameTime = GameTime()
@@ -21,7 +22,7 @@ class Engine(game: Game) {
         onRender = {
             screen.clear()
             for (mesh in game.meshes) {
-                rasterizer.render(mesh, screen)
+                wireframeRenderer.render(mesh, screen)
             }
             spriteRenderer.render(screen)
             display.displayPixels(screen)
