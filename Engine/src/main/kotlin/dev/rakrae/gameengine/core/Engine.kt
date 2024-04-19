@@ -17,12 +17,11 @@ class Engine(game: Game) {
         onTick = {
             gameTime.onTick()
             fpsCounter.onTick()
-            game.onTick()
         },
         onRender = {
             screen.clear()
-            for (mesh in game.meshes) {
-                wireframeRenderer.render(mesh, screen)
+            for (node in game.nodes) {
+                wireframeRenderer.render(node, screen)
             }
             spriteRenderer.render(screen)
             display.displayPixels(screen)

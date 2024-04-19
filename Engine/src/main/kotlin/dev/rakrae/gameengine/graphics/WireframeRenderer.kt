@@ -2,14 +2,15 @@ package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.Vec2i
+import dev.rakrae.gameengine.scene.Node
 import java.lang.Integer.signum
 import kotlin.math.*
 
 class WireframeRenderer {
 
-    fun render(mesh: Mesh, image: Bitmap) {
+    fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
-        for (triangle in mesh.triangles) {
+        for (triangle in node.mesh.triangles) {
             val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, screenSize)
             val triangleColor = Color.from(triangle.hashCode().toUInt())
             drawWireframe(triangleInScreenCoordinates, triangleColor, image)
