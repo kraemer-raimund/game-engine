@@ -21,7 +21,7 @@ class Engine(game: Game) {
         onRender = {
             screen.clear()
             for (node in game.nodes) {
-                wireframeRenderer.render(node, screen)
+                rasterizer.render(node, screen)
             }
             spriteRenderer.render(screen)
             display.displayPixels(screen)

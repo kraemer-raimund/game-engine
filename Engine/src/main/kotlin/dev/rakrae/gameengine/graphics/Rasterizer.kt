@@ -2,21 +2,23 @@ package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.Vec2i
+import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.scene.Node
 import java.lang.Integer.signum
 import kotlin.math.*
 
 class Rasterizer {
 
-    fun render(mesh: Mesh, image: Bitmap) {
+    fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
-        for (triangle in mesh.triangles) {
-            val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, screenSize)
+        for (triangle in node.mesh.triangles) {
+            val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, node.position, screenSize)
             val triangleColor = Color.from(triangle.hashCode().toUInt())
             drawFilled(triangleInScreenCoordinates, triangleColor, image)
         }
     }
 
-    private fun projectToScreenCoordinates(triangle: Triangle, screenSize: Vec2i): List<Vec2i> {
+    private fun projectToScreenCoordinates(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): List<Vec2i> {
         val vertices = listOf(triangle.v0, triangle.v1, triangle.v2)
         return vertices.map {
             /*
@@ -28,7 +30,7 @@ class Rasterizer {
             val distance = sqrt(it.position.x.pow(2) + it.position.z.pow(2))
             val x = distance * cos(newAngleRadians)
             Vec2i(
-                ((x + 2.8f) * screenSize.x / 6f).toInt(),
+                ((x + offset.x + 1.8f) * screenSize.x / 6f).toInt(),
                 ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
             )
         }
