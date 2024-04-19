@@ -4,6 +4,10 @@ class Bitmap(val width: Int, val height: Int) {
 
     val pixels: IntArray = IntArray(width * height)
 
+    fun setPixel(x: Int, y: Int, color: Color) {
+        pixels[x + y * width] = color.intValue.toInt()
+    }
+
     fun setPixelIfInBounds(x: Int, y: Int, color: Color) {
         if (!isInBounds(x, y)) return
         pixels[x + y * width] = color.intValue.toInt()
