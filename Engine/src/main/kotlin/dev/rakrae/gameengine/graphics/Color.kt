@@ -7,9 +7,9 @@ data class Color(
     val a: UByte
 ) {
 
-    val intValue: UInt
+    val asIntARGB: UInt
         get() {
-            return (r.toUInt() shl 24) + (g.toUInt() shl 16) + (b.toUInt() shl 8) + a.toUInt()
+            return (a.toUInt() shl 24) + (r.toUInt() shl 16) + (g.toUInt() shl 8) + b.toUInt()
         }
 
     override fun toString(): String {
@@ -28,12 +28,12 @@ data class Color(
     }
 
     companion object {
-        fun from(intValue: UInt): Color {
+        fun fromIntARGB(intValue: UInt): Color {
             return Color(
-                r = (intValue shr 24).toUByte(),
-                g = (intValue shr 16).toUByte(),
-                b = (intValue shr 8).toUByte(),
-                a = intValue.toUByte()
+                a = (intValue shr 24).toUByte(),
+                r = (intValue shr 16).toUByte(),
+                g = (intValue shr 8).toUByte(),
+                b = intValue.toUByte()
             )
         }
     }

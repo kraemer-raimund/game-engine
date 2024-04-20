@@ -5,12 +5,12 @@ class Bitmap(val width: Int, val height: Int) {
     val pixels: IntArray = IntArray(width * height)
 
     fun setPixel(x: Int, y: Int, color: Color) {
-        pixels[x + y * width] = color.intValue.toInt()
+        pixels[x + y * width] = color.asIntARGB.toInt()
     }
 
     fun setPixelIfInBounds(x: Int, y: Int, color: Color) {
         if (!isInBounds(x, y)) return
-        pixels[x + y * width] = color.intValue.toInt()
+        pixels[x + y * width] = color.asIntARGB.toInt()
     }
 
     private fun isInBounds(x: Int, y: Int): Boolean {
@@ -19,7 +19,7 @@ class Bitmap(val width: Int, val height: Int) {
 
     fun getPixel(x: Int, y: Int): Color {
         val intValue = pixels[x + y * width].toUInt()
-        return Color.from(intValue)
+        return Color.fromIntARGB(intValue)
     }
 
     fun clear() {

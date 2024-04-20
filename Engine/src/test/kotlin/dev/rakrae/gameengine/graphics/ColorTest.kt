@@ -13,32 +13,34 @@ import java.util.stream.Stream
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 internal class ColorTest {
 
-    private fun colorToIntTestArguments(): Stream<Arguments> {
+    private fun colorToIntARGBTestArguments(): Stream<Arguments> {
         return Stream.of(
             arguments(Color(0u, 0u, 0u, 0u), 0),
             arguments(Color(255u, 255u, 255u, 255u), UInt.MAX_VALUE.toInt()),
-            arguments(Color(0xDDu, 0x9Au, 0x22u, 0x0u), 0xDD9A2200u.toInt())
+            arguments(Color(0xDDu, 0x9Au, 0x22u, 0x00u), 0x00DD9A22u.toInt()),
+            arguments(Color(0xDDu, 0x9Au, 0x22u, 0xDFu), 0xDFDD9A22u.toInt())
         )
     }
 
     @ParameterizedTest
-    @MethodSource("colorToIntTestArguments")
-    fun `converts to correct integer`(color: Color, expected: Int) {
-        assertThat(color.intValue).isEqualTo(expected.toUInt())
+    @MethodSource("colorToIntARGBTestArguments")
+    fun `converts color to correct integer`(color: Color, expected: Int) {
+        assertThat(color.asIntARGB).isEqualTo(expected.toUInt())
     }
 
-    private fun colorFromIntTestArguments(): Stream<Arguments> {
+    private fun colorFromIntARGBTestArguments(): Stream<Arguments> {
         return Stream.of(
             arguments(0, Color(0u, 0u, 0u, 0u)),
             arguments(UInt.MAX_VALUE.toInt(), Color(255u, 255u, 255u, 255u)),
-            arguments(0xDD9A2200u.toInt(), Color(0xDDu, 0x9Au, 0x22u, 0x0u))
+            arguments(0x00DD9A22u.toInt(), Color(0xDDu, 0x9Au, 0x22u, 0x00u)),
+            arguments(0xDFDD9A22u.toInt(), Color(0xDDu, 0x9Au, 0x22u, 0xDFu))
         )
     }
 
     @ParameterizedTest
-    @MethodSource("colorFromIntTestArguments")
-    fun `converts to correct integer`(colorAsInt: Int, expected: Color) {
-        assertThat(Color.from(colorAsInt.toUInt())).isEqualTo(expected)
+    @MethodSource("colorFromIntARGBTestArguments")
+    fun `converts to correct color from integer`(colorAsInt: Int, expected: Color) {
+        assertThat(Color.fromIntARGB(colorAsInt.toUInt())).isEqualTo(expected)
     }
 
     private fun colorToStringTestArguments(): Stream<Arguments> {
@@ -51,7 +53,7 @@ internal class ColorTest {
 
     @ParameterizedTest
     @MethodSource("colorToStringTestArguments")
-    fun `converts to correct integer`(color: Color, expected: String) {
+    fun `formats color as human readable string`(color: Color, expected: String) {
         assertThat(color.toString()).isEqualTo(expected)
     }
 }

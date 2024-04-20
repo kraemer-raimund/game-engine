@@ -12,7 +12,7 @@ class WireframeRenderer {
         val screenSize = Vec2i(image.width, image.height)
         for (triangle in node.mesh.triangles) {
             val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, screenSize)
-            val triangleColor = Color.from(triangle.hashCode().toUInt())
+            val triangleColor = Color.fromIntARGB(triangle.hashCode().toUInt())
             drawWireframe(triangleInScreenCoordinates, triangleColor, image)
         }
     }
