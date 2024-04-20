@@ -12,10 +12,12 @@ class Rasterizer {
 
     fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
-        // Very rough approximation of painter's algorithm.
         val elapsedTime = GameTime.elapsedTime
+
+        // Very rough approximation of painter's algorithm.
         val trianglesSortedByDepth = node.mesh.triangles
             .sortedBy { rotate(it.v0.position.toVec3f(), elapsedTime).z }
+
         for (triangle in trianglesSortedByDepth) {
             val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, elapsedTime * -1f)
             val normal = triangle.normal
@@ -49,10 +51,10 @@ class Rasterizer {
 
     private fun rotate(vector: Vec3f, radians: Float): Vec3f {
         /*
-                https://en.wikipedia.org/wiki/Atan2
-                https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
-                `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
-                 */
+        https://en.wikipedia.org/wiki/Atan2
+        https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
+        `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
+         */
         val newAngleRadians = atan2(vector.z, vector.x) + radians
         val distance = sqrt(vector.x.pow(2) + vector.z.pow(2))
         val x = distance * cos(newAngleRadians)
