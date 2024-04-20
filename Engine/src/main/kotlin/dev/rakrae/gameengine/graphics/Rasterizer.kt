@@ -1,6 +1,8 @@
 package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.core.GameTime
+import dev.rakrae.gameengine.math.BarycentricCoordinates
+import dev.rakrae.gameengine.math.Triangle2i
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
@@ -8,7 +10,6 @@ import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
 import kotlin.math.sqrt
-import kotlin.random.Random
 
 class Rasterizer {
 
@@ -56,8 +57,16 @@ class Rasterizer {
         }
     }
 
-    private fun liesWithinTriangle(vec2i: Vec2i, triangleScreenCoordinates: List<Vec2i>): Boolean {
-        return Random.nextBoolean()
+    private fun liesWithinTriangle(point: Vec2i, triangleScreenCoordinates: List<Vec2i>): Boolean {
+        val barycentricCoordinates = BarycentricCoordinates.of(
+            point,
+            Triangle2i(
+                triangleScreenCoordinates[0],
+                triangleScreenCoordinates[1],
+                triangleScreenCoordinates[2]
+            )
+        )
+        return barycentricCoordinates.isWithinTriangle
     }
 
     private fun Bitmap.imageBounds(): AABB2i {
