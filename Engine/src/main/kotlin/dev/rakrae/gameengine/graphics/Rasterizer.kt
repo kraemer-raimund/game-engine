@@ -6,19 +6,18 @@ import dev.rakrae.gameengine.math.Triangle2i
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
-import kotlin.math.atan2
-import kotlin.math.cos
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 class Rasterizer {
 
     fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
         // Very rough approximation of painter's algorithm.
-        val trianglesSortedByDepth = node.mesh.triangles.sortedBy { it.v0.position.z }
+        val elapsedTime = GameTime.elapsedTime
+        val trianglesSortedByDepth = node.mesh.triangles
+            .sortedBy { rotate(it.v0.position.toVec3f(), elapsedTime).z }
         for (triangle in trianglesSortedByDepth) {
-            val lightDirection = Vec3f(0f, 0f, -1f)
+            val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, elapsedTime * -1f)
             val normal = triangle.normal
             val lightIntensity = normal.normalized dot lightDirection
             val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, node.position, screenSize)
@@ -35,16 +34,9 @@ class Rasterizer {
     private fun projectToScreenCoordinates(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
         val screenCoordinates = arrayOf(triangle.v0, triangle.v1, triangle.v2)
             .map {
-                /*
-                https://en.wikipedia.org/wiki/Atan2
-                https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
-                `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
-                 */
-                val newAngleRadians = atan2(it.position.z, it.position.x) + GameTime.elapsedTime
-                val distance = sqrt(it.position.x.pow(2) + it.position.z.pow(2))
-                val x = distance * cos(newAngleRadians)
+                val rotated = rotate(it.position.toVec3f(), GameTime.elapsedTime)
                 Vec2i(
-                    ((x + offset.x + 1.8f) * screenSize.x / 6f).toInt(),
+                    ((rotated.x + offset.x + 1.8f) * screenSize.x / 6f).toInt(),
                     ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
                 )
             }
@@ -53,6 +45,20 @@ class Rasterizer {
             screenCoordinates[1],
             screenCoordinates[2]
         )
+    }
+
+    private fun rotate(vector: Vec3f, radians: Float): Vec3f {
+        /*
+                https://en.wikipedia.org/wiki/Atan2
+                https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
+                `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
+                 */
+        val newAngleRadians = atan2(vector.z, vector.x) + radians
+        val distance = sqrt(vector.x.pow(2) + vector.z.pow(2))
+        val x = distance * cos(newAngleRadians)
+        val z = distance * sin(newAngleRadians)
+
+        return Vec3f(x, vector.y, z)
     }
 
     /**
