@@ -4,6 +4,7 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
+import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestInstance
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
@@ -113,6 +114,16 @@ internal class LinearAlgebraTest {
         @MethodSource("vectorSubtractionTestArguments")
         fun `subtracting a vector from another vector`(v1: Vec3f, v2: Vec3f, expected: Vec3f) {
             assertTrue((v1 - v2).isCloseTo(expected))
+        }
+
+        @Test
+        fun `cross product of two vectors`() {
+            val v1 = Vec3f(3.14f, 42.1337f, 12.4f)
+            val v2 = Vec3f(-1f, 5.2f, 0f)
+
+            val expectedCrossProduct = Vec3f(-64.48f, -12.4f, 58.46f)
+
+            assertTrue((v1 cross v2).isCloseTo(expectedCrossProduct, epsilon = 0.01f))
         }
     }
 }

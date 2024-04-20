@@ -41,7 +41,20 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
         return Vec3f(scalar * x, scalar * y, scalar * z)
     }
 
-    fun isCloseTo(other: Vec3f, epsilon: Float = 0.00001f): Boolean {
+    infix fun cross(vector: Vec3f): Vec3f {
+        // https://en.wikipedia.org/wiki/Cross_product#Mnemonic
+        // a = (b cross c)
+        val b = this
+        val c = vector
+
+        val ax = b.y * c.z - b.z * c.y
+        val ay = b.z * c.x - b.x * c.z
+        val az = b.x * c.y - b.y * c.x
+
+        return Vec3f(ax, ay, az)
+    }
+
+    fun isCloseTo(other: Vec3f, epsilon: Float = 0.01f): Boolean {
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
         return similar(this.x, other.x)
                 && similar(this.y, other.y)
