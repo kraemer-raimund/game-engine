@@ -44,28 +44,26 @@ class Rasterizer {
      * For each point within the triangle's AABB, fill the point if it lies within the triangle.
      */
     private fun drawFilled(triangleScreenCoordinates: List<Vec2i>, color: Color, image: Bitmap) {
+        val triangle = Triangle2i(
+            triangleScreenCoordinates[0],
+            triangleScreenCoordinates[1],
+            triangleScreenCoordinates[2]
+        )
         val boundingBox = AABB2i
             .calculateBoundingBox(triangleScreenCoordinates)
             .clampWithin(image.imageBounds())
 
         for (x in boundingBox.min.x..<boundingBox.max.x) {
             for (y in boundingBox.min.y..<boundingBox.max.y) {
-                if (liesWithinTriangle(Vec2i(x, y), triangleScreenCoordinates)) {
+                if (liesWithinTriangle(Vec2i(x, y), triangle)) {
                     image.setPixel(x, y, color)
                 }
             }
         }
     }
 
-    private fun liesWithinTriangle(point: Vec2i, triangleScreenCoordinates: List<Vec2i>): Boolean {
-        val barycentricCoordinates = BarycentricCoordinates.of(
-            point,
-            Triangle2i(
-                triangleScreenCoordinates[0],
-                triangleScreenCoordinates[1],
-                triangleScreenCoordinates[2]
-            )
-        )
+    private fun liesWithinTriangle(point: Vec2i, triangle: Triangle2i): Boolean {
+        val barycentricCoordinates = BarycentricCoordinates.of(point, triangle)
         return barycentricCoordinates.isWithinTriangle
     }
 
