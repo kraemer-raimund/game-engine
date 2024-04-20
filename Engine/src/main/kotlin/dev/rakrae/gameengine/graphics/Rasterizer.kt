@@ -16,9 +16,19 @@ class Rasterizer {
     fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
         for (triangle in node.mesh.triangles) {
-            val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, node.position, screenSize)
-            val triangleColor = Color.from(triangle.hashCode().toUInt())
-            drawFilled(triangleInScreenCoordinates, triangleColor, image)
+            val lightDirection = Vec3f(0f, 0f, -1f)
+            val normal = triangle.normal
+            val lightIntensity = normal.normalized dot lightDirection
+            if (lightIntensity > 0) {
+                val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, node.position, screenSize)
+                val color = Color(
+                    (lightIntensity * 255).toInt().toUByte(),
+                    (lightIntensity * 255).toInt().toUByte(),
+                    (lightIntensity * 255).toInt().toUByte(),
+                    255u
+                )
+                drawFilled(triangleInScreenCoordinates, color, image)
+            }
         }
     }
 

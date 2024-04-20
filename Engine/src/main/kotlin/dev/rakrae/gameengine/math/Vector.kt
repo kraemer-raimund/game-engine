@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.math
 
 import kotlin.math.abs
+import kotlin.math.sqrt
 
 data class Vec2i(val x: Int, val y: Int) {
 
@@ -16,6 +17,10 @@ data class Vec2i(val x: Int, val y: Int) {
 data class Vec2f(val x: Float, val y: Float)
 
 data class Vec3f(val x: Float, val y: Float, val z: Float) {
+
+    val magnitude: Float by lazy { sqrt(x * x + y * y + z * z) }
+
+    val normalized: Vec3f by lazy { Vec3f(x / magnitude, y / magnitude, z / magnitude) }
 
     operator fun plus(vector: Vec3f): Vec3f {
         return Vec3f(
@@ -54,6 +59,13 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
         return Vec3f(ax, ay, az)
     }
 
+    infix fun dot(vector: Vec3f): Float {
+        // https://en.wikipedia.org/wiki/Dot_product
+        val a = this
+        val b = vector
+        return (a.x * b.x) + (a.y * b.y) + (a.z * b.z)
+    }
+
     fun isCloseTo(other: Vec3f, epsilon: Float = 0.01f): Boolean {
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
         return similar(this.x, other.x)
@@ -66,4 +78,9 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
     }
 }
 
-data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float)
+data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float) {
+
+    fun toVec3f(): Vec3f {
+        return Vec3f(x, y, z)
+    }
+}

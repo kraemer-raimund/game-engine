@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.math
 
 import org.assertj.core.api.Assertions.assertThat
+import org.assertj.core.api.Assertions.offset
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested
@@ -82,7 +83,7 @@ internal class LinearAlgebraTest {
         @ParameterizedTest
         @MethodSource("vectorAdditionTestArguments")
         fun `adding two vectors`(v1: Vec3f, v2: Vec3f, expected: Vec3f) {
-            assertTrue((v1 + v2).isCloseTo(expected))
+            assertTrue((v1 + v2).isCloseTo(expected, epsilon = 0.01f))
         }
 
         private fun vectorSubtractionTestArguments(): Stream<Arguments> {
@@ -124,6 +125,31 @@ internal class LinearAlgebraTest {
             val expectedCrossProduct = Vec3f(-64.48f, -12.4f, 58.46f)
 
             assertTrue((v1 cross v2).isCloseTo(expectedCrossProduct, epsilon = 0.01f))
+        }
+
+        @Test
+        fun `dot product of two vectors`() {
+            val v1 = Vec3f(3.14f, 42.1337f, 12.4f)
+            val v2 = Vec3f(-1f, 5.2f, 0f)
+
+            val expectedDotProduct = 215.9552f
+
+            assertThat(v1 dot v2).isCloseTo(expectedDotProduct, offset(0.01f))
+        }
+
+        @Test
+        fun `calculates the magnitude meaning the length of the vector`() {
+            val v = Vec3f(3.14f, 42.1337f, 12.4f)
+            assertThat(v.magnitude).isCloseTo(44.0325f, offset(0.01f))
+        }
+
+        @Test
+        fun `normalizes the vector resulting in unit vector of same direction`() {
+            val v = Vec3f(3.14f, 42.1337f, 12.4f)
+
+            val expectedNormalized = Vec3f(0.0713f, 0.9568f, 0.2816f)
+
+            assertTrue(v.normalized.isCloseTo(expectedNormalized, epsilon = 0.01f))
         }
     }
 }
