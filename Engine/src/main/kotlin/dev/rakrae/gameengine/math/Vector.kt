@@ -1,5 +1,7 @@
 package dev.rakrae.gameengine.math
 
+import kotlin.math.abs
+
 data class Vec2i(val x: Int, val y: Int) {
 
     operator fun plus(vector: Vec2i): Vec2i {
@@ -23,6 +25,14 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
         )
     }
 
+    operator fun minus(vector: Vec3f): Vec3f {
+        return Vec3f(
+            x - vector.x,
+            y - vector.y,
+            z - vector.z
+        )
+    }
+
     operator fun times(scalar: Float): Vec3f {
         return Vec3f(scalar * x, scalar * y, scalar * z)
     }
@@ -31,10 +41,14 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
         return Vec3f(scalar * x, scalar * y, scalar * z)
     }
 
+    fun isCloseTo(other: Vec3f, epsilon: Float = 0.00001f): Boolean {
+        val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
+        return similar(this.x, other.x)
+                && similar(this.y, other.y)
+                && similar(this.z, other.z)
+    }
+
     companion object {
-        val right = Vec3f(1f, 0f, 0f)
-        val up = Vec3f(0f, 1f, 0f)
-        val forward = Vec3f(0f, 0f, 1f)
         val zero = Vec3f(0f, 0f, 0f)
     }
 }
