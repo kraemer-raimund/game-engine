@@ -55,16 +55,12 @@ class Rasterizer {
 
         for (x in boundingBox.min.x..<boundingBox.max.x) {
             for (y in boundingBox.min.y..<boundingBox.max.y) {
-                if (liesWithinTriangle(Vec2i(x, y), triangle)) {
+                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle)
+                if (barycentricCoordinates.isWithinTriangle) {
                     image.setPixel(x, y, color)
                 }
             }
         }
-    }
-
-    private fun liesWithinTriangle(point: Vec2i, triangle: Triangle2i): Boolean {
-        val barycentricCoordinates = BarycentricCoordinates.of(point, triangle)
-        return barycentricCoordinates.isWithinTriangle
     }
 
     private fun Bitmap.imageBounds(): AABB2i {
