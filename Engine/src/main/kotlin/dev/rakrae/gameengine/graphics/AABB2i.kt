@@ -1,5 +1,6 @@
 package dev.rakrae.gameengine.graphics
 
+import dev.rakrae.gameengine.math.Triangle2i
 import dev.rakrae.gameengine.math.Vec2i
 import kotlin.math.max
 import kotlin.math.min
@@ -28,6 +29,11 @@ data class AABB2i(val min: Vec2i, val max: Vec2i) {
     }
 
     companion object {
+        fun calculateBoundingBox(triangle: Triangle2i): AABB2i {
+            val points = listOf(triangle.v1, triangle.v2, triangle.v3)
+            return calculateBoundingBox(points)
+        }
+
         fun calculateBoundingBox(points: Iterable<Vec2i>): AABB2i {
             val xCoordinates = points.map { it.x }
             val yCoordinates = points.map { it.y }

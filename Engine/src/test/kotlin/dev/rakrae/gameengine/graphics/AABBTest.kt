@@ -1,5 +1,6 @@
 package dev.rakrae.gameengine.graphics
 
+import dev.rakrae.gameengine.math.Triangle2i
 import dev.rakrae.gameengine.math.Vec2i
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
@@ -19,6 +20,23 @@ internal class AABBTest {
     @DisplayName("AABB for given points")
     @TestInstance(TestInstance.Lifecycle.PER_CLASS)
     inner class CalculateAABBTest {
+
+        @Test
+        fun `determines correct AABB for the given triangle`() {
+            val triangle = Triangle2i(
+                Vec2i(-42, -69),
+                Vec2i(13, -1337),
+                Vec2i(900, 0)
+            )
+
+            assertThat(AABB2i.calculateBoundingBox(triangle))
+                .isEqualTo(
+                    AABB2i(
+                        Vec2i(-42, -1337),
+                        Vec2i(900, 0),
+                    )
+                )
+        }
 
         @Test
         fun `determines correct AABB for the given points`() {
