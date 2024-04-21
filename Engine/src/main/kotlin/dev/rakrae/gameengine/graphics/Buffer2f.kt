@@ -1,6 +1,6 @@
 package dev.rakrae.gameengine.graphics
 
-class Buffer2D(val width: Int, val height: Int) {
+class Buffer2f(val width: Int, val height: Int) {
 
     val pixels: FloatArray = FloatArray(width * height)
 
