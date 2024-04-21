@@ -110,7 +110,11 @@ class Rasterizer {
         val z2 = rotate(triangle.v1.position.toVec3f(), GameTime.tickTime).z
         val z3 = rotate(triangle.v2.position.toVec3f(), GameTime.tickTime).z
         val b = barycentricCoordinates
-        return z1 * b.a1 + z2 * b.a2 + z3 * b.a3
+        val interpolatedZ = z1 * b.a1 + z2 * b.a2 + z3 * b.a3
+
+        // Temporary offset since we are using world coordinates for the depth instead of relative
+        // to the camera.
+        return interpolatedZ - 100f
     }
 
     private fun Bitmap.imageBounds(): AABB2i {
