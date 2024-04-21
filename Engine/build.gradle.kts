@@ -17,6 +17,8 @@ dependencies {
     testImplementation("org.junit.platform:junit-platform-suite:$junitPlatformVersion")
     testImplementation("org.assertj:assertj-core:3.25.3")
     testImplementation("com.tngtech.archunit:archunit-junit5:1.2.1")
+
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.8.0")
 }
 
 tasks.test {
