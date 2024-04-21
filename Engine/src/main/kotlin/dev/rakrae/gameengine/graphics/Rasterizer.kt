@@ -16,25 +16,31 @@ class Rasterizer {
             .sortedBy { rotate(it.v0.position.toVec3f(), elapsedTime).z }
 
         for (triangle in trianglesSortedByDepth) {
-            val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, elapsedTime * -1f)
-            val normal = triangle.normal
-            val lightIntensity = normal.normalized dot lightDirection
-            val triangleInScreenCoordinates = projectToScreen(triangle, node.position, screenSize)
-            val color = Color(
-                (lightIntensity * 255).toInt().toUByte(),
-                (lightIntensity * 255).toInt().toUByte(),
-                (lightIntensity * 255).toInt().toUByte(),
-                255u
-            )
-            drawFilled(triangleInScreenCoordinates, color, image)
+            renderTriangle(elapsedTime, triangle, node.position, screenSize, image)
         }
     }
 
-    private fun projectToScreen(
+    private fun renderTriangle(
+        elapsedTime: Float,
         triangle: Triangle,
-        offset: Vec3f,
-        screenSize: Vec2i
-    ): Triangle2i {
+        positionOffset: Vec3f,
+        screenSize: Vec2i,
+        image: Bitmap
+    ) {
+        val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, elapsedTime * -1f)
+        val normal = triangle.normal
+        val lightIntensity = normal.normalized dot lightDirection
+        val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
+        val color = Color(
+            (lightIntensity * 255).toInt().toUByte(),
+            (lightIntensity * 255).toInt().toUByte(),
+            (lightIntensity * 255).toInt().toUByte(),
+            255u
+        )
+        drawFilled(triangleInScreenCoordinates, color, image)
+    }
+
+    private fun projectToScreen(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
         val screenCoordinates = arrayOf(triangle.v0, triangle.v1, triangle.v2)
             .map { projectToScreen(it.position.toVec3f(), offset, screenSize) }
         return Triangle2i(
@@ -44,11 +50,7 @@ class Rasterizer {
         )
     }
 
-    private fun projectToScreen(
-        worldPos: Vec3f,
-        offset: Vec3f,
-        screenSize: Vec2i
-    ): Vec2i {
+    private fun projectToScreen(worldPos: Vec3f, offset: Vec3f, screenSize: Vec2i): Vec2i {
         val rotatedPos = rotate(worldPos, GameTime.elapsedTime)
         val projectedX = ((rotatedPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
         val projectedY = ((worldPos.y + 1.5f) * screenSize.y / 6f).toInt()
