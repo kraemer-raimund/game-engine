@@ -9,11 +9,10 @@ class Rasterizer {
 
     fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
-        val elapsedTime = GameTime.tickTime
 
         // Very rough approximation of painter's algorithm.
         val trianglesSortedByDepth = node.mesh.triangles
-            .sortedBy { rotate(it.v0.position.toVec3f(), elapsedTime).z }
+            .sortedBy { rotate(it.v0.position.toVec3f(), GameTime.tickTime).z }
 
         for (triangle in trianglesSortedByDepth) {
             renderTriangle(triangle, node.position, screenSize, image)
