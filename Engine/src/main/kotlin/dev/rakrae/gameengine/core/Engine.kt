@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.core
 
 import dev.rakrae.gameengine.graphics.*
+import dev.rakrae.gameengine.platform.Display
 
 class Engine(game: Game) {
 

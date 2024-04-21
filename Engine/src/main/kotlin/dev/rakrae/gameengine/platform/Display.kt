@@ -1,5 +1,7 @@
-package dev.rakrae.gameengine.graphics
+package dev.rakrae.gameengine.platform
 
+import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.ScreenSize
 import java.awt.Canvas
 import java.awt.Dimension
 import java.awt.image.BufferedImage
