@@ -28,14 +28,16 @@ class Rasterizer {
         image: Bitmap,
         zBuffer: Buffer2f
     ) {
-        val lightDirection = Vec3f(0.2f, 0f, 0.6f).normalized
-        val normal = triangle.normal
-        val lightIntensity = (normal.normalized dot lightDirection).coerceIn(0f..1f)
+        val lightDirection = Vec3f(0.2f, 0f, 0.6f)
+        val lightIntensity = 0.8f
+        val illuminationAngleNormalized = (triangle.normal.normalized dot lightDirection.normalized)
+            .coerceIn(0f..1f)
+        val brightness = illuminationAngleNormalized * lightIntensity
         val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
         val color = Color(
-            (lightIntensity * 255).toInt().toUByte(),
-            (lightIntensity * 255).toInt().toUByte(),
-            (lightIntensity * 255).toInt().toUByte(),
+            (brightness * 255).toInt().toUByte(),
+            (brightness * 255).toInt().toUByte(),
+            (brightness * 255).toInt().toUByte(),
             255u
         )
         drawFilled(triangle, triangleInScreenCoordinates, color, image, zBuffer)
