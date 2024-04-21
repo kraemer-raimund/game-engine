@@ -1,12 +1,10 @@
 package dev.rakrae.gameengine.graphics
 
-import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.*
 import dev.rakrae.gameengine.scene.Node
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlin.math.*
 
 class Rasterizer {
 
@@ -30,7 +28,7 @@ class Rasterizer {
         image: Bitmap,
         zBuffer: Buffer2f
     ) {
-        val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, GameTime.tickTime * -1f)
+        val lightDirection = Vec3f(0.2f, 0f, 0.6f).normalized
         val normal = triangle.normal
         val lightIntensity = normal.normalized dot lightDirection
         val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
@@ -54,24 +52,9 @@ class Rasterizer {
     }
 
     private fun projectToScreen(worldPos: Vec3f, offset: Vec3f, screenSize: Vec2i): Vec2i {
-        val rotatedPos = rotate(worldPos, GameTime.tickTime)
-        val projectedX = ((rotatedPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
+        val projectedX = ((worldPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
         val projectedY = ((worldPos.y + 1.5f) * screenSize.y / 6f).toInt()
         return Vec2i(projectedX, projectedY)
-    }
-
-    private fun rotate(vector: Vec3f, radians: Float): Vec3f {
-        /*
-        https://en.wikipedia.org/wiki/Atan2
-        https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
-        `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
-         */
-        val newAngleRadians = atan2(vector.z, vector.x) + radians
-        val distance = sqrt(vector.x.pow(2) + vector.z.pow(2))
-        val x = distance * cos(newAngleRadians)
-        val z = distance * sin(newAngleRadians)
-
-        return Vec3f(x, vector.y, z)
     }
 
     /**
@@ -106,9 +89,9 @@ class Rasterizer {
         triangle: Triangle,
         barycentricCoordinates: BarycentricCoordinates
     ): Float {
-        val z1 = rotate(triangle.v0.position.toVec3f(), GameTime.tickTime).z
-        val z2 = rotate(triangle.v1.position.toVec3f(), GameTime.tickTime).z
-        val z3 = rotate(triangle.v2.position.toVec3f(), GameTime.tickTime).z
+        val z1 = triangle.v0.position.toVec3f().z
+        val z2 = triangle.v1.position.toVec3f().z
+        val z3 = triangle.v2.position.toVec3f().z
         val b = barycentricCoordinates
         val interpolatedZ = z1 * b.a1 + z2 * b.a2 + z3 * b.a3
 
