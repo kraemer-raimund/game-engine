@@ -2,6 +2,9 @@ package dev.rakrae.gameengine.core
 
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.platform.Display
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 
 class Engine(game: Game) {
 
@@ -22,8 +25,12 @@ class Engine(game: Game) {
         },
         onRender = {
             screen.clear()
-            for (node in game.nodes) {
-                rasterizer.render(node, screen)
+            runBlocking {
+                for (node in game.nodes) {
+                    launch(Dispatchers.IO) {
+                        rasterizer.render(node, screen)
+                    }
+                }
             }
             spriteRenderer.render(screen)
             display.displayPixels(screen)

@@ -3,16 +3,23 @@ package dev.rakrae.gameengine.graphics
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.math.*
 import dev.rakrae.gameengine.scene.Node
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import kotlin.math.*
 
 class Rasterizer {
 
-    fun render(node: Node, image: Bitmap) {
+    suspend fun render(node: Node, image: Bitmap) = withContext(Dispatchers.IO) {
         val screenSize = Vec2i(image.width, image.height)
         val zBuffer = Buffer2f(image.width, image.height)
 
-        for (triangle in node.mesh.triangles) {
-            renderTriangle(triangle, node.position, screenSize, image, zBuffer)
+        for (trianglesChunk in node.mesh.triangles.chunked(100)) {
+            launch {
+                for (triangle in trianglesChunk) {
+                    renderTriangle(triangle, node.position, screenSize, image, zBuffer)
+                }
+            }
         }
     }
 
