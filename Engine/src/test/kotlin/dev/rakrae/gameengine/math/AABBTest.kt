@@ -1,7 +1,5 @@
-package dev.rakrae.gameengine.graphics
+package dev.rakrae.gameengine.math
 
-import dev.rakrae.gameengine.math.Triangle2i
-import dev.rakrae.gameengine.math.Vec2i
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Nested

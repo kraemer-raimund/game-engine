@@ -1,7 +1,5 @@
-package dev.rakrae.gameengine.graphics
+package dev.rakrae.gameengine.math
 
-import dev.rakrae.gameengine.math.Triangle2i
-import dev.rakrae.gameengine.math.Vec2i
 import kotlin.math.max
 import kotlin.math.min
 

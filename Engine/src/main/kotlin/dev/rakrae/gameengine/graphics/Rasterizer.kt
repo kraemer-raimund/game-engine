@@ -1,10 +1,7 @@
 package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.core.GameTime
-import dev.rakrae.gameengine.math.BarycentricCoordinates
-import dev.rakrae.gameengine.math.Triangle2i
-import dev.rakrae.gameengine.math.Vec2i
-import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.math.*
 import dev.rakrae.gameengine.scene.Node
 import kotlin.math.*
 
