@@ -17,6 +17,7 @@ class Engine(game: Game) {
         onTick = {
             gameTime.onTick()
             fpsCounter.onTick()
+            game.onTick()
         },
         onRender = {
             screen.clear()

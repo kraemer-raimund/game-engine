@@ -6,4 +6,6 @@ interface Game {
 
     val title: String
     val nodes: Sequence<Node>
+
+    fun onTick()
 }
