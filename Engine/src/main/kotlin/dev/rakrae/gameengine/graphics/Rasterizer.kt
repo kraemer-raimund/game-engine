@@ -33,11 +33,10 @@ class Rasterizer {
     private fun projectToScreenCoordinates(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
         val screenCoordinates = arrayOf(triangle.v0, triangle.v1, triangle.v2)
             .map {
-                val rotated = rotate(it.position.toVec3f(), GameTime.elapsedTime)
-                Vec2i(
-                    ((rotated.x + offset.x + 1.8f) * screenSize.x / 6f).toInt(),
-                    ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
-                )
+                val rotatedPos = rotate(it.position.toVec3f(), GameTime.elapsedTime)
+                val projectedX = ((rotatedPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
+                val projectedY = ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
+                Vec2i(projectedX, projectedY)
             }
         return Triangle2i(
             screenCoordinates[0],
