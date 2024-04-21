@@ -5,9 +5,6 @@ import dev.rakrae.gameengine.graphics.ScreenSize
 import dev.rakrae.gameengine.graphics.SpriteRenderer
 import dev.rakrae.gameengine.graphics.pipeline.Renderer
 import dev.rakrae.gameengine.platform.Display
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class Engine(game: Game) {
 
@@ -27,13 +24,7 @@ class Engine(game: Game) {
         onRender = suspend {
             fpsCounter.onTick()
             screen.clear()
-            withContext(Dispatchers.Default) {
-                for (node in game.scene.nodes) {
-                    launch {
-                        renderer.render(node, screen)
-                    }
-                }
-            }
+            renderer.render(game.scene, screen)
             spriteRenderer.render(screen)
             display.displayPixels(screen)
         }
