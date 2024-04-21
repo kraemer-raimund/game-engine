@@ -5,6 +5,7 @@ class GameTime {
     fun onTick() {
         tickTime = elapsedTime
         deltaTime = (currentTimeMillis - previousFrameTimeMillis) / 1000.0f
+        scaledDeltaTime = deltaTime * timeScale
         previousFrameTimeMillis = currentTimeMillis
     }
 
@@ -33,10 +34,28 @@ class GameTime {
             private set
 
         /**
-         * Time difference since the last frame in seconds.
+         * The time difference since the last frame in seconds.
          */
         var deltaTime = 0.0f
             private set
+
+        /**
+         * The time difference since the last frame in seconds, scaled by an arbitrary [timeScale]
+         * factor.
+         *
+         * This can be helpful, e.g., for creating slow motion or speed-up effects that should
+         * affect the whole game.
+         */
+        var scaledDeltaTime = 0.0f
+            private set
+
+        /**
+         * An arbitrary timescale factor that affects [scaledDeltaTime].
+         *
+         * This can be helpful, e.g., for creating slow motion or speed-up effects that should
+         * affect the whole game.
+         */
+        var timeScale = 1.0f
 
         /**
          * Timestamp at the previous frame in seconds.
