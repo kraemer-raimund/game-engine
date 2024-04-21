@@ -8,14 +8,14 @@ import kotlinx.coroutines.withContext
 
 class Rasterizer {
 
-    suspend fun render(node: Node, image: Bitmap) = withContext(Dispatchers.IO) {
-        val screenSize = Vec2i(image.width, image.height)
-        val zBuffer = Buffer2f(image.width, image.height)
+    suspend fun render(node: Node, framebuffer: Bitmap) = withContext(Dispatchers.IO) {
+        val screenSize = Vec2i(framebuffer.width, framebuffer.height)
+        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height)
 
         for (trianglesChunk in node.mesh.triangles.chunked(100)) {
             launch {
                 for (triangle in trianglesChunk) {
-                    renderTriangle(triangle, node.position, screenSize, image, zBuffer)
+                    renderTriangle(triangle, node.position, screenSize, framebuffer, zBuffer)
                 }
             }
         }

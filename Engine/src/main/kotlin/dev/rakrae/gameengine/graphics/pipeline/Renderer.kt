@@ -15,11 +15,11 @@ class Renderer {
     private val vertexShader: VertexShader = DummyAnimationVertexShader()
     private val rasterizer = Rasterizer()
 
-    suspend fun render(scene: Scene, bitmap: Bitmap) {
+    suspend fun render(scene: Scene, framebuffer: Bitmap) {
         withContext(Dispatchers.Default) {
             for (node in scene.nodes) {
                 launch {
-                    renderNode(node, bitmap)
+                    renderNode(node, framebuffer)
                 }
             }
         }
