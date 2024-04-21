@@ -42,7 +42,7 @@ class Engine(game: Game) {
     }
 
     companion object {
-        private const val DEFAULT_WIDTH = 800
-        private const val DEFAULT_HEIGHT = 800
+        private const val DEFAULT_WIDTH = 1000
+        private const val DEFAULT_HEIGHT = 1000
     }
 }
