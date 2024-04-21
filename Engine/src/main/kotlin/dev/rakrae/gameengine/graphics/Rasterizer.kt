@@ -30,7 +30,7 @@ class Rasterizer {
     ) {
         val lightDirection = Vec3f(0.2f, 0f, 0.6f).normalized
         val normal = triangle.normal
-        val lightIntensity = normal.normalized dot lightDirection
+        val lightIntensity = (normal.normalized dot lightDirection).coerceIn(0f..1f)
         val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
         val color = Color(
             (lightIntensity * 255).toInt().toUByte(),
