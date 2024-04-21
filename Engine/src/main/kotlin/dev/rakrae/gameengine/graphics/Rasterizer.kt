@@ -19,7 +19,7 @@ class Rasterizer {
             val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, elapsedTime * -1f)
             val normal = triangle.normal
             val lightIntensity = normal.normalized dot lightDirection
-            val triangleInScreenCoordinates = projectToScreenCoordinates(triangle, node.position, screenSize)
+            val triangleInScreenCoordinates = projectToScreen(triangle, node.position, screenSize)
             val color = Color(
                 (lightIntensity * 255).toInt().toUByte(),
                 (lightIntensity * 255).toInt().toUByte(),
@@ -30,19 +30,29 @@ class Rasterizer {
         }
     }
 
-    private fun projectToScreenCoordinates(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
+    private fun projectToScreen(
+        triangle: Triangle,
+        offset: Vec3f,
+        screenSize: Vec2i
+    ): Triangle2i {
         val screenCoordinates = arrayOf(triangle.v0, triangle.v1, triangle.v2)
-            .map {
-                val rotatedPos = rotate(it.position.toVec3f(), GameTime.elapsedTime)
-                val projectedX = ((rotatedPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
-                val projectedY = ((it.position.y + 1.5f) * screenSize.y / 6f).toInt()
-                Vec2i(projectedX, projectedY)
-            }
+            .map { projectToScreen(it.position.toVec3f(), offset, screenSize) }
         return Triangle2i(
             screenCoordinates[0],
             screenCoordinates[1],
             screenCoordinates[2]
         )
+    }
+
+    private fun projectToScreen(
+        worldPos: Vec3f,
+        offset: Vec3f,
+        screenSize: Vec2i
+    ): Vec2i {
+        val rotatedPos = rotate(worldPos, GameTime.elapsedTime)
+        val projectedX = ((rotatedPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
+        val projectedY = ((worldPos.y + 1.5f) * screenSize.y / 6f).toInt()
+        return Vec2i(projectedX, projectedY)
     }
 
     private fun rotate(vector: Vec3f, radians: Float): Vec3f {
