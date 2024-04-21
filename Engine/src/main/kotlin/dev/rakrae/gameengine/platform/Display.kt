@@ -11,9 +11,10 @@ import javax.swing.JFrame
 /**
  * The window with the rendered pixels visible to the player.
  */
-class Display(title: String, screenSize: ScreenSize) : Canvas() {
+class Display(title: String, screenSize: ScreenSize) {
 
     private val frame = JFrame()
+    private val canvas = Canvas()
     private val bufferedImage = BufferedImage(
         screenSize.width,
         screenSize.height,
@@ -26,7 +27,7 @@ class Display(title: String, screenSize: ScreenSize) : Canvas() {
 
     init {
         frame.apply {
-            add(this@Display)
+            add(canvas)
             pack()
             this.title = title
             size = Dimension(screenSize.width, screenSize.height)
@@ -38,9 +39,9 @@ class Display(title: String, screenSize: ScreenSize) : Canvas() {
     }
 
     fun displayPixels(bitmap: Bitmap) {
-        val bufferStrategy = bufferStrategy
+        val bufferStrategy = canvas.bufferStrategy
         if (bufferStrategy == null) {
-            createBufferStrategy(NUMBER_OF_BUFFERS)
+            canvas.createBufferStrategy(NUMBER_OF_BUFFERS)
             return
         }
 
@@ -54,8 +55,8 @@ class Display(title: String, screenSize: ScreenSize) : Canvas() {
                 bufferedImage,
                 0,
                 0,
-                width,
-                height,
+                canvas.width,
+                canvas.height,
                 null
             )
             dispose()
