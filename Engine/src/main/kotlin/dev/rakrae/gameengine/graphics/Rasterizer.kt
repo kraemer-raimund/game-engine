@@ -9,13 +9,10 @@ class Rasterizer {
 
     fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
+        val zBuffer = Buffer2f(image.width, image.height)
 
-        // Very rough approximation of painter's algorithm.
-        val trianglesSortedByDepth = node.mesh.triangles
-            .sortedBy { rotate(it.v0.position.toVec3f(), GameTime.tickTime).z }
-
-        for (triangle in trianglesSortedByDepth) {
-            renderTriangle(triangle, node.position, screenSize, image)
+        for (triangle in node.mesh.triangles) {
+            renderTriangle(triangle, node.position, screenSize, image, zBuffer)
         }
     }
 
@@ -23,7 +20,8 @@ class Rasterizer {
         triangle: Triangle,
         positionOffset: Vec3f,
         screenSize: Vec2i,
-        image: Bitmap
+        image: Bitmap,
+        zBuffer: Buffer2f
     ) {
         val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, GameTime.tickTime * -1f)
         val normal = triangle.normal
@@ -35,7 +33,7 @@ class Rasterizer {
             (lightIntensity * 255).toInt().toUByte(),
             255u
         )
-        drawFilled(triangleInScreenCoordinates, color, image)
+        drawFilled(triangle, triangleInScreenCoordinates, color, image, zBuffer)
     }
 
     private fun projectToScreen(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
@@ -72,19 +70,40 @@ class Rasterizer {
     /**
      * For each point within the triangle's AABB, fill the point if it lies within the triangle.
      */
-    private fun drawFilled(triangle: Triangle2i, color: Color, image: Bitmap) {
+    private fun drawFilled(
+        trianglePolygon: Triangle,
+        triangleScreen: Triangle2i,
+        color: Color,
+        image: Bitmap,
+        zBuffer: Buffer2f
+    ) {
         val boundingBox = AABB2i
-            .calculateBoundingBox(triangle)
+            .calculateBoundingBox(triangleScreen)
             .clampWithin(image.imageBounds())
 
         for (x in boundingBox.min.x..<boundingBox.max.x) {
             for (y in boundingBox.min.y..<boundingBox.max.y) {
-                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle)
+                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangleScreen)
                 if (barycentricCoordinates.isWithinTriangle) {
-                    image.setPixel(x, y, color)
+                    val interpolatedDepth = interpolateDepth(trianglePolygon, barycentricCoordinates)
+                    if (interpolatedDepth < zBuffer.get(x, y)) {
+                        zBuffer.set(x, y, interpolatedDepth)
+                        image.setPixel(x, y, color)
+                    }
                 }
             }
         }
+    }
+
+    private fun interpolateDepth(
+        triangle: Triangle,
+        barycentricCoordinates: BarycentricCoordinates
+    ): Float {
+        val z1 = rotate(triangle.v0.position.toVec3f(), GameTime.tickTime).z
+        val z2 = rotate(triangle.v1.position.toVec3f(), GameTime.tickTime).z
+        val z3 = rotate(triangle.v2.position.toVec3f(), GameTime.tickTime).z
+        val b = barycentricCoordinates
+        return z1 * b.a1 + z2 * b.a2 + z3 * b.a3
     }
 
     private fun Bitmap.imageBounds(): AABB2i {

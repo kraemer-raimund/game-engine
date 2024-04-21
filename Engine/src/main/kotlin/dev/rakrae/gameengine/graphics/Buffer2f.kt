@@ -2,11 +2,19 @@ package dev.rakrae.gameengine.graphics
 
 class Buffer2f(val width: Int, val height: Int) {
 
-    val pixels: FloatArray = FloatArray(width * height)
+    private val values: FloatArray = FloatArray(width * height)
 
-    fun clear() {
-        for (i in 0 until width * height) {
-            pixels[i] = 0.0f
+    fun get(x: Int, y: Int): Float {
+        return values[x + y * width]
+    }
+
+    fun set(x: Int, y: Int, value: Float) {
+        values[x + y * width] = value
+    }
+
+    fun clear(value: Float = 0f) {
+        for (i in 0..<(width * height)) {
+            values[i] = value
         }
     }
 }
