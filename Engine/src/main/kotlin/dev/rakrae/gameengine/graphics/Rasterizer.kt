@@ -9,25 +9,24 @@ class Rasterizer {
 
     fun render(node: Node, image: Bitmap) {
         val screenSize = Vec2i(image.width, image.height)
-        val elapsedTime = GameTime.elapsedTime
+        val elapsedTime = GameTime.tickTime
 
         // Very rough approximation of painter's algorithm.
         val trianglesSortedByDepth = node.mesh.triangles
             .sortedBy { rotate(it.v0.position.toVec3f(), elapsedTime).z }
 
         for (triangle in trianglesSortedByDepth) {
-            renderTriangle(elapsedTime, triangle, node.position, screenSize, image)
+            renderTriangle(triangle, node.position, screenSize, image)
         }
     }
 
     private fun renderTriangle(
-        elapsedTime: Float,
         triangle: Triangle,
         positionOffset: Vec3f,
         screenSize: Vec2i,
         image: Bitmap
     ) {
-        val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, elapsedTime * -1f)
+        val lightDirection = rotate(Vec3f(0.2f, 0f, 0.6f).normalized, GameTime.tickTime * -1f)
         val normal = triangle.normal
         val lightIntensity = normal.normalized dot lightDirection
         val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
@@ -51,7 +50,7 @@ class Rasterizer {
     }
 
     private fun projectToScreen(worldPos: Vec3f, offset: Vec3f, screenSize: Vec2i): Vec2i {
-        val rotatedPos = rotate(worldPos, GameTime.elapsedTime)
+        val rotatedPos = rotate(worldPos, GameTime.tickTime)
         val projectedX = ((rotatedPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
         val projectedY = ((worldPos.y + 1.5f) * screenSize.y / 6f).toInt()
         return Vec2i(projectedX, projectedY)

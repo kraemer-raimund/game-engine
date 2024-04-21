@@ -25,7 +25,7 @@ class WireframeRenderer {
             https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
             `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
              */
-            val newAngleRadians = atan2(it.position.z, it.position.x) + GameTime.elapsedTime
+            val newAngleRadians = atan2(it.position.z, it.position.x) + GameTime.tickTime
             val distance = sqrt(it.position.x.pow(2) + it.position.z.pow(2))
             val x = distance * cos(newAngleRadians)
             Vec2i(
