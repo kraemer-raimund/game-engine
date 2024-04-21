@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.core
 
 class FpsCounter {
 
-    fun onTick() {
+    fun onRenderFrame() {
         framesSinceStartup++
 
         val currentTimeMillis = System.currentTimeMillis()

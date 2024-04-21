@@ -25,7 +25,23 @@ class SampleGame : Game {
         }
     }
 
-    override fun onTick() {
+    override suspend fun onStart() {
+        println("Game started")
+    }
+
+    override suspend fun onTick() {
         println(FpsCounter.currentFps)
+    }
+
+    override suspend fun onPause() {
+        println("Game paused")
+    }
+
+    override suspend fun onResume() {
+        println("Game resumed")
+    }
+
+    override suspend fun onStop() {
+        println("Game stopped")
     }
 }
