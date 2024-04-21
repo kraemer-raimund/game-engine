@@ -1,6 +1,9 @@
 package dev.rakrae.gameengine.core
 
-import dev.rakrae.gameengine.graphics.*
+import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.ScreenSize
+import dev.rakrae.gameengine.graphics.SpriteRenderer
+import dev.rakrae.gameengine.graphics.pipeline.Renderer
 import dev.rakrae.gameengine.platform.Display
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -11,8 +14,7 @@ class Engine(game: Game) {
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(game.title, defaultScreenSize)
     private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
-    private val rasterizer = Rasterizer()
-    private val wireframeRenderer = WireframeRenderer()
+    private val renderer = Renderer()
     private val spriteRenderer = SpriteRenderer()
 
     private val gameTime = GameTime()
@@ -28,7 +30,7 @@ class Engine(game: Game) {
             runBlocking {
                 for (node in game.nodes) {
                     launch(Dispatchers.IO) {
-                        rasterizer.render(node, screen)
+                        renderer.render(node, screen)
                     }
                 }
             }
