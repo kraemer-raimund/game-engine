@@ -1,36 +1,32 @@
 package dev.rakrae.gameengine.core
 
-class GameLoop(val onTick: () -> Unit, val onRender: () -> Unit) {
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+
+class GameLoop(val onTick: suspend () -> Unit, val onRender: suspend () -> Unit) {
 
     private var isRunning: Boolean = false
-    private val thread: Thread
 
-    init {
-        thread = Thread(::run)
-    }
-
-    @Synchronized
+    @OptIn(DelicateCoroutinesApi::class)
     fun start() {
-        if (isRunning) { return }
         isRunning = true
-        thread.start()
+
+        GlobalScope.launch {
+            launch {
+                while (isRunning) {
+                    onTick()
+                }
+            }
+            launch {
+                while (isRunning) {
+                    onRender()
+                }
+            }
+        }
     }
 
-    @Synchronized
     fun stop() {
-        if (!isRunning) { return }
         isRunning = false
-        try {
-            thread.join()
-        } catch (e: Exception) {
-            print(e)
-        }
-    }
-
-    private fun run() {
-        while (isRunning) {
-            onTick()
-            onRender()
-        }
     }
 }

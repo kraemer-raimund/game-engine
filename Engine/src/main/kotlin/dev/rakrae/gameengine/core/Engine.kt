@@ -7,7 +7,7 @@ import dev.rakrae.gameengine.graphics.pipeline.Renderer
 import dev.rakrae.gameengine.platform.Display
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withContext
 
 class Engine(game: Game) {
 
@@ -20,16 +20,16 @@ class Engine(game: Game) {
     private val gameTime = GameTime()
     private val fpsCounter = FpsCounter()
     private val gameLoop = GameLoop(
-        onTick = {
+        onTick = suspend {
             gameTime.onTick()
-            fpsCounter.onTick()
             game.onTick()
         },
-        onRender = {
+        onRender = suspend {
+            fpsCounter.onTick()
             screen.clear()
-            runBlocking {
+            withContext(Dispatchers.Default) {
                 for (node in game.scene.nodes) {
-                    launch(Dispatchers.IO) {
+                    launch {
                         renderer.render(node, screen)
                     }
                 }
