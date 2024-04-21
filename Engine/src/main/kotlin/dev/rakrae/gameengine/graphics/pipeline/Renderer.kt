@@ -10,6 +10,7 @@ import kotlinx.coroutines.withContext
 class Renderer {
 
     private val vertexShader: VertexShader = DummyAnimationVertexShader()
+    private val fragmentShader: FragmentShader = DummyExampleFragmentShader()
     private val rasterizer = Rasterizer()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
@@ -26,7 +27,7 @@ class Renderer {
 
     private suspend fun renderNode(node: Node, framebuffer: Bitmap, zBuffer: Buffer2f) {
         val vertexShadedMesh = applyVertexShader(node.mesh)
-        rasterizer.render(node.copy(mesh = vertexShadedMesh), framebuffer, zBuffer)
+        rasterizer.rasterize(node.copy(mesh = vertexShadedMesh), framebuffer, zBuffer, fragmentShader)
     }
 
     private fun applyVertexShader(mesh: Mesh): Mesh {

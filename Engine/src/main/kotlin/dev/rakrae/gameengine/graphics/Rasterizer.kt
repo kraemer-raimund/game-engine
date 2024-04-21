@@ -1,5 +1,7 @@
 package dev.rakrae.gameengine.graphics
 
+import dev.rakrae.gameengine.graphics.pipeline.Fragment
+import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
 import dev.rakrae.gameengine.math.*
 import dev.rakrae.gameengine.scene.Node
 import kotlinx.coroutines.Dispatchers
@@ -8,25 +10,27 @@ import kotlinx.coroutines.withContext
 
 class Rasterizer {
 
-    suspend fun render(
+    suspend fun rasterize(
         node: Node,
         framebuffer: Bitmap,
-        zBuffer: Buffer2f
+        zBuffer: Buffer2f,
+        fragmentShader: FragmentShader
     ) = withContext(Dispatchers.IO) {
         for (trianglesChunk in node.mesh.triangles.chunked(100)) {
             launch {
                 for (triangle in trianglesChunk) {
-                    renderTriangle(triangle, node.position, framebuffer, zBuffer)
+                    rasterizeTriangle(triangle, node.position, framebuffer, zBuffer, fragmentShader)
                 }
             }
         }
     }
 
-    private fun renderTriangle(
+    private fun rasterizeTriangle(
         triangle: Triangle,
         positionOffset: Vec3f,
         framebuffer: Bitmap,
-        zBuffer: Buffer2f
+        zBuffer: Buffer2f,
+        fragmentShader: FragmentShader
     ) {
         val lightDirection = Vec3f(0.2f, 0f, 0.6f)
         val lightIntensity = 0.8f
@@ -41,7 +45,7 @@ class Rasterizer {
             (brightness * 255).toInt().toUByte(),
             255u
         )
-        drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer)
+        drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer, fragmentShader)
     }
 
     private fun projectToScreen(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
@@ -68,7 +72,8 @@ class Rasterizer {
         triangleScreen: Triangle2i,
         color: Color,
         image: Bitmap,
-        zBuffer: Buffer2f
+        zBuffer: Buffer2f,
+        fragmentShader: FragmentShader
     ) {
         val boundingBox = AABB2i
             .calculateBoundingBox(triangleScreen)
@@ -81,7 +86,13 @@ class Rasterizer {
                     val interpolatedDepth = interpolateDepth(trianglePolygon, barycentricCoordinates)
                     if (interpolatedDepth < zBuffer.get(x, y)) {
                         zBuffer.set(x, y, interpolatedDepth)
-                        image.setPixel(x, y, color)
+                        val inputFragment = Fragment(
+                            Vec2i(x, y),
+                            color,
+                            interpolatedDepth
+                        )
+                        val outputFragment = fragmentShader.process(inputFragment)
+                        image.setPixel(x, y, outputFragment.color)
                     }
                 }
             }
