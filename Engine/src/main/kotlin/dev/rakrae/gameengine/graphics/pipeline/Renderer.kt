@@ -1,9 +1,6 @@
 package dev.rakrae.gameengine.graphics.pipeline
 
-import dev.rakrae.gameengine.graphics.Bitmap
-import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.Rasterizer
-import dev.rakrae.gameengine.graphics.Triangle
+import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
@@ -16,18 +13,20 @@ class Renderer {
     private val rasterizer = Rasterizer()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
+        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height)
+
         withContext(Dispatchers.Default) {
             for (node in scene.nodes) {
                 launch {
-                    renderNode(node, framebuffer)
+                    renderNode(node, framebuffer, zBuffer)
                 }
             }
         }
     }
 
-    private suspend fun renderNode(node: Node, bitmap: Bitmap) {
+    private suspend fun renderNode(node: Node, framebuffer: Bitmap, zBuffer: Buffer2f) {
         val vertexShadedMesh = applyVertexShader(node.mesh)
-        rasterizer.render(node.copy(mesh = vertexShadedMesh), bitmap)
+        rasterizer.render(node.copy(mesh = vertexShadedMesh), framebuffer, zBuffer)
     }
 
     private fun applyVertexShader(mesh: Mesh): Mesh {

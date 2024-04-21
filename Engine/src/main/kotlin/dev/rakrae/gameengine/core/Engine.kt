@@ -12,7 +12,7 @@ class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val display = Display(game.title, defaultScreenSize)
-    private val framebuffer = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
+    private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
     private val renderer = Renderer()
     private val spriteRenderer = SpriteRenderer()
 
@@ -29,10 +29,10 @@ class Engine(game: Game) {
         },
         onRender = suspend {
             fpsCounter.onRenderFrame()
-            framebuffer.clear()
-            renderer.render(game.scene, framebuffer)
-            spriteRenderer.render(framebuffer)
-            display.displayPixels(framebuffer)
+            screen.clear()
+            renderer.render(game.scene, screen)
+            spriteRenderer.render(screen)
+            display.displayPixels(screen)
         },
         onPause = suspend {
             game.onPause()
@@ -43,7 +43,7 @@ class Engine(game: Game) {
         onStop = suspend {
             game.onStop()
             delay(0.5.seconds)
-            framebuffer.clear()
+            screen.clear()
         }
     )
 

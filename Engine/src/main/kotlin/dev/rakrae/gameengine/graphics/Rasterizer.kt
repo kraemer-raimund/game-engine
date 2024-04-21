@@ -8,14 +8,15 @@ import kotlinx.coroutines.withContext
 
 class Rasterizer {
 
-    suspend fun render(node: Node, framebuffer: Bitmap) = withContext(Dispatchers.IO) {
-        val screenSize = Vec2i(framebuffer.width, framebuffer.height)
-        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height)
-
+    suspend fun render(
+        node: Node,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f
+    ) = withContext(Dispatchers.IO) {
         for (trianglesChunk in node.mesh.triangles.chunked(100)) {
             launch {
                 for (triangle in trianglesChunk) {
-                    renderTriangle(triangle, node.position, screenSize, framebuffer, zBuffer)
+                    renderTriangle(triangle, node.position, framebuffer, zBuffer)
                 }
             }
         }
@@ -24,8 +25,7 @@ class Rasterizer {
     private fun renderTriangle(
         triangle: Triangle,
         positionOffset: Vec3f,
-        screenSize: Vec2i,
-        image: Bitmap,
+        framebuffer: Bitmap,
         zBuffer: Buffer2f
     ) {
         val lightDirection = Vec3f(0.2f, 0f, 0.6f)
@@ -33,6 +33,7 @@ class Rasterizer {
         val illuminationAngleNormalized = (triangle.normal.normalized dot lightDirection.normalized)
             .coerceIn(0f..1f)
         val brightness = illuminationAngleNormalized * lightIntensity
+        val screenSize = Vec2i(framebuffer.width, framebuffer.height)
         val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
         val color = Color(
             (brightness * 255).toInt().toUByte(),
@@ -40,7 +41,7 @@ class Rasterizer {
             (brightness * 255).toInt().toUByte(),
             255u
         )
-        drawFilled(triangle, triangleInScreenCoordinates, color, image, zBuffer)
+        drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer)
     }
 
     private fun projectToScreen(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
