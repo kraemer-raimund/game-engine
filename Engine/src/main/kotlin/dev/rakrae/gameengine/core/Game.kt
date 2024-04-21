@@ -1,11 +1,11 @@
 package dev.rakrae.gameengine.core
 
-import dev.rakrae.gameengine.scene.Node
+import dev.rakrae.gameengine.scene.Scene
 
 interface Game {
 
     val title: String
-    val nodes: Sequence<Node>
+    val scene: Scene
 
     fun onTick()
 }

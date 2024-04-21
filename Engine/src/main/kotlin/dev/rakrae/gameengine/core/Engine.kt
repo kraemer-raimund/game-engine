@@ -28,7 +28,7 @@ class Engine(game: Game) {
         onRender = {
             screen.clear()
             runBlocking {
-                for (node in game.nodes) {
+                for (node in game.scene.nodes) {
                     launch(Dispatchers.IO) {
                         renderer.render(node, screen)
                     }

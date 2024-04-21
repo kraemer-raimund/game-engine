@@ -5,12 +5,15 @@ import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
+import dev.rakrae.gameengine.scene.Scene
 
 class SampleGame : Game {
 
     override val title = "Chess (Sample Game)"
 
-    override val nodes: Sequence<Node> by lazy {
+    override val scene: Scene by lazy { Scene(nodes) }
+
+    private val nodes: Sequence<Node> by lazy {
         val king = AssetLoader().loadMesh("/assets/chesspieces/king.obj")
         val queen = AssetLoader().loadMesh("/assets/chesspieces/queen.obj")
         val bishop = AssetLoader().loadMesh("/assets/chesspieces/bishop.obj")
