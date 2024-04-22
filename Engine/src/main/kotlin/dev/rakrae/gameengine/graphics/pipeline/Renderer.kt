@@ -11,7 +11,7 @@ import kotlinx.coroutines.withContext
 class Renderer {
 
     private val vertexShader: VertexShader = DummyAnimationVertexShader()
-    private val fragmentShader: FragmentShader = DummyExampleFragmentShader()
+    private val fragmentShader: FragmentShader = GouraudFragmentShader()
     private val rasterizer = Rasterizer()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {

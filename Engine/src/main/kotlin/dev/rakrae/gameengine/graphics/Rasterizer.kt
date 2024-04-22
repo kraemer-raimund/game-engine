@@ -32,19 +32,9 @@ class Rasterizer {
         zBuffer: Buffer2f,
         fragmentShader: FragmentShader
     ) {
-        val lightDirection = Vec3f(0.2f, 0f, 0.6f)
-        val lightIntensity = 0.8f
-        val illuminationAngleNormalized = (triangle.normal.normalized dot lightDirection.normalized)
-            .coerceIn(0f..1f)
-        val brightness = illuminationAngleNormalized * lightIntensity
         val screenSize = Vec2i(framebuffer.width, framebuffer.height)
         val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
-        val color = Color(
-            (brightness * 255).toInt().toUByte(),
-            (brightness * 255).toInt().toUByte(),
-            (brightness * 255).toInt().toUByte(),
-            255u
-        )
+        val color = Color(255u, 255u, 255u, 255u)
         drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer, fragmentShader)
     }
 
@@ -87,9 +77,11 @@ class Rasterizer {
                     if (interpolatedDepth < zBuffer.get(x, y)) {
                         zBuffer.set(x, y, interpolatedDepth)
                         val inputFragment = InputFragment(
-                            Vec2i(x, y),
-                            color,
-                            interpolatedDepth
+                            windowSpacePosition = Vec2i(x, y),
+                            interpolatedVertexColor = color,
+                            interpolatedNormal = interpolateNormal(trianglePolygon, barycentricCoordinates),
+                            faceNormal = trianglePolygon.normal,
+                            depth = interpolatedDepth
                         )
                         val outputFragment = fragmentShader.process(inputFragment)
                         image.setPixel(x, y, outputFragment.fragmentColor)
@@ -112,6 +104,21 @@ class Rasterizer {
         // Temporary offset since we are using world coordinates for the depth instead of relative
         // to the camera.
         return interpolatedZ - 100f
+    }
+
+    private fun interpolateNormal(
+        triangle: Triangle,
+        barycentricCoordinates: BarycentricCoordinates
+    ): Vec3f {
+        val n1 = triangle.v0.normal
+        val n2 = triangle.v1.normal
+        val n3 = triangle.v2.normal
+        val b = barycentricCoordinates
+        return Vec3f(
+            n1.x * b.a1 + n2.x * b.a2 + n3.x * b.a3,
+            n1.y * b.a1 + n2.y * b.a2 + n3.y * b.a3,
+            n1.z * b.a1 + n2.z * b.a2 + n3.z * b.a3
+        )
     }
 
     private fun Bitmap.imageBounds(): AABB2i {
