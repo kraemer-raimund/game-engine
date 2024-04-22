@@ -11,5 +11,5 @@ interface FragmentShader {
      * multiple fragments might be associated with a single pixel, like in the case of
      * multisampling.
      */
-    fun process(fragment: Fragment): Fragment
+    fun process(inputFragment: InputFragment): OutputFragment
 }

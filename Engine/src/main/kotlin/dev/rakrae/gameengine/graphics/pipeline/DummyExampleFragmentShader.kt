@@ -10,17 +10,16 @@ import kotlin.random.Random
  */
 class DummyExampleFragmentShader : FragmentShader {
 
-    override fun process(fragment: Fragment): Fragment {
+    override fun process(inputFragment: InputFragment): OutputFragment {
         val glow = Color(
-            glow(fragment.color.r, 0.4f, 2.8f),
-            glow(fragment.color.g, Random.nextFloat() * 0.4f + 0.9f, 4.4f),
-            glow(fragment.color.b, 0.4f, 2.8f),
+            glow(inputFragment.interpolatedVertexColor.r, 0.4f, 2.8f),
+            glow(inputFragment.interpolatedVertexColor.g, Random.nextFloat() * 0.4f + 0.9f, 4.4f),
+            glow(inputFragment.interpolatedVertexColor.b, 0.4f, 2.8f),
             255u
         )
-        return Fragment(
-            screenPosition = fragment.screenPosition,
-            color = glow,
-            depth = fragment.depth
+        return OutputFragment(
+            fragmentColor = glow,
+            depth = inputFragment.depth
         )
     }
 

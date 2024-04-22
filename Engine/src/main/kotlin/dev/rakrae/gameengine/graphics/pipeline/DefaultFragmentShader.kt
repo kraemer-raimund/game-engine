@@ -2,9 +2,12 @@ package dev.rakrae.gameengine.graphics.pipeline
 
 class DefaultFragmentShader : FragmentShader {
 
-    override fun process(fragment: Fragment): Fragment {
+    override fun process(inputFragment: InputFragment): OutputFragment {
         // Simple pass through in the default implementation.
         // User defined shaders can handle this differently.
-        return fragment
+        return OutputFragment(
+            inputFragment.interpolatedVertexColor,
+            inputFragment.depth
+        )
     }
 }

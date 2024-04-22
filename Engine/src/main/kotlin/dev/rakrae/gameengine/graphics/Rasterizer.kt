@@ -1,7 +1,7 @@
 package dev.rakrae.gameengine.graphics
 
-import dev.rakrae.gameengine.graphics.pipeline.Fragment
 import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
+import dev.rakrae.gameengine.graphics.pipeline.InputFragment
 import dev.rakrae.gameengine.math.*
 import dev.rakrae.gameengine.scene.Node
 import kotlinx.coroutines.Dispatchers
@@ -86,13 +86,13 @@ class Rasterizer {
                     val interpolatedDepth = interpolateDepth(trianglePolygon, barycentricCoordinates)
                     if (interpolatedDepth < zBuffer.get(x, y)) {
                         zBuffer.set(x, y, interpolatedDepth)
-                        val inputFragment = Fragment(
+                        val inputFragment = InputFragment(
                             Vec2i(x, y),
                             color,
                             interpolatedDepth
                         )
                         val outputFragment = fragmentShader.process(inputFragment)
-                        image.setPixel(x, y, outputFragment.color)
+                        image.setPixel(x, y, outputFragment.fragmentColor)
                     }
                 }
             }
