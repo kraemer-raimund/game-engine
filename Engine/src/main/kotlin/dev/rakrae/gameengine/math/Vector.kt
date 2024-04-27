@@ -14,8 +14,6 @@ data class Vec2i(val x: Int, val y: Int) {
     }
 }
 
-data class Vec2f(val x: Float, val y: Float)
-
 data class Vec3f(val x: Float, val y: Float, val z: Float) {
 
     val magnitude: Float = sqrt(x * x + y * y + z * z)
