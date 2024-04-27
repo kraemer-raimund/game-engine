@@ -2,6 +2,9 @@ package dev.rakrae.gameengine.math
 
 import kotlin.math.abs
 
+/**
+ * https://en.wikipedia.org/wiki/Matrix_(mathematics)#Notation
+ */
 data class Mat4x4f(
     val a11: Float, val a12: Float, val a13: Float, val a14: Float,
     val a21: Float, val a22: Float, val a23: Float, val a24: Float,
