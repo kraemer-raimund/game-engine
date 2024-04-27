@@ -47,4 +47,13 @@ data class Mat4x4f(
         val otherAsArray = matrix.asList
         return (0..15).all { i -> similar(thisAsArray[i], otherAsArray[i]) }
     }
+
+    companion object {
+        val identity = Mat4x4f(
+            1f, 0f, 0f, 0f,
+            0f, 1f, 0f, 0f,
+            0f, 0f, 1f, 0f,
+            0f, 0f, 0f, 1f
+        )
+    }
 }
