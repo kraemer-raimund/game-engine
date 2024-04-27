@@ -18,9 +18,8 @@ data class Vec2f(val x: Float, val y: Float)
 
 data class Vec3f(val x: Float, val y: Float, val z: Float) {
 
-    val magnitude: Float by lazy { sqrt(x * x + y * y + z * z) }
-
-    val normalized: Vec3f by lazy { Vec3f(x / magnitude, y / magnitude, z / magnitude) }
+    val magnitude: Float = sqrt(x * x + y * y + z * z)
+    val normalized: Vec3f = Vec3f(x / magnitude, y / magnitude, z / magnitude)
 
     operator fun plus(vector: Vec3f): Vec3f {
         return Vec3f(
