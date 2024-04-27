@@ -84,4 +84,35 @@ internal class Mat4x4fTest {
                     "Actual:\n$actualSum"
         )
     }
+
+    @Test
+    fun `matrix subtraction`() {
+        val m1 = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+        val m2 = Mat4x4f(
+            a11 = 31.2f, a12 = 4.7f, a13 = 13.4f, a14 = 11.62f,
+            a21 = -2.689f, a22 = 13.42f, a23 = 12.7f, a24 = 0.9f,
+            a31 = 2.51f, a32 = 6.456f, a33 = 18.56f, a34 = -54.5f,
+            a41 = -7f, a42 = 3.57f, a43 = 81.87f, a44 = -6.894f
+        )
+        val expected = Mat4x4f(
+            a11 = -28.0f, a12 = -0.5999999f, a13 = -1.6999998f, a14 = -23.51f,
+            a21 = 45.378998f, a22 = -0.05000019f, a23 = -11.7f, a24 = 0.0f,
+            a31 = -5.299f, a32 = -12.912f, a33 = -10.559999f, a34 = 59.0f,
+            a41 = 14.653999f, a42 = 0.78699994f, a43 = -73.4f, a44 = 13.788f
+        )
+
+        val actual = m1 - m2
+
+        assertTrue(
+            actual.isCloseTo(expected),
+            "Expected matrices to be equal (within margin for rounding error).\n" +
+                    "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
+        )
+    }
 }

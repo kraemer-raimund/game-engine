@@ -34,6 +34,13 @@ data class Mat4x4f(
         return Mat4x4f(sumAsArray)
     }
 
+    operator fun minus(matrix: Mat4x4f): Mat4x4f {
+        val thisAsArray = this.asList
+        val otherAsArray = matrix.asList
+        val sumAsArray = (0..15).map { i -> thisAsArray[i] - otherAsArray[i] }
+        return Mat4x4f(sumAsArray)
+    }
+
     fun isCloseTo(matrix: Mat4x4f, epsilon: Float = 0.01f): Boolean {
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
         val thisAsArray = this.asList
