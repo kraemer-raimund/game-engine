@@ -68,20 +68,20 @@ internal class Mat4x4fTest {
             a31 = 2.51f, a32 = 6.456f, a33 = 18.56f, a34 = -54.5f,
             a41 = -7f, a42 = 3.57f, a43 = 81.87f, a44 = -6.894f
         )
-        val expectedSum = Mat4x4f(
+        val expected = Mat4x4f(
             a11 = 34.4f, a12 = 8.8f, a13 = 25.1f, a14 = -0.27f,
             a21 = 40.001f, a22 = 26.79f, a23 = 13.7f, a24 = 1.8f,
             a31 = -0.279f, a32 = 0.0f, a33 = 26.56f, a34 = -50.0f,
             a41 = 0.654f, a42 = 7.927f, a43 = 90.34f, a44 = 0.0f
         )
 
-        val actualSum = m1 + m2
+        val actual = m1 + m2
 
         assertTrue(
-            actualSum.isCloseTo(expectedSum),
+            actual.isCloseTo(expected),
             "Expected matrices to be equal (within margin for rounding error).\n" +
-                    "Expected:\n$expectedSum\n" +
-                    "Actual:\n$actualSum"
+                    "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
         )
     }
 
