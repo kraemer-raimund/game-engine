@@ -28,17 +28,17 @@ data class Mat4x4f(
     )
 
     operator fun plus(matrix: Mat4x4f): Mat4x4f {
-        val thisAsArray = this.asList
-        val otherAsArray = matrix.asList
-        val sumAsArray = (0..15).map { i -> thisAsArray[i] + otherAsArray[i] }
-        return Mat4x4f(sumAsArray)
+        val thisAsList = this.asList
+        val otherAsList = matrix.asList
+        val resultAsList = (0..15).map { i -> thisAsList[i] + otherAsList[i] }
+        return Mat4x4f(resultAsList)
     }
 
     operator fun minus(matrix: Mat4x4f): Mat4x4f {
-        val thisAsArray = this.asList
-        val otherAsArray = matrix.asList
-        val sumAsArray = (0..15).map { i -> thisAsArray[i] - otherAsArray[i] }
-        return Mat4x4f(sumAsArray)
+        val thisAsList = this.asList
+        val otherAsList = matrix.asList
+        val resultAsList = (0..15).map { i -> thisAsList[i] - otherAsList[i] }
+        return Mat4x4f(resultAsList)
     }
 
     fun isCloseTo(matrix: Mat4x4f, epsilon: Float = 0.01f): Boolean {
