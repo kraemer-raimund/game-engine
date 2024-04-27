@@ -20,15 +20,18 @@ data class Mat4x4f(
             a41, a42, a43, a44
         )
 
+    private constructor(m: List<Float>) : this(
+        m[0], m[1], m[2], m[3],
+        m[4], m[5], m[6], m[7],
+        m[8], m[9], m[10], m[11],
+        m[12], m[13], m[14], m[15]
+    )
+
     operator fun plus(matrix: Mat4x4f): Mat4x4f {
-        val m1 = this
-        val m2 = matrix
-        return Mat4x4f(
-            a11 = m1.a11 + m2.a11, a12 = m1.a12 + m2.a12, a13 = m1.a13 + m2.a13, a14 = m1.a14 + m2.a14,
-            a21 = m1.a21 + m2.a21, a22 = m1.a22 + m2.a22, a23 = m1.a23 + m2.a23, a24 = m1.a24 + m2.a24,
-            a31 = m1.a31 + m2.a31, a32 = m1.a32 + m2.a32, a33 = m1.a33 + m2.a33, a34 = m1.a34 + m2.a34,
-            a41 = m1.a41 + m2.a41, a42 = m1.a42 + m2.a42, a43 = m1.a43 + m2.a43, a44 = m1.a44 + m2.a44
-        )
+        val thisAsArray = this.asList
+        val otherAsArray = matrix.asList
+        val sumAsArray = (0..15).map { i -> thisAsArray[i] + otherAsArray[i] }
+        return Mat4x4f(sumAsArray)
     }
 
     fun isCloseTo(matrix: Mat4x4f, epsilon: Float = 0.01f): Boolean {
