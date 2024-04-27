@@ -1,11 +1,58 @@
 package dev.rakrae.gameengine.math
 
+import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.DisplayName
 import org.junit.jupiter.api.Test
 
 @DisplayName("Matrix 4x4 Float")
 internal class Mat4x4fTest {
+
+    @Test
+    fun `matrices are (almost) equal`() {
+        val m1 = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+        val m2 = Mat4x4f(
+            a11 = 3.20001f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        assertTrue(
+            m1.isCloseTo(m2),
+            "Expected matrices to be equal (within margin for rounding error).\n" +
+                    "m1:\n$m1\n" +
+                    "m2:\n$m2"
+        )
+    }
+
+    @Test
+    fun `matrices are different`() {
+        val m1 = Mat4x4f(
+            a11 = 100f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+        val m2 = Mat4x4f(
+            a11 = -30f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        assertFalse(
+            m1.isCloseTo(m2),
+            "Expected matrices to be different.\n" +
+                    "m1:\n$m1\n" +
+                    "m2:\n$m2"
+        )
+    }
 
     @Test
     fun `matrix addition`() {
