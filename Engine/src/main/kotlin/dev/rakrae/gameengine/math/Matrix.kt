@@ -55,5 +55,11 @@ data class Mat4x4f(
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         )
+
+        fun scalarMultiply(scalar: Float, matrix: Mat4x4f): Mat4x4f {
+            val matrixAsList = matrix.asList
+            val resultAsList = (0..15).map { i -> scalar * matrixAsList[i] }
+            return Mat4x4f(resultAsList)
+        }
     }
 }

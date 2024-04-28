@@ -134,4 +134,31 @@ internal class Mat4x4fTest {
                     "Actual:\n$actual"
         )
     }
+
+    @Test
+    fun `scalar matrix multiplication`() {
+        val matrix = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+        val scalar = 1.23f
+
+        val expected = Mat4x4f(
+            a11 = 3.936f, a12 = 5.0429997f, a13 = 14.391f, a14 = -14.624701f,
+            a21 = 52.508698f, a22 = 16.4451f, a23 = 1.23f, a24 = 1.107f,
+            a31 = -3.43047f, a32 = -7.94088f, a33 = 9.84f, a34 = 5.535f,
+            a41 = 9.41442f, a42 = 5.35911f, a43 = 10.4181f, a44 = 8.47962f
+        )
+
+        val actual = Mat4x4f.scalarMultiply(scalar, matrix)
+
+        assertTrue(
+            actual.isCloseTo(expected),
+            "Expected matrices to be equal (within margin for rounding error).\n" +
+                    "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
+        )
+    }
 }
