@@ -192,4 +192,35 @@ internal class Mat4x4fTest {
                     "Actual:\n$actual"
         )
     }
+
+    @Test
+    fun `translation matrix moves vector`() {
+        val translationMatrix = Mat4x4f(
+            1f, 0f, 0f, 1.5f,
+            0f, 1f, 0f, 2.3f,
+            0f, 0f, 1f, -7.31f,
+            0f, 0f, 0f, 1f
+        )
+        val vectorToBeTransformed = Vec4f(
+            x = 23.4f,
+            y = 5.6f,
+            z = -2.57f,
+            w = 1f
+        )
+        val expected = Vec4f(
+            x = 24.9f,
+            y = 7.8999996f,
+            z = -9.88f,
+            w = 1f
+        )
+
+        val actual = translationMatrix * vectorToBeTransformed
+
+        assertTrue(
+            actual.isCloseTo(expected),
+            "Expected vectors to be equal (within margin for rounding error).\n" +
+                    "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
+        )
+    }
 }
