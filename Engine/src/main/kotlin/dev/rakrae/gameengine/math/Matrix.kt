@@ -39,6 +39,17 @@ data class Mat4x4f(
         return Mat4x4f(resultAsList)
     }
 
+    operator fun times(vector: Vec4f): Vec4f {
+        val m = this
+        val v = vector
+        return Vec4f(
+            m.a11 * v.x + m.a12 * v.y + m.a13 * v.z + m.a14 * v.w,
+            m.a21 * v.x + m.a22 * v.y + m.a23 * v.z + m.a24 * v.w,
+            m.a31 * v.x + m.a32 * v.y + m.a33 * v.z + m.a34 * v.w,
+            m.a41 * v.x + m.a42 * v.y + m.a43 * v.z + m.a44 * v.w
+        )
+    }
+
     fun isCloseTo(matrix: Mat4x4f, epsilon: Float = 0.01f): Boolean {
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
         val thisAsList = this.asList

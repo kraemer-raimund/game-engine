@@ -82,4 +82,12 @@ data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float) {
     fun toVec3f(): Vec3f {
         return Vec3f(x, y, z)
     }
+
+    fun isCloseTo(other: Vec4f, epsilon: Float = 0.01f): Boolean {
+        val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
+        return similar(this.x, other.x)
+                && similar(this.y, other.y)
+                && similar(this.z, other.z)
+                && similar(this.w, other.w)
+    }
 }

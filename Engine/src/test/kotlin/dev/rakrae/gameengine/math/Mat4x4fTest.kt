@@ -161,4 +161,35 @@ internal class Mat4x4fTest {
                     "Actual:\n$actual"
         )
     }
+
+    @Test
+    fun `matrix vector multiplication (Vec4f)`() {
+        val matrix = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+        val vector = Vec4f(
+            x = 23.4f,
+            y = 5.6f,
+            z = -2.57f,
+            w = 0.79f
+        )
+        val expected = Vec4f(
+            x = 58.377895f,
+            y = 1071.959f,
+            z = -118.421196f,
+            w = 187.18115f
+        )
+
+        val actual = matrix * vector
+
+        assertTrue(
+            actual.isCloseTo(expected),
+            "Expected vectors to be equal (within margin for rounding error).\n" +
+                    "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
+        )
+    }
 }
