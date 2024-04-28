@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.graphics.pipeline
 
 import dev.rakrae.gameengine.graphics.*
+import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec4f
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.Scene
@@ -56,11 +57,12 @@ class Renderer {
 
     private fun applyPerspectiveProjection(worldPosition: Vec4f): Vec4f {
         // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
-        return Vec4f(
-            x = worldPosition.x / (worldPosition.z + 1.5f),
-            y = worldPosition.y / (worldPosition.z + 1.5f),
-            z = worldPosition.z,
-            w = worldPosition.w
+        val projectionMatrix = Mat4x4f(
+            1f, 0f, 0.8f, 0f,
+            0f, 1f, 0.8f, 0f,
+            0f, 0f, 1f, 0f,
+            0f, 0f, 0f, 1f
         )
+        return projectionMatrix * worldPosition
     }
 }
