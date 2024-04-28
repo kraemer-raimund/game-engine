@@ -73,3 +73,7 @@ data class Mat4x4f(
         }
     }
 }
+
+operator fun Float.times(matrix: Mat4x4f): Mat4x4f {
+    return Mat4x4f.scalarMultiply(this, matrix)
+}

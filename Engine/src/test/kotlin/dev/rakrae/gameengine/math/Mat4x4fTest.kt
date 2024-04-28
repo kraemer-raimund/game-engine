@@ -152,7 +152,7 @@ internal class Mat4x4fTest {
             a41 = 9.41442f, a42 = 5.35911f, a43 = 10.4181f, a44 = 8.47962f
         )
 
-        val actual = Mat4x4f.scalarMultiply(scalar, matrix)
+        val actual = scalar * matrix
 
         assertTrue(
             actual.isCloseTo(expected),
