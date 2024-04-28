@@ -55,25 +55,6 @@ internal class Mat4x4fTest {
     }
 
     @Test
-    fun `identity matrix`() {
-        val expected = Mat4x4f(
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, 0f, 0f, 1f
-        )
-
-        val actual = Mat4x4f.identity
-
-        assertTrue(
-            actual.isCloseTo(expected),
-            "Expected matrices to be equal (within margin for rounding error).\n" +
-                    "Expected:\n$expected\n" +
-                    "Actual:\n$actual"
-        )
-    }
-
-    @Test
     fun `matrix addition`() {
         val m1 = Mat4x4f(
             a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
@@ -189,6 +170,25 @@ internal class Mat4x4fTest {
             actual.isCloseTo(expected),
             "Expected vectors to be equal (within margin for rounding error).\n" +
                     "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
+        )
+    }
+
+    @Test
+    fun `identity matrix times vector yields original vector`() {
+        val originalVector = Vec4f(
+            x = 23.4f,
+            y = 5.6f,
+            z = -2.57f,
+            w = 0.79f
+        )
+
+        val actual = Mat4x4f.identity * originalVector
+
+        assertTrue(
+            actual.isCloseTo(originalVector),
+            "Expected vectors to be equal (within margin for rounding error).\n" +
+                    "Expected:\n$originalVector\n" +
                     "Actual:\n$actual"
         )
     }
