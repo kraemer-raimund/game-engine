@@ -54,8 +54,7 @@ data class Mat4x4f(
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
         val thisAsList = this.asList
         val otherAsList = matrix.asList
-        return (0..thisAsList.lastIndex)
-            .all { i -> similar(thisAsList[i], otherAsList[i]) }
+        return (0..thisAsList.lastIndex).all { i -> similar(thisAsList[i], otherAsList[i]) }
     }
 
     companion object {
