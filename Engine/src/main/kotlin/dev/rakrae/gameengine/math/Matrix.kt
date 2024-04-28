@@ -50,6 +50,54 @@ data class Mat4x4f(
         )
     }
 
+    /**
+     * A matrix is multiplied by a matrix according to this pattern (exemplified with two
+     * 2x2 matrices for simplicity):
+     *
+     * |1; 2| * |a; b| = |1a + 2c; 1b + 2d|
+     * |3; 4|   |c; d|   |3a + 4c; 3b + 4d|
+     *
+     * This example would be very complex with 4x4 matrices, but the pattern is the same.
+     * Note how we use the rows from the first matrix and the columns from the seconds one
+     * and calculate each value by summing the products of the corresponding values in the
+     * respective row/column from the operands.
+     */
+    operator fun times(matrix: Mat4x4f): Mat4x4f {
+        val (a, b, c, d) = this.asList.subList(0, 4)
+        val (e, f, g, h) = this.asList.subList(4, 8)
+        val (i, j, k, l) = this.asList.subList(8, 12)
+        val (m, n, o, p) = this.asList.subList(12, 16)
+
+        val (A, B, C, D) = matrix.asList.subList(0, 4)
+        val (E, F, G, H) = matrix.asList.subList(4, 8)
+        val (I, J, K, L) = matrix.asList.subList(8, 12)
+        val (M, N, O, P) = matrix.asList.subList(12, 16)
+
+        val m1Rows = listOf(
+            listOf(a, b, c, d),
+            listOf(e, f, g, h),
+            listOf(i, j, k, l),
+            listOf(m, n, o, p)
+        )
+
+        val m2Columns = listOf(
+            listOf(A, E, I, M),
+            listOf(B, F, J, N),
+            listOf(C, G, K, O),
+            listOf(D, H, L, P)
+        )
+
+        val values = (0..15).map {
+            val row = it / 4
+            val col = it % 4
+            (0..3)
+                .map { i -> m1Rows[row][i] * m2Columns[col][i] }
+                .sum()
+        }
+
+        return Mat4x4f(values)
+    }
+
     fun isCloseTo(matrix: Mat4x4f, epsilon: Float = 0.01f): Boolean {
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
         val thisAsList = this.asList

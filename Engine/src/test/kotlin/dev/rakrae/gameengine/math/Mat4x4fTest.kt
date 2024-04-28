@@ -223,4 +223,35 @@ internal class Mat4x4fTest {
                     "Actual:\n$actual"
         )
     }
+
+    @Test
+    fun `matrix multiplication`() {
+        val m1 = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+        val m2 = Mat4x4f(
+            a11 = 31.2f, a12 = 4.7f, a13 = 13.4f, a14 = 11.62f,
+            a21 = -2.689f, a22 = 13.42f, a23 = 12.7f, a24 = 0.9f,
+            a31 = 2.51f, a32 = 6.456f, a33 = 18.56f, a34 = -54.5f,
+            a41 = -7f, a42 = 3.57f, a43 = 81.87f, a44 = -6.894f
+        )
+        val expected = Mat4x4f(
+            a11 = 201.41211f, a12 = 103.1499f, a13 = -661.3324f, a14 = -514.8063f,
+            a21 = 1292.186f, a22 = 389.7374f, a23 = 834.08795f, a24 = 447.38617f,
+            a31 = -81.076614f, a32 = -32.03482f, a33 = 397.5312f, a34 = -505.24158f,
+            a41 = 200.09053f, a42 = 173.73862f, a43 = 879.5125f, a44 = -416.2815f
+        )
+
+        val actual = m1 * m2
+
+        assertTrue(
+            actual.isCloseTo(expected),
+            "Expected matrices to be equal (within margin for rounding error).\n" +
+                    "Expected:\n$expected\n" +
+                    "Actual:\n$actual"
+        )
+    }
 }
