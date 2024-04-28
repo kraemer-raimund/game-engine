@@ -28,24 +28,23 @@ data class Mat4x4f(
     )
 
     operator fun plus(matrix: Mat4x4f): Mat4x4f {
-        val thisAsList = this.asList
         val otherAsList = matrix.asList
-        val resultAsList = (0..15).map { i -> thisAsList[i] + otherAsList[i] }
+        val resultAsList = this.asList.mapIndexed { i, value -> value + otherAsList[i] }
         return Mat4x4f(resultAsList)
     }
 
     operator fun minus(matrix: Mat4x4f): Mat4x4f {
-        val thisAsList = this.asList
         val otherAsList = matrix.asList
-        val resultAsList = (0..15).map { i -> thisAsList[i] - otherAsList[i] }
+        val resultAsList = this.asList.mapIndexed { i, value -> value - otherAsList[i] }
         return Mat4x4f(resultAsList)
     }
 
     fun isCloseTo(matrix: Mat4x4f, epsilon: Float = 0.01f): Boolean {
         val similar = { f1: Float, f2: Float -> abs(f1 - f2) < epsilon }
-        val thisAsArray = this.asList
-        val otherAsArray = matrix.asList
-        return (0..15).all { i -> similar(thisAsArray[i], otherAsArray[i]) }
+        val thisAsList = this.asList
+        val otherAsList = matrix.asList
+        return (0..thisAsList.lastIndex)
+            .all { i -> similar(thisAsList[i], otherAsList[i]) }
     }
 
     companion object {
