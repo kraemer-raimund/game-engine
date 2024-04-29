@@ -13,6 +13,9 @@ from scratch. Besides learning more of the technical details myself, I intend
 to use it as an educational project to help others learn about game engines,
 graphics programming, and game development.
 
+Along with the game engine I develop a (small) sample game to incrementally
+drive the requirements of the engine.
+
 # Contribution
 
 As of now, this is just a personal for-fun project. If you find a bug, feel
