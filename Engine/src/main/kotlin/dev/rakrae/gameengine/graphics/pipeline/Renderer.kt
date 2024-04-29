@@ -2,7 +2,6 @@ package dev.rakrae.gameengine.graphics.pipeline
 
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec4f
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
@@ -45,17 +44,6 @@ class Renderer {
     }
 
     private fun applyPerspectiveProjection(mesh: Mesh): Mesh {
-        val processedTriangles = mesh.triangles.map { inputTriangle ->
-            Triangle(
-                inputTriangle.v0.copy(position = applyPerspectiveProjection(inputTriangle.v0.position)),
-                inputTriangle.v1.copy(position = applyPerspectiveProjection(inputTriangle.v1.position)),
-                inputTriangle.v2.copy(position = applyPerspectiveProjection(inputTriangle.v2.position))
-            )
-        }
-        return Mesh(processedTriangles)
-    }
-
-    private fun applyPerspectiveProjection(worldPosition: Vec4f): Vec4f {
         // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
         val projectionMatrix = Mat4x4f(
             1f, 0f, 0.8f, 0f,
@@ -63,6 +51,17 @@ class Renderer {
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         )
-        return projectionMatrix * worldPosition
+        return transform(mesh, projectionMatrix)
+    }
+
+    private fun transform(mesh: Mesh, matrix: Mat4x4f): Mesh {
+        val transformedTriangles = mesh.triangles.map { inputTriangle ->
+            Triangle(
+                inputTriangle.v0.copy(position = matrix * inputTriangle.v0.position),
+                inputTriangle.v1.copy(position = matrix * inputTriangle.v1.position),
+                inputTriangle.v2.copy(position = matrix * inputTriangle.v2.position)
+            )
+        }
+        return Mesh(transformedTriangles)
     }
 }
