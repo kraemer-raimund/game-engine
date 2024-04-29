@@ -2,6 +2,7 @@ package dev.rakrae.gameengine.graphics.pipeline
 
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
@@ -28,7 +29,8 @@ class Renderer {
 
     private suspend fun renderNode(node: Node, framebuffer: Bitmap, zBuffer: Buffer2f) {
         val vertexShadedMesh = applyVertexShader(node.mesh)
-        val projectedMesh = applyPerspectiveProjection(vertexShadedMesh)
+        val translatedMesh = applyTranslation(vertexShadedMesh, node.position)
+        val projectedMesh = applyPerspectiveProjection(translatedMesh)
         rasterizer.rasterize(node.copy(mesh = projectedMesh), framebuffer, zBuffer, fragmentShader)
     }
 
@@ -43,11 +45,21 @@ class Renderer {
         return Mesh(processedTriangles)
     }
 
+    private fun applyTranslation(mesh: Mesh, offset: Vec3f): Mesh {
+        val translationMatrix = Mat4x4f(
+            1f, 0f, 0f, offset.x,
+            0f, 1f, 0f, offset.y,
+            0f, 0f, 1f, offset.z,
+            0f, 0f, 0f, 1f
+        )
+        return transform(mesh, translationMatrix)
+    }
+
     private fun applyPerspectiveProjection(mesh: Mesh): Mesh {
         // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
         val projectionMatrix = Mat4x4f(
-            1f, 0f, 0.8f, 0f,
-            0f, 1f, 0.8f, 0f,
+            1f, 0f, 0f, 0f,
+            0f, 1f, 0f, 0f,
             0f, 0f, 1f, 0f,
             0f, 0f, 0f, 1f
         )

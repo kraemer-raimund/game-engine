@@ -21,7 +21,7 @@ class SampleGame : Game {
 
         val meshes = sequenceOf(king, queen, bishop, knight)
         meshes.mapIndexed { i, mesh ->
-            Node(mesh, Vec3f(0.5f * i.toFloat(), 0f, 1f * i.toFloat()))
+            Node(mesh, Vec3f(0.5f * i.toFloat(), 0.5f * i.toFloat(), 1f * i.toFloat()))
         }
     }
 

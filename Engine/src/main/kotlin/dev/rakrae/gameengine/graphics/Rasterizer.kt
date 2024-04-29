@@ -19,7 +19,7 @@ class Rasterizer {
         for (trianglesChunk in node.mesh.triangles.chunked(100)) {
             launch {
                 for (triangle in trianglesChunk) {
-                    rasterizeTriangle(triangle, node.position, framebuffer, zBuffer, fragmentShader)
+                    rasterizeTriangle(triangle, framebuffer, zBuffer, fragmentShader)
                 }
             }
         }
@@ -27,20 +27,19 @@ class Rasterizer {
 
     private fun rasterizeTriangle(
         triangle: Triangle,
-        positionOffset: Vec3f,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
         fragmentShader: FragmentShader
     ) {
         val screenSize = Vec2i(framebuffer.width, framebuffer.height)
-        val triangleInScreenCoordinates = projectToScreen(triangle, positionOffset, screenSize)
+        val triangleInScreenCoordinates = projectToScreen(triangle, screenSize)
         val color = Color(255u, 255u, 255u, 255u)
         drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer, fragmentShader)
     }
 
-    private fun projectToScreen(triangle: Triangle, offset: Vec3f, screenSize: Vec2i): Triangle2i {
+    private fun projectToScreen(triangle: Triangle, screenSize: Vec2i): Triangle2i {
         val screenCoordinates = arrayOf(triangle.v0, triangle.v1, triangle.v2)
-            .map { projectToScreen(it.position.toVec3f(), offset, screenSize) }
+            .map { projectToScreen(it.position.toVec3f(), screenSize) }
         return Triangle2i(
             screenCoordinates[0],
             screenCoordinates[1],
@@ -48,9 +47,9 @@ class Rasterizer {
         )
     }
 
-    private fun projectToScreen(worldPos: Vec3f, offset: Vec3f, screenSize: Vec2i): Vec2i {
-        val projectedX = ((worldPos.x + offset.x + 1.8f) * screenSize.x / 6f).toInt()
-        val projectedY = ((worldPos.y + 1.5f) * screenSize.y / 6f).toInt()
+    private fun projectToScreen(worldPos: Vec3f, screenSize: Vec2i): Vec2i {
+        val projectedX = (worldPos.x * screenSize.x / 6f).toInt()
+        val projectedY = (worldPos.y * screenSize.y / 6f).toInt()
         return Vec2i(projectedX, projectedY)
     }
 
