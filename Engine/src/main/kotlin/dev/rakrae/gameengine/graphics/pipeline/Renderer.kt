@@ -12,8 +12,6 @@ import kotlinx.coroutines.withContext
 
 class Renderer {
 
-    private val vertexShader: VertexShader = DummyAnimationVertexShader()
-    private val fragmentShader: FragmentShader = GouraudFragmentShader()
     private val rasterizer = Rasterizer()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
@@ -21,7 +19,10 @@ class Renderer {
 
         withContext(Dispatchers.Default) {
             for (node in scene.nodes) {
-                val vertexShadedMesh = applyVertexShader(node.renderComponent.mesh)
+                val vertexShadedMesh = applyVertexShader(
+                    node.renderComponent.mesh,
+                    node.renderComponent.material.vertexShader
+                )
 
                 val modelMatrix = node.renderComponent.translationMatrix
                 val viewMatrix = scene.activeCamera.viewMatrix
@@ -33,7 +34,12 @@ class Renderer {
                     launch {
                         for (triangle in trianglesChunk) {
                             val projectedTriangle = transform(triangle, finalMatrix)
-                            rasterizer.rasterize(projectedTriangle, framebuffer, zBuffer, fragmentShader)
+                            rasterizer.rasterize(
+                                projectedTriangle,
+                                framebuffer,
+                                zBuffer,
+                                node.renderComponent.material.fragmentShader
+                            )
                         }
                     }
                 }
@@ -41,7 +47,7 @@ class Renderer {
         }
     }
 
-    private fun applyVertexShader(mesh: Mesh): Mesh {
+    private fun applyVertexShader(mesh: Mesh, vertexShader: VertexShader): Mesh {
         val processedTriangles = mesh.triangles.map { inputTriangle ->
             Triangle(
                 vertexShader.process(inputTriangle.v0),
