@@ -14,12 +14,14 @@ class GouraudFragmentShader : FragmentShader {
         val illuminationAngleNormalized = (inputFragment.interpolatedNormal.normalized dot lightDirection.normalized)
             .coerceIn(0f..1f)
         val brightness = illuminationAngleNormalized * lightIntensity
-        val color = Color(
-            (brightness * 255).toInt().toUByte(),
-            (brightness * 255).toInt().toUByte(),
-            (brightness * 255).toInt().toUByte(),
-            255u
-        )
+        val color = with(inputFragment.interpolatedVertexColor) {
+            Color(
+                (brightness * r.toInt()).toInt().toUByte(),
+                (brightness * g.toInt()).toInt().toUByte(),
+                (brightness * b.toInt()).toInt().toUByte(),
+                255u
+            )
+        }
 
         return OutputFragment(
             fragmentColor = color,
