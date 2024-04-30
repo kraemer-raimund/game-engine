@@ -4,6 +4,7 @@ import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
+import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.pipeline.*
 import dev.rakrae.gameengine.math.Vec3f
@@ -28,10 +29,10 @@ class SampleGame : Game {
         meshes.mapIndexed { i, mesh ->
             val position = Vec3f(0.5f * i.toFloat(), 0.5f * i.toFloat(), 1f * i.toFloat())
             val material = when (i) {
-                0 -> Material(DefaultVertexShader(), DefaultFragmentShader())
-                1 -> Material(DummyAnimationVertexShader(), GouraudFragmentShader())
+                0 -> Material(DefaultVertexShader(), DefaultFragmentShader(), Color(80u, 80u, 190u, 255u))
+                1 -> Material(DummyAnimationVertexShader(), GouraudFragmentShader(), Color(255u, 0u, 0u, 255u))
                 2 -> Material(DefaultVertexShader(), DummyExampleFragmentShader())
-                else -> Material(DummyAnimationVertexShader(), GouraudFragmentShader())
+                else -> Material(DummyAnimationVertexShader(), GouraudFragmentShader(), Color(50u, 120u, 180u, 255u))
             }
             Node(RenderComponent(mesh, position, material))
         }

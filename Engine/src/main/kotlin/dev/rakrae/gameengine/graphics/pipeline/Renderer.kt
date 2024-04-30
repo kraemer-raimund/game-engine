@@ -1,6 +1,9 @@
 package dev.rakrae.gameengine.graphics.pipeline
 
-import dev.rakrae.gameengine.graphics.*
+import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.Buffer2f
+import dev.rakrae.gameengine.graphics.Mesh
+import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
@@ -31,10 +34,9 @@ class Renderer {
                     launch {
                         for (triangle in trianglesChunk) {
                             val projectedTriangle = transform(triangle, finalMatrix)
-                            val color = Color(255u, 255u, 255u, 255u)
                             rasterizer.rasterize(
                                 projectedTriangle,
-                                color,
+                                node.renderComponent.material.color,
                                 framebuffer,
                                 zBuffer,
                                 node.renderComponent.material.fragmentShader
