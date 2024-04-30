@@ -27,7 +27,7 @@ class SampleGame : Game {
 
         val meshes = sequenceOf(king, queen, bishop, knight)
         meshes.mapIndexed { i, mesh ->
-            val position = Vec3f(0f * i.toFloat(), 0f * i.toFloat(), 1f * i.toFloat())
+            val position = Vec3f((0.25f * i.toFloat()) - 0.5f, 0.05f * i.toFloat(), 1f * i.toFloat())
             val material = when (i) {
                 0 -> Material(DefaultVertexShader(), DefaultFragmentShader(), Color(80u, 80u, 190u, 255u))
                 1 -> Material(DummyAnimationVertexShader(), GouraudFragmentShader(), Color(255u, 0u, 0u, 255u))
@@ -38,7 +38,7 @@ class SampleGame : Game {
                 RenderComponent(
                     mesh = mesh,
                     position = position,
-                    scale = Vec3f(0.1f + 0.2f * i, 0.1f + 0.2f * i, 0.1f + 0.2f * i),
+                    scale = Vec3f(0.2f + 0.1f * i, 0.2f + 0.1f * i, 0.2f + 0.1f * i),
                     material = material
                 )
             )
@@ -47,12 +47,12 @@ class SampleGame : Game {
 
     override suspend fun onStart() {
         println("Game started")
-        scene.activeCamera.translate(Vec3f(-1f, -1f, 0f))
+        scene.activeCamera.translate(Vec3f(-1f, -0.5f, 0f))
     }
 
     override suspend fun onTick() {
         println("FPS: ${FpsCounter.currentFps}")
-        scene.activeCamera.translate(Vec3f(1f, 1f, 1f) * 0.0001f * sin(GameTime.tickTime * 4f))
+        scene.activeCamera.translate(Vec3f(1f, 1f, 1f) * 0.000001f * sin(GameTime.tickTime * 4f))
     }
 
     override suspend fun onPause() {
