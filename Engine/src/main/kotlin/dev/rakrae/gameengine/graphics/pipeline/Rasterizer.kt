@@ -8,19 +8,25 @@ import dev.rakrae.gameengine.math.*
 
 class Rasterizer {
 
-    fun rasterize(triangle: Triangle, framebuffer: Bitmap, zBuffer: Buffer2f, fragmentShader: FragmentShader) {
-        rasterizeTriangle(triangle, framebuffer, zBuffer, fragmentShader)
+    fun rasterize(
+        triangle: Triangle,
+        color: Color,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f,
+        fragmentShader: FragmentShader
+    ) {
+        rasterizeTriangle(triangle, color, framebuffer, zBuffer, fragmentShader)
     }
 
     private fun rasterizeTriangle(
         triangle: Triangle,
+        color: Color,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
         fragmentShader: FragmentShader
     ) {
         val screenSize = Vec2i(framebuffer.width, framebuffer.height)
         val triangleInScreenCoordinates = projectToScreen(triangle, screenSize)
-        val color = Color(255u, 255u, 255u, 255u)
         drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer, fragmentShader)
     }
 
