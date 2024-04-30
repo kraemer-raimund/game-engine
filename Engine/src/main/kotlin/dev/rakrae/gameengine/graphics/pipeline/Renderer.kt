@@ -3,7 +3,6 @@ package dev.rakrae.gameengine.graphics.pipeline
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -20,18 +19,20 @@ class Renderer {
 
         withContext(Dispatchers.Default) {
             for (node in scene.nodes) {
-                launch {
-                    renderNode(node, framebuffer, zBuffer)
+                val vertexShadedMesh = applyVertexShader(node.mesh)
+                val translatedMesh = applyTranslation(vertexShadedMesh, node.position)
+                val projectedMesh = applyPerspectiveProjection(translatedMesh)
+                val projectedNode = node.copy(mesh = projectedMesh)
+
+                for (trianglesChunk in projectedNode.mesh.triangles.chunked(100)) {
+                    launch {
+                        for (triangle in trianglesChunk) {
+                            rasterizer.rasterize(triangle, framebuffer, zBuffer, fragmentShader)
+                        }
+                    }
                 }
             }
         }
-    }
-
-    private suspend fun renderNode(node: Node, framebuffer: Bitmap, zBuffer: Buffer2f) {
-        val vertexShadedMesh = applyVertexShader(node.mesh)
-        val translatedMesh = applyTranslation(vertexShadedMesh, node.position)
-        val projectedMesh = applyPerspectiveProjection(translatedMesh)
-        rasterizer.rasterize(node.copy(mesh = projectedMesh), framebuffer, zBuffer, fragmentShader)
     }
 
     private fun applyVertexShader(mesh: Mesh): Mesh {

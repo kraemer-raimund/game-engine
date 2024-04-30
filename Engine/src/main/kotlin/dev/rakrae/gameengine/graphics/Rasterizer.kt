@@ -3,26 +3,11 @@ package dev.rakrae.gameengine.graphics
 import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.pipeline.InputFragment
 import dev.rakrae.gameengine.math.*
-import dev.rakrae.gameengine.scene.Node
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 class Rasterizer {
 
-    suspend fun rasterize(
-        node: Node,
-        framebuffer: Bitmap,
-        zBuffer: Buffer2f,
-        fragmentShader: FragmentShader
-    ) = withContext(Dispatchers.IO) {
-        for (trianglesChunk in node.mesh.triangles.chunked(100)) {
-            launch {
-                for (triangle in trianglesChunk) {
-                    rasterizeTriangle(triangle, framebuffer, zBuffer, fragmentShader)
-                }
-            }
-        }
+    fun rasterize(triangle: Triangle, framebuffer: Bitmap, zBuffer: Buffer2f, fragmentShader: FragmentShader) {
+        rasterizeTriangle(triangle, framebuffer, zBuffer, fragmentShader)
     }
 
     private fun rasterizeTriangle(
