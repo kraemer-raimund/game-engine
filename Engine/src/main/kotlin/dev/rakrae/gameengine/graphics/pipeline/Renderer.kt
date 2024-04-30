@@ -1,6 +1,9 @@
 package dev.rakrae.gameengine.graphics.pipeline
 
-import dev.rakrae.gameengine.graphics.*
+import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.Buffer2f
+import dev.rakrae.gameengine.graphics.Mesh
+import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Scene
@@ -19,12 +22,11 @@ class Renderer {
 
         withContext(Dispatchers.Default) {
             for (node in scene.nodes) {
-                val vertexShadedMesh = applyVertexShader(node.mesh)
-                val translatedMesh = applyTranslation(vertexShadedMesh, node.position)
+                val vertexShadedMesh = applyVertexShader(node.renderComponent.mesh)
+                val translatedMesh = applyTranslation(vertexShadedMesh, node.renderComponent.position)
                 val projectedMesh = applyPerspectiveProjection(translatedMesh)
-                val projectedNode = node.copy(mesh = projectedMesh)
 
-                for (trianglesChunk in projectedNode.mesh.triangles.chunked(100)) {
+                for (trianglesChunk in projectedMesh.triangles.chunked(100)) {
                     launch {
                         for (triangle in trianglesChunk) {
                             rasterizer.rasterize(triangle, framebuffer, zBuffer, fragmentShader)

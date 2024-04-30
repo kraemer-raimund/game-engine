@@ -5,6 +5,7 @@ import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
+import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
 
 class SampleGame : Game {
@@ -21,7 +22,8 @@ class SampleGame : Game {
 
         val meshes = sequenceOf(king, queen, bishop, knight)
         meshes.mapIndexed { i, mesh ->
-            Node(mesh, Vec3f(0.5f * i.toFloat(), 0.5f * i.toFloat(), 1f * i.toFloat()))
+            val position = Vec3f(0.5f * i.toFloat(), 0.5f * i.toFloat(), 1f * i.toFloat())
+            Node(RenderComponent(mesh, position))
         }
     }
 
