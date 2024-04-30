@@ -1,7 +1,9 @@
-package dev.rakrae.gameengine.graphics
+package dev.rakrae.gameengine.graphics.pipeline
 
-import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
-import dev.rakrae.gameengine.graphics.pipeline.InputFragment
+import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.Buffer2f
+import dev.rakrae.gameengine.graphics.Color
+import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.*
 
 class Rasterizer {
