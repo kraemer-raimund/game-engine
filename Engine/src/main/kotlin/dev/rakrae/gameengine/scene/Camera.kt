@@ -8,6 +8,14 @@ class Camera {
     var viewMatrix: Mat4x4f = Mat4x4f.identity
         private set
 
+    // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
+    val projectionMatrix = Mat4x4f(
+        1f, 0f, 0f, 0f,
+        0f, 1f, 0f, 0f,
+        0f, 0f, 1f, 0f,
+        0f, 0f, 0f, 1f
+    )
+
     fun translate(offset: Vec3f) {
         val translationMatrix = Mat4x4f(
             1f, 0f, 0f, -offset.x,

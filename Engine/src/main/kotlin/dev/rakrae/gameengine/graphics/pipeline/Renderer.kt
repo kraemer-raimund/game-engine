@@ -5,8 +5,6 @@ import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,9 +22,13 @@ class Renderer {
         withContext(Dispatchers.Default) {
             for (node in scene.nodes) {
                 val vertexShadedMesh = applyVertexShader(node.renderComponent.mesh)
-                val translatedMesh = applyTranslation(vertexShadedMesh, node.renderComponent.position)
-                val viewTransformedMesh = applyViewTransformation(translatedMesh, scene.activeCamera)
-                val projectedMesh = applyPerspectiveProjection(viewTransformedMesh)
+
+                val modelMatrix = node.renderComponent.translationMatrix
+                val viewMatrix = scene.activeCamera.viewMatrix
+                val projectionMatrix = scene.activeCamera.projectionMatrix
+
+                val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
+                val projectedMesh = transform(vertexShadedMesh, finalMatrix)
 
                 for (trianglesChunk in projectedMesh.triangles.chunked(100)) {
                     launch {
@@ -48,31 +50,6 @@ class Renderer {
             )
         }
         return Mesh(processedTriangles)
-    }
-
-    private fun applyTranslation(mesh: Mesh, offset: Vec3f): Mesh {
-        val translationMatrix = Mat4x4f(
-            1f, 0f, 0f, offset.x,
-            0f, 1f, 0f, offset.y,
-            0f, 0f, 1f, offset.z,
-            0f, 0f, 0f, 1f
-        )
-        return transform(mesh, translationMatrix)
-    }
-
-    private fun applyViewTransformation(mesh: Mesh, camera: Camera): Mesh {
-        return transform(mesh, camera.viewMatrix)
-    }
-
-    private fun applyPerspectiveProjection(mesh: Mesh): Mesh {
-        // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
-        val projectionMatrix = Mat4x4f(
-            1f, 0f, 0f, 0f,
-            0f, 1f, 0f, 0f,
-            0f, 0f, 1f, 0f,
-            0f, 0f, 0f, 1f
-        )
-        return transform(mesh, projectionMatrix)
     }
 
     private fun transform(mesh: Mesh, matrix: Mat4x4f): Mesh {
