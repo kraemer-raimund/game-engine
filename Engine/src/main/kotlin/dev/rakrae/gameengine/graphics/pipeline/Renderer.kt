@@ -6,6 +6,7 @@ import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -24,7 +25,8 @@ class Renderer {
             for (node in scene.nodes) {
                 val vertexShadedMesh = applyVertexShader(node.renderComponent.mesh)
                 val translatedMesh = applyTranslation(vertexShadedMesh, node.renderComponent.position)
-                val projectedMesh = applyPerspectiveProjection(translatedMesh)
+                val viewTransformedMesh = applyViewTransformation(translatedMesh, scene.activeCamera)
+                val projectedMesh = applyPerspectiveProjection(viewTransformedMesh)
 
                 for (trianglesChunk in projectedMesh.triangles.chunked(100)) {
                     launch {
@@ -56,6 +58,10 @@ class Renderer {
             0f, 0f, 0f, 1f
         )
         return transform(mesh, translationMatrix)
+    }
+
+    private fun applyViewTransformation(mesh: Mesh, camera: Camera): Mesh {
+        return transform(mesh, camera.viewMatrix)
     }
 
     private fun applyPerspectiveProjection(mesh: Mesh): Mesh {
