@@ -28,12 +28,12 @@ class Renderer {
                 val projectionMatrix = scene.activeCamera.projectionMatrix
 
                 val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
-                val projectedMesh = transform(vertexShadedMesh, finalMatrix)
 
-                for (trianglesChunk in projectedMesh.triangles.chunked(100)) {
+                for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
                     launch {
                         for (triangle in trianglesChunk) {
-                            rasterizer.rasterize(triangle, framebuffer, zBuffer, fragmentShader)
+                            val projectedTriangle = transform(triangle, finalMatrix)
+                            rasterizer.rasterize(projectedTriangle, framebuffer, zBuffer, fragmentShader)
                         }
                     }
                 }
@@ -52,14 +52,12 @@ class Renderer {
         return Mesh(processedTriangles)
     }
 
-    private fun transform(mesh: Mesh, matrix: Mat4x4f): Mesh {
-        val transformedTriangles = mesh.triangles.map { inputTriangle ->
-            Triangle(
-                inputTriangle.v0.copy(position = matrix * inputTriangle.v0.position),
-                inputTriangle.v1.copy(position = matrix * inputTriangle.v1.position),
-                inputTriangle.v2.copy(position = matrix * inputTriangle.v2.position)
-            )
-        }
-        return Mesh(transformedTriangles)
+    private fun transform(triangle: Triangle, matrix: Mat4x4f): Triangle {
+        return Triangle(
+            triangle.v0.copy(position = matrix * triangle.v0.position),
+            triangle.v1.copy(position = matrix * triangle.v1.position),
+            triangle.v2.copy(position = matrix * triangle.v2.position)
+        )
     }
+
 }
