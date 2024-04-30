@@ -24,7 +24,7 @@ class Renderer {
                     node.renderComponent.material.vertexShader
                 )
 
-                val modelMatrix = node.renderComponent.translationMatrix
+                val modelMatrix = node.renderComponent.transformMatrix
                 val viewMatrix = scene.activeCamera.viewMatrix
                 val projectionMatrix = scene.activeCamera.projectionMatrix
 

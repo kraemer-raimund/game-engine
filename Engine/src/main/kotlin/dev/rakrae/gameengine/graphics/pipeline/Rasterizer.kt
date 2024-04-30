@@ -40,9 +40,9 @@ class Rasterizer {
         )
     }
 
-    private fun projectToScreen(worldPos: Vec3f, screenSize: Vec2i): Vec2i {
-        val projectedX = (worldPos.x * screenSize.x / 6f).toInt()
-        val projectedY = (worldPos.y * screenSize.y / 6f).toInt()
+    private fun projectToScreen(normalizedDeviceCoords: Vec3f, screenSize: Vec2i): Vec2i {
+        val projectedX = (screenSize.x / 2f * normalizedDeviceCoords.x).toInt()
+        val projectedY = (screenSize.y / 2f * normalizedDeviceCoords.y).toInt()
         return Vec2i(projectedX, projectedY)
     }
 
