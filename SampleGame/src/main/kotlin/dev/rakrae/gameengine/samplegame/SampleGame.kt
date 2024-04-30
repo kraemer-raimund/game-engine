@@ -35,7 +35,7 @@ class SampleGame : Game {
     }
 
     override suspend fun onTick() {
-        println(FpsCounter.currentFps)
+        println("FPS: ${FpsCounter.currentFps}")
         scene.activeCamera.translate(Vec3f(0.00005f, 0.00005f, 0.0005f) * sin(GameTime.tickTime * 4f))
     }
 
