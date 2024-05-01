@@ -23,8 +23,8 @@ class Rasterizer {
             .clampWithin(framebuffer.imageBounds())
 
         // For each point within the triangle's AABB, render the point if it lies within the triangle.
-        for (x in boundingBox.min.x..<boundingBox.max.x) {
-            for (y in boundingBox.min.y..<boundingBox.max.y) {
+        for (x in boundingBox.min.x..boundingBox.max.x) {
+            for (y in boundingBox.min.y..boundingBox.max.y) {
                 val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle2i)
                 if (barycentricCoordinates.isWithinTriangle) {
                     val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
