@@ -21,7 +21,7 @@ class GameLoop(
     fun start() {
         isRunning = true
 
-        GlobalScope.launch {
+        GlobalScope.run {
             launch {
                 onStart()
                 while (isRunning) {
