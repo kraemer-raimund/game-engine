@@ -26,14 +26,14 @@ data class BarycentricCoordinates(
     companion object {
         fun of(point: Vec2i, triangle: Triangle2i): BarycentricCoordinates {
             val p = point
-            val v1 = triangle.v1
-            val v2 = triangle.v2
-            val v3 = triangle.v3
+            val v1 = with(triangle.v1) { Vec2f(x.toFloat(), y.toFloat()) }
+            val v2 = with(triangle.v2) { Vec2f(x.toFloat(), y.toFloat()) }
+            val v3 = with(triangle.v3) { Vec2f(x.toFloat(), y.toFloat()) }
 
-            val a1 = ((v2.y - v3.y) * (p.x - v3.x) + (v3.x - v2.x) * (p.y - v3.y)).toFloat() /
-                    ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y)).toFloat()
-            val a2 = ((v3.y - v1.y) * (p.x - v3.x) + (v1.x - v3.x) * (p.y - v3.y)).toFloat() /
-                    ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y)).toFloat()
+            val a1 = ((v2.y - v3.y) * (p.x - v3.x) + (v3.x - v2.x) * (p.y - v3.y)) /
+                    ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y))
+            val a2 = ((v3.y - v1.y) * (p.x - v3.x) + (v1.x - v3.x) * (p.y - v3.y)) /
+                    ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y))
             val a3 = 1f - a1 - a2
 
             return BarycentricCoordinates(a1, a2, a3)
