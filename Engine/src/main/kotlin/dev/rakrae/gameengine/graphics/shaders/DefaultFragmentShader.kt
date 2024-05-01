@@ -1,4 +1,8 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.shaders
+
+import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
+import dev.rakrae.gameengine.graphics.pipeline.InputFragment
+import dev.rakrae.gameengine.graphics.pipeline.OutputFragment
 
 class DefaultFragmentShader : FragmentShader {
 

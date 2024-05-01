@@ -2,10 +2,10 @@ package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.pipeline.DefaultFragmentShader
-import dev.rakrae.gameengine.graphics.pipeline.DefaultVertexShader
 import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
-import dev.rakrae.gameengine.graphics.pipeline.VertexShader
+import dev.rakrae.gameengine.graphics.shaders.DefaultFragmentShader
+import dev.rakrae.gameengine.graphics.shaders.DefaultVertexShader
+import dev.rakrae.gameengine.graphics.shaders.VertexShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 

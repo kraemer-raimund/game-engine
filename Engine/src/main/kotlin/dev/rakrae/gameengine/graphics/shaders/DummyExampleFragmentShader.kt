@@ -1,6 +1,9 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.shaders
 
 import dev.rakrae.gameengine.graphics.Color
+import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
+import dev.rakrae.gameengine.graphics.pipeline.InputFragment
+import dev.rakrae.gameengine.graphics.pipeline.OutputFragment
 import kotlin.math.pow
 import kotlin.random.Random
 

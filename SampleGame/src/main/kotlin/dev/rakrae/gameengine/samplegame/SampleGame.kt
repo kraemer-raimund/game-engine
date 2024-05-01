@@ -5,7 +5,7 @@ import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
-import dev.rakrae.gameengine.graphics.pipeline.*
+import dev.rakrae.gameengine.graphics.shaders.*
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node

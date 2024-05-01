@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.shaders
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Vertex
