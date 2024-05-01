@@ -1,5 +1,6 @@
 package dev.rakrae.gameengine.platform
 
+import dev.rakrae.gameengine.core.Window
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.ScreenSize
 import java.awt.Canvas
@@ -11,7 +12,7 @@ import javax.swing.JFrame
 /**
  * The window with the rendered pixels visible to the player.
  */
-class Display(title: String, screenSize: ScreenSize) {
+class SwingWindow(title: String, screenSize: ScreenSize) : Window {
 
     private val frame = JFrame()
     private val canvas = Canvas()
@@ -38,7 +39,7 @@ class Display(title: String, screenSize: ScreenSize) {
         }
     }
 
-    fun displayPixels(bitmap: Bitmap) {
+    override fun displayPixels(bitmap: Bitmap) {
         val bufferStrategy = canvas.bufferStrategy
         if (bufferStrategy == null) {
             canvas.createBufferStrategy(NUMBER_OF_BUFFERS)

@@ -4,14 +4,14 @@ import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.ScreenSize
 import dev.rakrae.gameengine.graphics.SpriteRenderer
 import dev.rakrae.gameengine.graphics.pipeline.Renderer
-import dev.rakrae.gameengine.platform.Display
+import dev.rakrae.gameengine.platform.SwingWindow
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
 class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    private val display = Display(game.title, defaultScreenSize)
+    private val window: Window = SwingWindow(game.title, defaultScreenSize)
     private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
     private val renderer = Renderer()
     private val spriteRenderer = SpriteRenderer()
@@ -32,7 +32,7 @@ class Engine(game: Game) {
             screen.clear()
             renderer.render(game.scene, screen)
             spriteRenderer.render(screen)
-            display.displayPixels(screen)
+            window.displayPixels(screen)
         },
         onPause = suspend {
             game.onPause()
