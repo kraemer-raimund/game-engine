@@ -53,6 +53,7 @@ class SampleGame : Game {
     override suspend fun onTick() {
         println("FPS: ${FpsCounter.currentFps}")
         scene.activeCamera.translate(Vec3f(0.5f, -0.5f, 1f) * 0.0000015f * sin(GameTime.tickTime * 1.5f))
+        scene.activeCamera.rotate(Vec3f(0.5f, -0.5f, 1f) * 0.0000015f * sin(GameTime.tickTime * 1.5f))
     }
 
     override suspend fun onPause() {
