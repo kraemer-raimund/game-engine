@@ -16,11 +16,15 @@ class Engine(game: Game) {
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val swingWindow = SwingWindow(game.title, defaultScreenSize)
 
+    private val awtKeyboardInputAdapter = AwtKeyboardInputAdapter()
+    private val awtMouseInputAdapter = AwtMouseInputAdapter()
+
     init {
-        val awtKeyboardInputAdapter = AwtKeyboardInputAdapter()
-        swingWindow.frame.addKeyListener(awtKeyboardInputAdapter)
+        swingWindow.container.addKeyListener(awtKeyboardInputAdapter)
         Input.axisPairProvider1 = awtKeyboardInputAdapter
-        Input.axisPairProvider2 = AwtMouseInputAdapter()
+
+        swingWindow.container.addMouseMotionListener(awtMouseInputAdapter)
+        Input.axisPairProvider2 = awtMouseInputAdapter
     }
 
     private val window: Window = swingWindow
@@ -37,6 +41,7 @@ class Engine(game: Game) {
         },
         onTick = suspend {
             gameTime.onTick()
+            awtMouseInputAdapter.tick()
             game.onTick()
         },
         onRender = suspend {

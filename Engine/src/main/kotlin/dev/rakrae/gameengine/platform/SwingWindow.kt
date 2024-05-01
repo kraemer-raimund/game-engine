@@ -14,7 +14,8 @@ import javax.swing.JFrame
  */
 internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
 
-    internal val frame = JFrame()
+    internal val container get() = canvas
+    private val frame = JFrame()
     private val canvas = Canvas()
     private val bufferedImage = BufferedImage(
         screenSize.width,

@@ -1,10 +1,51 @@
 package dev.rakrae.gameengine.platform
 
+import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.input.AxisPairProvider
 import dev.rakrae.gameengine.math.Vec2f
+import dev.rakrae.gameengine.math.Vec2i
+import java.awt.event.MouseEvent
+import java.awt.event.MouseMotionListener
 
-class AwtMouseInputAdapter : AxisPairProvider {
+class AwtMouseInputAdapter : AxisPairProvider, MouseMotionListener {
 
     override val axisPair: Vec2f
-        get() = Vec2f(0f, 0f)
+        get() = Vec2f(
+            horizontalAxis,
+            verticalAxis
+        )
+
+    private var horizontalAxis: Float = 0f
+    private var verticalAxis: Float = 0f
+
+    private var lastMousePosition: Vec2i = Vec2i(0, 0)
+    private var unconsumedMouseEvent: MouseEvent? = null
+
+    fun tick() {
+        if (unconsumedMouseEvent != null) {
+            val mousePosition = Vec2i(unconsumedMouseEvent?.x ?: 0, unconsumedMouseEvent?.y ?: 0)
+
+            val horizontalDelta = mousePosition.x - lastMousePosition.x
+            val scaledHorizontalDelta = horizontalDelta * GameTime.tickTime
+            horizontalAxis = (scaledHorizontalDelta / 1000f).coerceIn(-1f, 1f)
+
+            val verticalDelta = mousePosition.y - lastMousePosition.y
+            val scaledVerticalDelta = verticalDelta * GameTime.tickTime
+            verticalAxis = (scaledVerticalDelta / 1000f).coerceIn(-1f, 1f)
+
+            lastMousePosition = mousePosition
+            unconsumedMouseEvent = null
+        } else {
+            horizontalAxis = 0f
+            verticalAxis = 0f
+        }
+    }
+
+    override fun mouseDragged(e: MouseEvent?) {
+        // Event ignored.
+    }
+
+    override fun mouseMoved(e: MouseEvent?) {
+        unconsumedMouseEvent = e
+    }
 }
