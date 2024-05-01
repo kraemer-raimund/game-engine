@@ -19,8 +19,8 @@ class Engine(game: Game) {
     init {
         val awtKeyboardInputAdapter = AwtKeyboardInputAdapter()
         swingWindow.frame.addKeyListener(awtKeyboardInputAdapter)
-        Input.inputAdapter1 = awtKeyboardInputAdapter
-        Input.inputAdapter2 = AwtMouseInputAdapter()
+        Input.inputAxisAdapter1 = awtKeyboardInputAdapter
+        Input.inputAxisAdapter2 = AwtMouseInputAdapter()
     }
 
     private val window: Window = swingWindow

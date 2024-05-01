@@ -1,11 +1,11 @@
 package dev.rakrae.gameengine.platform
 
-import dev.rakrae.gameengine.input.InputAdapter
+import dev.rakrae.gameengine.input.InputAxisAdapter
 import dev.rakrae.gameengine.math.Vec2f
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 
-internal class AwtKeyboardInputAdapter : InputAdapter, KeyListener {
+internal class AwtKeyboardInputAdapter : InputAxisAdapter, KeyListener {
 
     override val axisPair: Vec2f
         get() = Vec2f(horizontalAxis, verticalAxis)
