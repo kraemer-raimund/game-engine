@@ -26,7 +26,7 @@ class SampleGame : Game {
 
         val meshes = sequenceOf(king, queen, bishop, knight)
         meshes.mapIndexed { i, mesh ->
-            val position = Vec3f((0.25f * i.toFloat()) + 0.5f, 0.05f * i.toFloat(), 1f * i.toFloat())
+            val position = Vec3f((2f * i.toFloat() - 2.5f), 0f, 5f)
             val material = when (i) {
                 0 -> Material(color = Color(80u, 80u, 190u, 255u))
                 1 -> Material(color = Color(255u, 0u, 0u, 255u), glossiness = 12f)
@@ -49,7 +49,7 @@ class SampleGame : Game {
                 RenderComponent(
                     mesh = mesh,
                     position = position,
-                    scale = Vec3f(0.2f + 0.1f * i, 0.2f + 0.1f * i, 0.2f + 0.1f * i),
+                    scale = Vec3f(1f, 1f, 1f),
                     material = material,
                     vertexShader = vertexShader,
                     fragmentShader = fragmentShader
@@ -60,6 +60,7 @@ class SampleGame : Game {
 
     override suspend fun onStart() {
         println("Game started")
+        scene.activeCamera.translate(Vec3f(0f, 1.8f, 0f))
     }
 
     override suspend fun onTick() {
