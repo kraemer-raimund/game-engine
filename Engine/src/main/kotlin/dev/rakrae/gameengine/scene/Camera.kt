@@ -4,19 +4,31 @@ import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import kotlin.math.cos
 import kotlin.math.sin
+import kotlin.math.tan
 
 class Camera(
     private var loc: Vec3f = Vec3f.zero,
     private var rot: Vec3f = Vec3f.zero
 ) {
 
+    var fov: Float = 45f
+    var aspectRatio: Float = 1f
+    var nearPlane: Float = 1f
+    var farPlane: Float = 100f
+
     // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
-    val projectionMatrix = Mat4x4f(
-        1f, 0f, 0f, 0f,
-        0f, 1f, 0f, 0f,
-        0f, 0f, 1f, 0f,
-        0f, 0f, 1f, 1f
-    )
+    val projectionMatrix: Mat4x4f
+        get() {
+            val a = aspectRatio
+            val f = farPlane
+            val n = nearPlane
+            return Mat4x4f(
+                1f / (a * tan(0.5f * fov)), 0f, 0f, 0f,
+                0f, 1f / tan(0.5f * fov), 0f, 0f, 0f,
+                0f, -((f + n) / f - n), -((2 * f * n) / (f - n)),
+                0f, 0f, 1f, 0f
+            )
+        }
 
     val viewMatrix: Mat4x4f
         get() = rotationMatrix * translationMatrix
