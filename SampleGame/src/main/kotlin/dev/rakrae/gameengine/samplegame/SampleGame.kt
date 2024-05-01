@@ -3,15 +3,14 @@ package dev.rakrae.gameengine.samplegame
 import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
-import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.pipeline.*
+import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
-import kotlin.math.sin
 
 class SampleGame : Game {
 
@@ -52,8 +51,7 @@ class SampleGame : Game {
 
     override suspend fun onTick() {
         println("FPS: ${FpsCounter.currentFps}")
-        scene.activeCamera.translate(Vec3f(0.5f, -0.5f, 1f) * 0.0000015f * sin(GameTime.tickTime * 1.5f))
-        scene.activeCamera.rotate(Vec3f(0.5f, -0.5f, 1f) * 0.0000015f * sin(GameTime.tickTime * 1.5f))
+        scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * 0.000001f * Input.horizontalAxis)
     }
 
     override suspend fun onPause() {

@@ -12,9 +12,9 @@ import javax.swing.JFrame
 /**
  * The window with the rendered pixels visible to the player.
  */
-class SwingWindow(title: String, screenSize: ScreenSize) : Window {
+internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
 
-    private val frame = JFrame()
+    internal val frame = JFrame()
     private val canvas = Canvas()
     private val bufferedImage = BufferedImage(
         screenSize.width,
