@@ -46,7 +46,6 @@ class SampleGame : Game {
 
     override suspend fun onStart() {
         println("Game started")
-        scene.activeCamera.translate(Vec3f(-0.5f, 0f, 0f))
     }
 
     override suspend fun onTick() {
