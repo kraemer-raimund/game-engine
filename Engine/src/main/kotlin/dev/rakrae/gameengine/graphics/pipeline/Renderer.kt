@@ -5,6 +5,7 @@ import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.math.Vec4f
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
@@ -31,7 +32,7 @@ class Renderer {
                 for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
                     launch {
                         for (triangle in trianglesChunk) {
-                            val projectedTriangle = transform(triangle, finalMatrix)
+                            val projectedTriangle = applyPerspectiveDivide(transform(triangle, finalMatrix))
                             rasterizer.rasterize(
                                 projectedTriangle,
                                 node.renderComponent.material.color,
@@ -62,6 +63,23 @@ class Renderer {
             triangle.v0.copy(position = matrix * triangle.v0.position),
             triangle.v1.copy(position = matrix * triangle.v1.position),
             triangle.v2.copy(position = matrix * triangle.v2.position)
+        )
+    }
+
+    private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
+        return Triangle(
+            triangle.v0.copy(position = applyPerspectiveDivide(triangle.v0.position)),
+            triangle.v1.copy(position = applyPerspectiveDivide(triangle.v1.position)),
+            triangle.v2.copy(position = applyPerspectiveDivide(triangle.v2.position))
+        )
+    }
+
+    private fun applyPerspectiveDivide(vector: Vec4f): Vec4f {
+        return Vec4f(
+            vector.x / vector.w,
+            vector.y / vector.w,
+            vector.z / vector.w,
+            1f
         )
     }
 }
