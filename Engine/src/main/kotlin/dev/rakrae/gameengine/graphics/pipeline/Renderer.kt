@@ -5,6 +5,7 @@ import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.Vec4f
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
@@ -32,9 +33,12 @@ class Renderer {
                 for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
                     launch {
                         for (triangle in trianglesChunk) {
-                            val projectedTriangle = applyPerspectiveDivide(transform(triangle, finalMatrix))
+                            val clipCoordinates = transform(triangle, finalMatrix)
+                            val normalizedDeviceCoordinates = applyPerspectiveDivide(clipCoordinates)
+                            val screenSize = Vec2i(framebuffer.width, framebuffer.height)
+                            val viewportCoordinates = viewportTransform(normalizedDeviceCoordinates, screenSize)
                             rasterizer.rasterize(
-                                projectedTriangle,
+                                viewportCoordinates,
                                 node.renderComponent.material.color,
                                 framebuffer,
                                 zBuffer,
@@ -79,6 +83,23 @@ class Renderer {
             vector.x / vector.w,
             vector.y / vector.w,
             vector.z / vector.w,
+            1f
+        )
+    }
+
+    private fun viewportTransform(triangle: Triangle, screenSize: Vec2i): Triangle {
+        return Triangle(
+            triangle.v0.copy(position = viewportTransform(triangle.v0.position, screenSize)),
+            triangle.v1.copy(position = viewportTransform(triangle.v1.position, screenSize)),
+            triangle.v2.copy(position = viewportTransform(triangle.v2.position, screenSize))
+        )
+    }
+
+    private fun viewportTransform(vector: Vec4f, screenSize: Vec2i): Vec4f {
+        return Vec4f(
+            0.5f * screenSize.x + (vector.x * 0.5f * screenSize.x),
+            0.5f * screenSize.y + (vector.y * 0.5f * screenSize.y),
+            vector.z,
             1f
         )
     }

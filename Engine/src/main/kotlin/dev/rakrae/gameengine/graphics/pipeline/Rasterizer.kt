@@ -15,58 +15,32 @@ class Rasterizer {
         zBuffer: Buffer2f,
         fragmentShader: FragmentShader
     ) {
-        val screenSize = Vec2i(framebuffer.width, framebuffer.height)
-        val triangleInScreenCoordinates = projectToScreen(triangle, screenSize)
-        drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer, fragmentShader)
-    }
-
-    private fun projectToScreen(triangle: Triangle, screenSize: Vec2i): Triangle2i {
-        val screenCoordinates = arrayOf(triangle.v0, triangle.v1, triangle.v2)
-            .map { projectToScreen(it.position.toVec3f(), screenSize) }
-        return Triangle2i(
-            screenCoordinates[0],
-            screenCoordinates[1],
-            screenCoordinates[2]
-        )
-    }
-
-    private fun projectToScreen(normalizedDeviceCoords: Vec3f, screenSize: Vec2i): Vec2i {
-        val projectedX = (screenSize.x / 2f * normalizedDeviceCoords.x).toInt()
-        val projectedY = (screenSize.y / 2f * normalizedDeviceCoords.y).toInt()
-        return Vec2i(projectedX, projectedY)
-    }
-
-    /**
-     * For each point within the triangle's AABB, fill the point if it lies within the triangle.
-     */
-    private fun drawFilled(
-        trianglePolygon: Triangle,
-        triangleScreen: Triangle2i,
-        color: Color,
-        image: Bitmap,
-        zBuffer: Buffer2f,
-        fragmentShader: FragmentShader
-    ) {
+        val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
+            .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
+            .let {
+                return@let Triangle2i(it[0], it[1], it[2])
+            }
         val boundingBox = AABB2i
-            .calculateBoundingBox(triangleScreen)
-            .clampWithin(image.imageBounds())
+            .calculateBoundingBox(triangle2i)
+            .clampWithin(framebuffer.imageBounds())
 
+        // For each point within the triangle's AABB, render the point if it lies within the triangle.
         for (x in boundingBox.min.x..<boundingBox.max.x) {
             for (y in boundingBox.min.y..<boundingBox.max.y) {
-                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangleScreen)
+                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle2i)
                 if (barycentricCoordinates.isWithinTriangle) {
-                    val interpolatedDepth = interpolateDepth(trianglePolygon, barycentricCoordinates)
+                    val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
                     if (interpolatedDepth < zBuffer.get(x, y)) {
                         zBuffer.set(x, y, interpolatedDepth)
                         val inputFragment = InputFragment(
                             windowSpacePosition = Vec2i(x, y),
                             interpolatedVertexColor = color,
-                            interpolatedNormal = interpolateNormal(trianglePolygon, barycentricCoordinates),
-                            faceNormal = trianglePolygon.normal,
+                            interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
+                            faceNormal = triangle.normal,
                             depth = interpolatedDepth
                         )
                         val outputFragment = fragmentShader.process(inputFragment)
-                        image.setPixel(x, y, outputFragment.fragmentColor)
+                        framebuffer.setPixel(x, y, outputFragment.fragmentColor)
                     }
                 }
             }
