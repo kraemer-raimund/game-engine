@@ -17,9 +17,7 @@ class Rasterizer {
     ) {
         val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
             .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
-            .let {
-                return@let Triangle2i(it[0], it[1], it[2])
-            }
+            .let { return@let Triangle2i(it[0], it[1], it[2]) }
         val boundingBox = AABB2i
             .calculateBoundingBox(triangle2i)
             .clampWithin(framebuffer.imageBounds())
