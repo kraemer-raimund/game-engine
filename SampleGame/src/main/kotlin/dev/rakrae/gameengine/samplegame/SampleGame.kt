@@ -56,7 +56,7 @@ class SampleGame : Game {
 
         val mouseSensitivity = 0.2f
         scene.activeCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
-        scene.activeCamera.rotate(Vec3f(1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
+        scene.activeCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
     }
 
     override suspend fun onPause() {
