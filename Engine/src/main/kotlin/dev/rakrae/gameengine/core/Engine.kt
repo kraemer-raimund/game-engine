@@ -5,7 +5,8 @@ import dev.rakrae.gameengine.graphics.ScreenSize
 import dev.rakrae.gameengine.graphics.SpriteRenderer
 import dev.rakrae.gameengine.graphics.pipeline.Renderer
 import dev.rakrae.gameengine.input.Input
-import dev.rakrae.gameengine.platform.AwtInputAdapter
+import dev.rakrae.gameengine.platform.AwtKeyboardInputAdapter
+import dev.rakrae.gameengine.platform.AwtMouseInputAdapter
 import dev.rakrae.gameengine.platform.SwingWindow
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
@@ -16,9 +17,10 @@ class Engine(game: Game) {
     private val swingWindow = SwingWindow(game.title, defaultScreenSize)
 
     init {
-        val awtInputAdapter = AwtInputAdapter()
-        swingWindow.frame.addKeyListener(awtInputAdapter)
-        Input.inputAdapter = awtInputAdapter
+        val awtKeyboardInputAdapter = AwtKeyboardInputAdapter()
+        swingWindow.frame.addKeyListener(awtKeyboardInputAdapter)
+        Input.inputAdapter1 = awtKeyboardInputAdapter
+        Input.inputAdapter2 = AwtMouseInputAdapter()
     }
 
     private val window: Window = swingWindow

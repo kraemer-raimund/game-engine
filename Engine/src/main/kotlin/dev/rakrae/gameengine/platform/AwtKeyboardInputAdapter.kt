@@ -1,12 +1,16 @@
 package dev.rakrae.gameengine.platform
 
 import dev.rakrae.gameengine.input.InputAdapter
+import dev.rakrae.gameengine.math.Vec2f
 import java.awt.event.KeyEvent
 import java.awt.event.KeyListener
 
-internal class AwtInputAdapter : InputAdapter, KeyListener {
+internal class AwtKeyboardInputAdapter : InputAdapter, KeyListener {
 
-    override val verticalAxisNormalized: Float
+    override val axisPair: Vec2f
+        get() = Vec2f(horizontalAxis, verticalAxis)
+
+    private val verticalAxis: Float
         get() {
             return when {
                 isWKeyPressed -> 1f
@@ -15,7 +19,7 @@ internal class AwtInputAdapter : InputAdapter, KeyListener {
             }
         }
 
-    override val horizontalAxisNormalized: Float
+    private val horizontalAxis: Float
         get() {
             return when {
                 isAKeyPressed -> -1f
