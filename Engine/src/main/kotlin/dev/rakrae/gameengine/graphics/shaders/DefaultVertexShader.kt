@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.graphics.shaders
 
 import dev.rakrae.gameengine.graphics.Vertex
+import dev.rakrae.gameengine.graphics.pipeline.VertexShader
 
 class DefaultVertexShader : VertexShader {
 

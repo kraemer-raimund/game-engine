@@ -2,6 +2,7 @@ package dev.rakrae.gameengine.graphics.shaders
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Vertex
+import dev.rakrae.gameengine.graphics.pipeline.VertexShader
 import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.*
 

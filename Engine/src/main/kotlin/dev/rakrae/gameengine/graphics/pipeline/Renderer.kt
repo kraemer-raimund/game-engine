@@ -4,7 +4,6 @@ import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.graphics.shaders.VertexShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.Vec4f
