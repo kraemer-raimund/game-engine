@@ -16,28 +16,30 @@ class Renderer {
     suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height)
         for (node in scene.nodes) {
-            val vertexShadedMesh = applyVertexShader(
-                node.renderComponent.mesh,
-                node.renderComponent.material.vertexShader
-            )
+            launch {
+                val vertexShadedMesh = applyVertexShader(
+                    node.renderComponent.mesh,
+                    node.renderComponent.material.vertexShader
+                )
 
-            val modelMatrix = node.renderComponent.transformMatrix
-            val viewMatrix = scene.activeCamera.viewMatrix
-            val projectionMatrix = scene.activeCamera.projectionMatrix
+                val modelMatrix = node.renderComponent.transformMatrix
+                val viewMatrix = scene.activeCamera.viewMatrix
+                val projectionMatrix = scene.activeCamera.projectionMatrix
 
-            val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
+                val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
 
-            for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
-                launch {
-                    for (triangle in trianglesChunk) {
-                        val projectedTriangle = transform(triangle, finalMatrix)
-                        rasterizer.rasterize(
-                            projectedTriangle,
-                            node.renderComponent.material.color,
-                            framebuffer,
-                            zBuffer,
-                            node.renderComponent.material.fragmentShader
-                        )
+                for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
+                    launch {
+                        for (triangle in trianglesChunk) {
+                            val projectedTriangle = transform(triangle, finalMatrix)
+                            rasterizer.rasterize(
+                                projectedTriangle,
+                                node.renderComponent.material.color,
+                                framebuffer,
+                                zBuffer,
+                                node.renderComponent.material.fragmentShader
+                            )
+                        }
                     }
                 }
             }
