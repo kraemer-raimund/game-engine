@@ -6,7 +6,7 @@ class DefaultFragmentShader : FragmentShader {
         // Simple pass through in the default implementation.
         // User defined shaders can handle this differently.
         return OutputFragment(
-            inputFragment.interpolatedVertexColor,
+            inputFragment.material.color,
             inputFragment.depth
         )
     }

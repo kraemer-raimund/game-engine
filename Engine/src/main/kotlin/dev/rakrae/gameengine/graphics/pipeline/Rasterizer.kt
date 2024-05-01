@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.graphics.pipeline
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
-import dev.rakrae.gameengine.graphics.Color
+import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.*
 
@@ -10,9 +10,9 @@ class Rasterizer {
 
     fun rasterize(
         triangle: Triangle,
-        color: Color,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
+        material: Material,
         fragmentShader: FragmentShader
     ) {
         val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
@@ -32,10 +32,10 @@ class Rasterizer {
                         zBuffer.set(x, y, interpolatedDepth)
                         val inputFragment = InputFragment(
                             windowSpacePosition = Vec2i(x, y),
-                            interpolatedVertexColor = color,
                             interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
                             faceNormal = triangle.normal,
-                            depth = interpolatedDepth
+                            depth = interpolatedDepth,
+                            material = material
                         )
                         val outputFragment = fragmentShader.process(inputFragment)
                         framebuffer.setPixel(x, y, outputFragment.fragmentColor)

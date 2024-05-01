@@ -12,9 +12,9 @@ class DummyExampleFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
         val glow = Color(
-            glow(inputFragment.interpolatedVertexColor.r, 0.4f, 2.8f),
-            glow(inputFragment.interpolatedVertexColor.g, Random.nextFloat() * 0.4f + 0.9f, 4.4f),
-            glow(inputFragment.interpolatedVertexColor.b, 0.4f, 2.8f),
+            glow(inputFragment.material.color.r, 0.4f, 2.8f),
+            glow(inputFragment.material.color.g, Random.nextFloat() * 0.4f + 0.9f, 4.4f),
+            glow(inputFragment.material.color.b, 0.4f, 2.8f),
             255u
         )
         return OutputFragment(

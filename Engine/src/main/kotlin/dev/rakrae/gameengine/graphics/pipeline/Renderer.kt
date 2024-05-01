@@ -21,7 +21,7 @@ class Renderer {
             launch {
                 val vertexShadedMesh = applyVertexShader(
                     node.renderComponent.mesh,
-                    node.renderComponent.material.vertexShader
+                    node.renderComponent.vertexShader
                 )
 
                 val modelMatrix = node.renderComponent.transformMatrix
@@ -39,10 +39,10 @@ class Renderer {
                             val viewportCoordinates = viewportTransform(normalizedDeviceCoordinates, screenSize)
                             rasterizer.rasterize(
                                 viewportCoordinates,
-                                node.renderComponent.material.color,
                                 framebuffer,
                                 zBuffer,
-                                node.renderComponent.material.fragmentShader
+                                node.renderComponent.material,
+                                node.renderComponent.fragmentShader
                             )
                         }
                     }

@@ -2,6 +2,10 @@ package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Mesh
+import dev.rakrae.gameengine.graphics.pipeline.DefaultFragmentShader
+import dev.rakrae.gameengine.graphics.pipeline.DefaultVertexShader
+import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
+import dev.rakrae.gameengine.graphics.pipeline.VertexShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 
@@ -11,7 +15,9 @@ class RenderComponent(
     val mesh: Mesh,
     position: Vec3f,
     scale: Vec3f = Vec3f(1f, 1f, 1f),
-    val material: Material = Material.default
+    val material: Material = Material.default,
+    val vertexShader: VertexShader = DefaultVertexShader(),
+    val fragmentShader: FragmentShader = DefaultFragmentShader()
 ) : Component() {
 
     val transformMatrix by lazy { translationMatrix * scaleMatrix }

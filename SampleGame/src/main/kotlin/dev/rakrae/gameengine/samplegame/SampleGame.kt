@@ -28,17 +28,31 @@ class SampleGame : Game {
         meshes.mapIndexed { i, mesh ->
             val position = Vec3f((0.25f * i.toFloat()) + 0.5f, 0.05f * i.toFloat(), 1f * i.toFloat())
             val material = when (i) {
-                0 -> Material(DefaultVertexShader(), DefaultFragmentShader(), Color(80u, 80u, 190u, 255u))
-                1 -> Material(DummyAnimationVertexShader(), GouraudFragmentShader(), Color(255u, 0u, 0u, 255u))
-                2 -> Material(DefaultVertexShader(), DummyExampleFragmentShader())
-                else -> Material(DummyAnimationVertexShader(), GouraudFragmentShader(), Color(50u, 120u, 180u, 255u))
+                0 -> Material(color = Color(80u, 80u, 190u, 255u))
+                1 -> Material(color = Color(255u, 0u, 0u, 255u), glossiness = 12f)
+                2 -> Material()
+                else -> Material(color = Color(50u, 120u, 180u, 255u), glossiness = 0.5f)
+            }
+            val vertexShader = when (i) {
+                0 -> DefaultVertexShader()
+                1 -> DummyAnimationVertexShader()
+                2 -> DefaultVertexShader()
+                else -> DummyAnimationVertexShader()
+            }
+            val fragmentShader = when (i) {
+                0 -> DefaultFragmentShader()
+                1 -> GouraudFragmentShader()
+                2 -> DummyExampleFragmentShader()
+                else -> GouraudFragmentShader()
             }
             Node(
                 RenderComponent(
                     mesh = mesh,
                     position = position,
                     scale = Vec3f(0.2f + 0.1f * i, 0.2f + 0.1f * i, 0.2f + 0.1f * i),
-                    material = material
+                    material = material,
+                    vertexShader = vertexShader,
+                    fragmentShader = fragmentShader
                 )
             )
         }
