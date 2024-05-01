@@ -4,6 +4,9 @@ object Input {
 
     internal var inputAdapter: InputAdapter? = null
 
-    val horizontalAxis: Float
+    val verticalAxisNormalized: Float
+        get() = inputAdapter?.verticalAxisNormalized ?: 0f
+
+    val horizontalAxisNormalized: Float
         get() = inputAdapter?.horizontalAxisNormalized ?: 0f
 }

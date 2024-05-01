@@ -51,7 +51,9 @@ class SampleGame : Game {
 
     override suspend fun onTick() {
         println("FPS: ${FpsCounter.currentFps}")
-        scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * 0.000001f * Input.horizontalAxis)
+        val moveSpeed = 0.000001f
+        scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * (moveSpeed * Input.horizontalAxisNormalized))
+        scene.activeCamera.translate(Vec3f(0f, 0f, 1f) * (moveSpeed * Input.verticalAxisNormalized))
     }
 
     override suspend fun onPause() {

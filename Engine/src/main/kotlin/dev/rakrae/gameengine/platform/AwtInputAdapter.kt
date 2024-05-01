@@ -6,6 +6,15 @@ import java.awt.event.KeyListener
 
 internal class AwtInputAdapter : InputAdapter, KeyListener {
 
+    override val verticalAxisNormalized: Float
+        get() {
+            return when {
+                isWKeyPressed -> 1f
+                isSKeyPressed -> -1f
+                else -> 0f
+            }
+        }
+
     override val horizontalAxisNormalized: Float
         get() {
             return when {
@@ -15,21 +24,33 @@ internal class AwtInputAdapter : InputAdapter, KeyListener {
             }
         }
 
+    private var isWKeyPressed = false
+    private var isSKeyPressed = false
     private var isAKeyPressed = false
     private var isDKeyPressed = false
 
     override fun keyPressed(e: KeyEvent?) {
+        if (e?.keyCode == KeyEvent.VK_W) {
+            isWKeyPressed = true
+        }
+        if (e?.keyCode == KeyEvent.VK_S) {
+            isSKeyPressed = true
+        }
         if (e?.keyCode == KeyEvent.VK_A) {
-            println("A")
             isAKeyPressed = true
         }
         if (e?.keyCode == KeyEvent.VK_D) {
             isDKeyPressed = true
-            println("D")
         }
     }
 
     override fun keyReleased(e: KeyEvent?) {
+        if (e?.keyCode == KeyEvent.VK_W) {
+            isWKeyPressed = false
+        }
+        if (e?.keyCode == KeyEvent.VK_S) {
+            isSKeyPressed = false
+        }
         if (e?.keyCode == KeyEvent.VK_A) {
             isAKeyPressed = false
         }
