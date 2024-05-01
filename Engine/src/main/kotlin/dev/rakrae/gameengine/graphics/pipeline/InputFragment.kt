@@ -7,7 +7,7 @@ import dev.rakrae.gameengine.math.Vec3f
 data class InputFragment(
     val windowSpacePosition: Vec2i,
     val interpolatedNormal: Vec3f,
-    val faceNormal: Vec3f,
+    val faceNormalWorldSpace: Vec3f,
     val depth: Float,
     val material: Material
 )

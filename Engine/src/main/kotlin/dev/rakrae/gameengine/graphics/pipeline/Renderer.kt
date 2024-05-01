@@ -39,6 +39,7 @@ class Renderer {
                             val viewportCoordinates = viewportTransform(normalizedDeviceCoordinates, screenSize)
                             rasterizer.rasterize(
                                 viewportCoordinates,
+                                triangle.normal,
                                 framebuffer,
                                 zBuffer,
                                 node.renderComponent.material,

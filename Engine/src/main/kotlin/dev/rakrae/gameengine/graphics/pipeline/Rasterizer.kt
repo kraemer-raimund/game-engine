@@ -10,6 +10,7 @@ class Rasterizer {
 
     fun rasterize(
         triangle: Triangle,
+        normalWorldSpace: Vec3f,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
         material: Material,
@@ -33,7 +34,7 @@ class Rasterizer {
                         val inputFragment = InputFragment(
                             windowSpacePosition = Vec2i(x, y),
                             interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
-                            faceNormal = triangle.normal,
+                            faceNormalWorldSpace = normalWorldSpace,
                             depth = interpolatedDepth,
                             material = material
                         )
