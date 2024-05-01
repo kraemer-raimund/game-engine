@@ -56,10 +56,7 @@ class Rasterizer {
         val z3 = triangle.v2.position.toVec3f().z
         val b = barycentricCoordinates
         val interpolatedZ = z1 * b.a1 + z2 * b.a2 + z3 * b.a3
-
-        // Temporary offset since we are using world coordinates for the depth instead of relative
-        // to the camera.
-        return interpolatedZ - 100f
+        return interpolatedZ
     }
 
     private fun interpolateNormal(
