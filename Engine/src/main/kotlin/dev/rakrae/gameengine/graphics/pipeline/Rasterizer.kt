@@ -15,16 +15,6 @@ class Rasterizer {
         zBuffer: Buffer2f,
         fragmentShader: FragmentShader
     ) {
-        rasterizeTriangle(triangle, color, framebuffer, zBuffer, fragmentShader)
-    }
-
-    private fun rasterizeTriangle(
-        triangle: Triangle,
-        color: Color,
-        framebuffer: Bitmap,
-        zBuffer: Buffer2f,
-        fragmentShader: FragmentShader
-    ) {
         val screenSize = Vec2i(framebuffer.width, framebuffer.height)
         val triangleInScreenCoordinates = projectToScreen(triangle, screenSize)
         drawFilled(triangle, triangleInScreenCoordinates, color, framebuffer, zBuffer, fragmentShader)
