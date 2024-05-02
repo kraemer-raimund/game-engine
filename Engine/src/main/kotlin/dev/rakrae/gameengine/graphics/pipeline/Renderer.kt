@@ -17,14 +17,16 @@ class Renderer {
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height)
-        for (node in scene.nodes) {
+        val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+
+        for (renderComponent in renderComponents) {
             launch {
                 val vertexShadedMesh = applyVertexShader(
-                    node.renderComponent.mesh,
-                    node.renderComponent.vertexShader
+                    renderComponent.mesh,
+                    renderComponent.vertexShader
                 )
 
-                val modelMatrix = node.renderComponent.transformMatrix
+                val modelMatrix = renderComponent.transformMatrix
                 val viewMatrix = scene.activeCamera.viewMatrix
                 val projectionMatrix = scene.activeCamera.projectionMatrix
 
@@ -42,8 +44,8 @@ class Renderer {
                                 triangle.normal,
                                 framebuffer,
                                 zBuffer,
-                                node.renderComponent.material,
-                                node.renderComponent.fragmentShader
+                                renderComponent.material,
+                                renderComponent.fragmentShader
                             )
                         }
                     }
