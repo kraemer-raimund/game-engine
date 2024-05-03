@@ -16,7 +16,7 @@ class Renderer {
     private val rasterizer = Rasterizer()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
-        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height)
+        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
         val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
 
         for (renderComponent in renderComponents) {
