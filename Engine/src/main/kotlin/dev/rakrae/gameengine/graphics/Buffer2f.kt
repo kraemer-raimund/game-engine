@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.graphics
 
 class Buffer2f(val width: Int, val height: Int) {
 
-    private val values: FloatArray = FloatArray(width * height)
+    private val values: FloatArray = FloatArray(width * height) { 1.0f }
 
     fun get(x: Int, y: Int): Float {
         return values[x + y * width]

@@ -42,7 +42,7 @@ class SampleGame : Game {
             val fragmentShader = when (i) {
                 0 -> DefaultFragmentShader()
                 1 -> GouraudFragmentShader()
-                2 -> DummyExampleFragmentShader()
+                2 -> DepthFragmentShader()
                 else -> GouraudFragmentShader()
             }
             Node(

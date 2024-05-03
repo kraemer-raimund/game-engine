@@ -18,7 +18,7 @@ class Rasterizer {
     ) {
         val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
             .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
-            .let { return@let Triangle2i(it[0], it[1], it[2]) }
+            .let { Triangle2i(it[0], it[1], it[2]) }
         val boundingBox = AABB2i
             .calculateBoundingBox(triangle2i)
             .clampWithin(framebuffer.imageBounds())
@@ -50,12 +50,19 @@ class Rasterizer {
         triangle: Triangle,
         barycentricCoordinates: BarycentricCoordinates
     ): Float {
-        val z1 = triangle.v0.position.toVec3f().z
-        val z2 = triangle.v1.position.toVec3f().z
-        val z3 = triangle.v2.position.toVec3f().z
+        val z1 = triangle.v0.position.toVec3f().z.ndcToDepth()
+        val z2 = triangle.v1.position.toVec3f().z.ndcToDepth()
+        val z3 = triangle.v2.position.toVec3f().z.ndcToDepth()
         val b = barycentricCoordinates
         val interpolatedZ = z1 * b.a1 + z2 * b.a2 + z3 * b.a3
         return interpolatedZ
+    }
+
+    /**
+     * Normalized device coordinates [-1; 1] to depth value [0; 1].
+     */
+    private fun Float.ndcToDepth(): Float {
+        return (this + 1f) * 0.5f
     }
 
     private fun interpolateNormal(
