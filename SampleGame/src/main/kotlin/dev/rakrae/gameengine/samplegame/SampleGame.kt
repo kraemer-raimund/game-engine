@@ -65,7 +65,7 @@ class SampleGame : Game {
 
     override suspend fun onTick() {
         println("FPS: ${FpsCounter.currentFps}")
-        val moveSpeed = 0.000001f
+        val moveSpeed = 0.00001f
         scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * (moveSpeed * Input.axisPair1.x))
         scene.activeCamera.translate(Vec3f(0f, 0f, 1f) * (moveSpeed * Input.axisPair1.y))
 
