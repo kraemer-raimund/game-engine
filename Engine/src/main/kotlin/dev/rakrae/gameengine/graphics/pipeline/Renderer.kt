@@ -112,7 +112,7 @@ class Renderer {
     private fun isInsideViewFrustum(triangleClipSpace: Triangle): Boolean {
         val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
-        return vertexPositions.all { position ->
+        return vertexPositions.any { position ->
             position.x in -1f..1f
                     && position.y in -1f..1f
                     && position.z in -1f..1f
