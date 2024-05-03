@@ -34,11 +34,13 @@ class Renderer {
 
                 for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
                     launch {
-                        for (triangle in trianglesChunk) {
-                            val clipCoordinates = transform(triangle, finalMatrix)
-                            val normalizedDeviceCoordinates = applyPerspectiveDivide(clipCoordinates)
+                        val trianglesClipSpace = trianglesChunk.map { transform(it, finalMatrix) }
+                        val trianglesNormalizedDeviceCoordinates = trianglesClipSpace.map(::applyPerspectiveDivide)
+                        val trianglesInViewFrustum = trianglesNormalizedDeviceCoordinates.filter(::isInsideViewFrustum)
+
+                        for (triangle in trianglesInViewFrustum) {
                             val screenSize = Vec2i(framebuffer.width, framebuffer.height)
-                            val viewportCoordinates = viewportTransform(normalizedDeviceCoordinates, screenSize)
+                            val viewportCoordinates = viewportTransform(triangle, screenSize)
                             rasterizer.rasterize(
                                 viewportCoordinates,
                                 triangle.normal,
@@ -105,5 +107,15 @@ class Renderer {
             vector.z,
             1f
         )
+    }
+
+    private fun isInsideViewFrustum(triangleClipSpace: Triangle): Boolean {
+        val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
+        val vertexPositions = vertices.map { it.position }
+        return vertexPositions.all { position ->
+            position.x in -1f..1f
+                    && position.y in -1f..1f
+                    && position.z in -1f..1f
+        }
     }
 }
