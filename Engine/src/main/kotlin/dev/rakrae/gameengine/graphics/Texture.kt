@@ -7,7 +7,7 @@ class Texture(filePath: String) {
     val bitmap = loadBitmap(filePath)
 
     private fun loadBitmap(filePath: String): Bitmap {
-        val imageUrl = this::class.java.classLoader.getResource(filePath)
+        val imageUrl = javaClass.getResource(filePath)
         val bufferedImage = ImageIO.read(imageUrl)
         val width = bufferedImage.width
         val height = bufferedImage.height

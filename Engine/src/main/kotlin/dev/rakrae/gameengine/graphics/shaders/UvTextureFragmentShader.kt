@@ -7,9 +7,18 @@ import dev.rakrae.gameengine.graphics.pipeline.OutputFragment
 class UvTextureFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
-        // Work in progress. Simply use material color for now.
+        val texture = inputFragment.material.texture?.bitmap
+        val color = if (texture == null) {
+            inputFragment.material.color
+        } else {
+            val uv = inputFragment.uv
+            texture.getPixel(
+                x = (uv.x * texture.width).toInt(),
+                y = (uv.y * texture.height).toInt()
+            )
+        }
         return OutputFragment(
-            fragmentColor = inputFragment.material.color,
+            fragmentColor = color,
             depth = inputFragment.depth
         )
     }

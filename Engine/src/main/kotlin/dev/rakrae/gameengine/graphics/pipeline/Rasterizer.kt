@@ -36,7 +36,8 @@ class Rasterizer {
                             interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
                             faceNormalWorldSpace = normalWorldSpace,
                             depth = interpolatedDepth,
-                            material = material
+                            material = material,
+                            uv = interpolateUVs(triangle, barycentricCoordinates)
                         )
                         val outputFragment = fragmentShader.process(inputFragment)
                         framebuffer.setPixel(x, y, outputFragment.fragmentColor)
@@ -77,6 +78,20 @@ class Rasterizer {
             n1.x * b.a1 + n2.x * b.a2 + n3.x * b.a3,
             n1.y * b.a1 + n2.y * b.a2 + n3.y * b.a3,
             n1.z * b.a1 + n2.z * b.a2 + n3.z * b.a3
+        )
+    }
+
+    private fun interpolateUVs(
+        triangle: Triangle,
+        barycentricCoordinates: BarycentricCoordinates
+    ): Vec2f {
+        val uv1 = triangle.v0.textureCoordinates
+        val uv2 = triangle.v1.textureCoordinates
+        val uv3 = triangle.v2.textureCoordinates
+        val b = barycentricCoordinates
+        return Vec2f(
+            uv1.x * b.a1 + uv2.x * b.a2 + uv3.x * b.a3,
+            uv1.y * b.a1 + uv2.y * b.a2 + uv3.y * b.a3
         )
     }
 

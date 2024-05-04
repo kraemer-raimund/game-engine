@@ -6,6 +6,7 @@ import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
+import dev.rakrae.gameengine.graphics.Texture
 import dev.rakrae.gameengine.graphics.shaders.*
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec3f
@@ -25,14 +26,14 @@ class SampleGame : Game {
 
     override val scene: Scene by lazy { Scene(nodes) }
 
-    private val nodes: Sequence<Node> by lazy {
+    private val nodes: List<Node> by lazy {
         val king = AssetLoader().loadMesh("/assets/chesspieces/king.obj")
         val queen = AssetLoader().loadMesh("/assets/chesspieces/queen.obj")
         val bishop = AssetLoader().loadMesh("/assets/chesspieces/bishop.obj")
         val knight = AssetLoader().loadMesh("/assets/chesspieces/knight.obj")
         val rook = AssetLoader().loadMesh("/assets/chesspieces/rook.obj")
 
-        val meshes = sequenceOf(king, queen, bishop, knight, rook)
+        val meshes = listOf(king, queen, bishop, knight, rook)
         meshes.mapIndexed { i, mesh ->
             val position = Vec3f(
                 x = -2.5f + 2f * i.mod(3),
@@ -44,7 +45,12 @@ class SampleGame : Game {
                 1 -> Material(color = Color(255u, 0u, 0u, 255u), glossiness = 12f)
                 2 -> Material()
                 3 -> Material(color = Color(50u, 120u, 180u, 255u), glossiness = 0.5f)
-                4 -> Material(color = Color(80u, 80u, 20u, 255u), glossiness = 4f)
+                4 -> Material(
+                    color = Color(80u, 80u, 20u, 255u),
+                    glossiness = 4f,
+                    texture = Texture("/assets/textures/TCom_Wood_OakVeneer2_512_albedo.tif")
+                )
+
                 else -> Material.default
             }
             val vertexShader = when (i) {
