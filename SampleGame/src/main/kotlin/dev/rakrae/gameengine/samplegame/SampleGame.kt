@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.samplegame
 import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
+import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.shaders.*
@@ -65,9 +66,12 @@ class SampleGame : Game {
 
     override suspend fun onTick() {
         println("FPS: ${FpsCounter.currentFps}")
-        val moveSpeed = 0.00001f
-        scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * (moveSpeed * Input.axisPair1.x))
-        scene.activeCamera.translate(Vec3f(0f, 0f, 1f) * (moveSpeed * Input.axisPair1.y))
+
+        val moveSpeed = 2f
+        val forwardOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.x
+        val sidewaysOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.y
+        scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * forwardOffset)
+        scene.activeCamera.translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
 
         val mouseSensitivity = 0.2f
         scene.activeCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
