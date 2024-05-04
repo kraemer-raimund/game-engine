@@ -35,6 +35,8 @@ class Renderer {
 
                 val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
 
+                val renderContext = RenderContext(framebuffer, zBuffer)
+
                 for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
                     launch {
                         val trianglesClipSpace = trianglesChunk.map { transform(it, finalMatrix) }
@@ -51,7 +53,8 @@ class Renderer {
                                 framebuffer,
                                 zBuffer,
                                 renderComponent.material,
-                                renderComponent.fragmentShader
+                                renderComponent.fragmentShader,
+                                renderContext
                             )
                         }
                     }

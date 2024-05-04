@@ -6,7 +6,7 @@ import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.*
 
-class Rasterizer {
+internal class Rasterizer {
 
     fun rasterize(
         triangle: Triangle,
@@ -14,7 +14,8 @@ class Rasterizer {
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
         material: Material,
-        fragmentShader: FragmentShader
+        fragmentShader: FragmentShader,
+        renderContext: RenderContext
     ) {
         val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
             .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
