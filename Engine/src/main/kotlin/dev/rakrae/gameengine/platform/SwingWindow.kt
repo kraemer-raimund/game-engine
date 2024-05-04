@@ -38,6 +38,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
             isVisible = true
             defaultCloseOperation = JFrame.EXIT_ON_CLOSE
         }
+        canvas.requestFocus()
     }
 
     override fun displayPixels(bitmap: Bitmap) {
