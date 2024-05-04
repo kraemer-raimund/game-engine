@@ -50,7 +50,6 @@ class Renderer {
                             rasterizer.rasterize(
                                 viewportCoordinates,
                                 triangle.normal,
-                                framebuffer,
                                 renderComponent.material,
                                 renderComponent.fragmentShader,
                                 renderContext

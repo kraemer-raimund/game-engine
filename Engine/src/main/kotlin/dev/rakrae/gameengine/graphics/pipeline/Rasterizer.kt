@@ -10,7 +10,6 @@ internal class Rasterizer {
     fun rasterize(
         triangle: Triangle,
         normalWorldSpace: Vec3f,
-        framebuffer: Bitmap,
         material: Material,
         fragmentShader: FragmentShader,
         renderContext: RenderContext
