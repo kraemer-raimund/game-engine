@@ -6,10 +6,13 @@ import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec2i
+import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.PI
+import kotlin.math.acos
 
 class Renderer {
 
@@ -37,8 +40,9 @@ class Renderer {
                         val trianglesClipSpace = trianglesChunk.map { transform(it, finalMatrix) }
                         val trianglesNormalizedDeviceCoordinates = trianglesClipSpace.map(::applyPerspectiveDivide)
                         val trianglesInViewFrustum = trianglesNormalizedDeviceCoordinates.filter(::isInsideViewFrustum)
+                        val frontFacesInViewFrustum = trianglesInViewFrustum.filter { isFrontFace(it) }
 
-                        for (triangle in trianglesInViewFrustum) {
+                        for (triangle in frontFacesInViewFrustum) {
                             val screenSize = Vec2i(framebuffer.width, framebuffer.height)
                             val viewportCoordinates = viewportTransform(triangle, screenSize)
                             rasterizer.rasterize(
@@ -117,5 +121,16 @@ class Renderer {
                     && position.y in -1f..1f
                     && position.z in -1f..1f
         }
+    }
+
+    /**
+     * True if the polygon's front face is oriented towards the camera.
+     * If back face culling is desired/enabled, the polygon will only be rendered if this is true.
+     */
+    private fun isFrontFace(triangleClipSpace: Triangle): Boolean {
+        val n = triangleClipSpace.normal.normalized
+        val view = Vec3f(0f, 0f, 1f)
+        val angleRad = acos(view dot n)
+        return angleRad < 0.5f * PI
     }
 }
