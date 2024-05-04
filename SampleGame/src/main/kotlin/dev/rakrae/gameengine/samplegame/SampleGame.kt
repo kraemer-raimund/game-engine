@@ -33,8 +33,8 @@ class SampleGame : Game {
         val knight = AssetLoader().loadMesh("/assets/chesspieces/knight.obj")
         val rook = AssetLoader().loadMesh("/assets/chesspieces/rook.obj")
 
-        val meshes = listOf(king, queen, bishop, knight, rook)
-        meshes.mapIndexed { i, mesh ->
+        val chessPieces = listOf(king, queen, bishop, knight, rook)
+        val chessNodes = chessPieces.mapIndexed { i, mesh ->
             val position = Vec3f(
                 x = -2.5f + 2f * i.mod(3),
                 y = 0f,
@@ -48,7 +48,7 @@ class SampleGame : Game {
                 4 -> Material(
                     color = Color(80u, 80u, 20u, 255u),
                     glossiness = 4f,
-                    texture = Texture("/assets/textures/TCom_Wood_OakVeneer2_512_albedo.tif")
+                    texture = Texture("/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png")
                 )
 
                 else -> Material.default
@@ -76,6 +76,50 @@ class SampleGame : Game {
                 )
             )
         }
+
+        val exampleObjects = listOf(
+            Node(
+                renderComponent = RenderComponent(
+                    mesh = AssetLoader().loadMesh("/assets/floor.obj"),
+                    position = Vec3f(-10f, 0f, 0f),
+                    scale = Vec3f(8f, 1f, 8f),
+                    material = Material(
+                        texture = Texture(
+                            "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_albedo.png"
+                        )
+                    ),
+                    fragmentShader = UvTextureFragmentShader()
+                )
+            ),
+            Node(
+                renderComponent = RenderComponent(
+                    mesh = AssetLoader().loadMesh("/assets/cube.obj"),
+                    position = Vec3f(-10f, 2f, -10f),
+                    scale = Vec3f(0.1f, 2f, 2f),
+                    material = Material(
+                        texture = Texture(
+                            "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_albedo.png"
+                        )
+                    ),
+                    fragmentShader = UvTextureFragmentShader()
+                )
+            ),
+            Node(
+                renderComponent = RenderComponent(
+                    mesh = AssetLoader().loadMesh("/assets/cube.obj"),
+                    position = Vec3f(-10f, 1f, 0f),
+                    scale = Vec3f(1f, 1f, 1f),
+                    material = Material(
+                        texture = Texture(
+                            "/assets/textures/scifi-panel/TCom_Scifi_Panel_512_albedo.png"
+                        )
+                    ),
+                    fragmentShader = UvTextureFragmentShader()
+                )
+            )
+        )
+
+        return@lazy chessNodes + exampleObjects
     }
 
     private var fpsCounterCoroutine: Job? = null
