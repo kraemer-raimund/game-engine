@@ -15,32 +15,33 @@ internal class Rasterizer {
         fragmentShader: FragmentShader,
         renderContext: RenderContext
     ) {
-        val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
-            .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
-            .let { Triangle2i(it[0], it[1], it[2]) }
-        val boundingBox = AABB2i
-            .calculateBoundingBox(triangle2i)
-            .clampWithin(framebuffer.imageBounds())
-        val zBuffer = renderContext.zBuffer
+        with(renderContext) {
+            val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
+                .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
+                .let { Triangle2i(it[0], it[1], it[2]) }
+            val boundingBox = AABB2i
+                .calculateBoundingBox(triangle2i)
+                .clampWithin(framebuffer.imageBounds())
 
-        // For each point within the triangle's AABB, render the point if it lies within the triangle.
-        for (x in boundingBox.min.x..boundingBox.max.x) {
-            for (y in boundingBox.min.y..boundingBox.max.y) {
-                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle2i)
-                if (barycentricCoordinates.isWithinTriangle) {
-                    val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
-                    if (interpolatedDepth < zBuffer.get(x, y)) {
-                        zBuffer.set(x, y, interpolatedDepth)
-                        val inputFragment = InputFragment(
-                            windowSpacePosition = Vec2i(x, y),
-                            interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
-                            faceNormalWorldSpace = normalWorldSpace,
-                            depth = interpolatedDepth,
-                            material = material,
-                            uv = interpolateUVs(triangle, barycentricCoordinates)
-                        )
-                        val outputFragment = fragmentShader.process(inputFragment)
-                        framebuffer.setPixel(x, y, outputFragment.fragmentColor)
+            // For each point within the triangle's AABB, render the point if it lies within the triangle.
+            for (x in boundingBox.min.x..boundingBox.max.x) {
+                for (y in boundingBox.min.y..boundingBox.max.y) {
+                    val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle2i)
+                    if (barycentricCoordinates.isWithinTriangle) {
+                        val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
+                        if (interpolatedDepth < zBuffer.get(x, y)) {
+                            zBuffer.set(x, y, interpolatedDepth)
+                            val inputFragment = InputFragment(
+                                windowSpacePosition = Vec2i(x, y),
+                                interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
+                                faceNormalWorldSpace = normalWorldSpace,
+                                depth = interpolatedDepth,
+                                material = material,
+                                uv = interpolateUVs(triangle, barycentricCoordinates)
+                            )
+                            val outputFragment = fragmentShader.process(inputFragment)
+                            framebuffer.setPixel(x, y, outputFragment.fragmentColor)
+                        }
                     }
                 }
             }
