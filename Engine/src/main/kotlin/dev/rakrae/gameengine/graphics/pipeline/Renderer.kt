@@ -35,21 +35,36 @@ class Renderer {
 
                 val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
 
-                val renderContext = RenderContext(framebuffer, zBuffer)
-
                 for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
                     launch {
-                        val trianglesClipSpace = trianglesChunk.map { transform(it, finalMatrix) }
-                        val trianglesNormalizedDeviceCoordinates = trianglesClipSpace.map(::applyPerspectiveDivide)
-                        val trianglesInViewFrustum = trianglesNormalizedDeviceCoordinates.filter(::isInsideViewFrustum)
-                        val frontFacesInViewFrustum = trianglesInViewFrustum.filter { isFrontFace(it) }
+                        for (triangleWorldSpace in trianglesChunk) {
+                            val triangleClipSpace = transform(triangleWorldSpace, finalMatrix)
+                            val triangleNormalizedDeviceCoords = applyPerspectiveDivide(triangleClipSpace)
 
-                        for (triangle in frontFacesInViewFrustum) {
+                            // Frustum culling.
+                            if (!isInsideViewFrustum(triangleNormalizedDeviceCoords)) {
+                                continue
+                            }
+                            // Back face culling.
+                            if (!isFrontFace(triangleNormalizedDeviceCoords)) {
+                                continue
+                            }
+
+                            val renderContext = RenderContext(
+                                framebuffer,
+                                zBuffer,
+                                wComponents = RenderContext.WComponents(
+                                    triangleClipSpace.v0.position.w,
+                                    triangleClipSpace.v1.position.w,
+                                    triangleClipSpace.v2.position.w
+                                )
+                            )
+
                             val screenSize = Vec2i(framebuffer.width, framebuffer.height)
-                            val viewportCoordinates = viewportTransform(triangle, screenSize)
+                            val viewportCoordinates = viewportTransform(triangleNormalizedDeviceCoords, screenSize)
                             rasterizer.rasterize(
                                 viewportCoordinates,
-                                triangle.normal,
+                                triangleWorldSpace.normal,
                                 renderComponent.material,
                                 renderComponent.fragmentShader,
                                 renderContext
@@ -114,8 +129,8 @@ class Renderer {
         )
     }
 
-    private fun isInsideViewFrustum(triangleClipSpace: Triangle): Boolean {
-        val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
+    private fun isInsideViewFrustum(triangleNormalizedDeviceCoords: Triangle): Boolean {
+        val vertices = with(triangleNormalizedDeviceCoords) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
         return vertexPositions.any { position ->
             position.x in -1f..1f

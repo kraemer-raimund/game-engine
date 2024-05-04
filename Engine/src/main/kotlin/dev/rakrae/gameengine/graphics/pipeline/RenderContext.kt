@@ -21,5 +21,19 @@ import dev.rakrae.gameengine.graphics.Buffer2f
  */
 internal data class RenderContext(
     val framebuffer: Bitmap,
-    val zBuffer: Buffer2f
-)
+    val zBuffer: Buffer2f,
+    val wComponents: WComponents
+) {
+
+    /**
+     * The w components of the current triangle's vertices in clip space, i.e., after applying the
+     * projection matrix, but before the perspective divide. These are the values that are used in
+     * the perspective divide for each respective vertex, and they are required for perspective-
+     * correct barycentric interpolation in viewport space.
+     */
+    data class WComponents(
+        val triangle1W: Float,
+        val triangle2W: Float,
+        val triangle3W: Float
+    )
+}

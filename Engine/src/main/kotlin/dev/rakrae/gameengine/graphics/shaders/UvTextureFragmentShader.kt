@@ -13,8 +13,8 @@ class UvTextureFragmentShader : FragmentShader {
         } else {
             val uv = inputFragment.uv
             texture.getPixel(
-                x = (uv.x * (texture.width - 1)).toInt(),
-                y = (uv.y * (texture.height - 1)).toInt()
+                x = (uv.x * (texture.width - 1)).toInt().coerceIn(0, texture.width - 1),
+                y = (uv.y * (texture.height - 1)).toInt().coerceIn(0, texture.height - 1)
             )
         }
         return OutputFragment(

@@ -36,7 +36,7 @@ internal class Rasterizer {
                                 faceNormalWorldSpace = normalWorldSpace,
                                 depth = interpolatedDepth,
                                 material = material,
-                                uv = interpolateUVs(triangle, barycentricCoordinates)
+                                uv = interpolateUVs(triangle, barycentricCoordinates, renderContext)
                             )
                             val outputFragment = fragmentShader.process(inputFragment)
                             framebuffer.setPixel(x, y, outputFragment.fragmentColor)
@@ -83,16 +83,31 @@ internal class Rasterizer {
 
     private fun interpolateUVs(
         triangle: Triangle,
-        barycentricCoordinates: BarycentricCoordinates
+        barycentricCoordinates: BarycentricCoordinates,
+        renderContext: RenderContext
     ): Vec2f {
         val uv1 = triangle.v0.textureCoordinates
         val uv2 = triangle.v1.textureCoordinates
         val uv3 = triangle.v2.textureCoordinates
-        val b = barycentricCoordinates
+        val b = barycentricCoordinates.toPerspectiveCorrectBarycentric(renderContext)
         return Vec2f(
             uv1.x * b.a1 + uv2.x * b.a2 + uv3.x * b.a3,
             uv1.y * b.a1 + uv2.y * b.a2 + uv3.y * b.a3
         )
+    }
+
+    private fun BarycentricCoordinates.toPerspectiveCorrectBarycentric(
+        renderContext: RenderContext
+    ): BarycentricCoordinates {
+        // https://stackoverflow.com/a/24460895/3726133
+        // https://stackoverflow.com/a/74630682/3726133
+        val wc = renderContext.wComponents
+        val w1 = wc.triangle1W
+        val w2 = wc.triangle2W
+        val w3 = wc.triangle3W
+        val p = Vec3f(a1 / w1, a2 / w2, a3 / w3) *
+                (1f / (a1 / w1 + a2 / w2 + a3 / w3))
+        return BarycentricCoordinates(p.x, p.y, p.z)
     }
 
     private fun Bitmap.imageBounds(): AABB2i {
