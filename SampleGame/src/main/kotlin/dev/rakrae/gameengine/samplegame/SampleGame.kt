@@ -12,6 +12,12 @@ import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlin.coroutines.coroutineContext
+import kotlin.time.Duration.Companion.seconds
 
 class SampleGame : Game {
 
@@ -59,14 +65,16 @@ class SampleGame : Game {
         }
     }
 
+    private var fpsCounterCoroutine: Job? = null
+
     override suspend fun onStart() {
         println("Game started")
         scene.activeCamera.translate(Vec3f(0f, 1.8f, 0f))
+
+        startFpsCounterCoroutine()
     }
 
     override suspend fun onTick() {
-        println("FPS: ${FpsCounter.currentFps}")
-
         val moveSpeed = 2f
         val forwardOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.x
         val sidewaysOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.y
@@ -88,5 +96,18 @@ class SampleGame : Game {
 
     override suspend fun onStop() {
         println("Game stopped")
+        fpsCounterCoroutine?.cancel()
+    }
+
+    /**
+     * Print the current frame rate to the console in regular intervals.
+     */
+    private suspend fun startFpsCounterCoroutine() {
+        fpsCounterCoroutine = CoroutineScope(coroutineContext).launch {
+            while (true) {
+                delay(1.seconds)
+                println("FPS: ${FpsCounter.currentFps}")
+            }
+        }
     }
 }
