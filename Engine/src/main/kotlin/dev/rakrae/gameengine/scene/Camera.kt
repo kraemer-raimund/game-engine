@@ -73,4 +73,24 @@ class Camera(
     fun rotate(euler: Vec3f) {
         rot += euler
     }
+
+    companion object {
+        /**
+         * Calculate a view matrix from a given camera (eye) position, the position to look at,
+         * and the up vector in world space, i.e. usually (0, 1, 0).
+         */
+        fun lookAt(eyePos: Vec3f, targetPos: Vec3f, worldUp: Vec3f): Mat4x4f {
+            val camDir = (targetPos - eyePos).normalized
+            val camRight = (camDir cross worldUp).normalized
+            val camUp = (camRight cross camDir).normalized
+
+            val viewMatrix = Mat4x4f(
+                camRight.x, camRight.y, camRight.z, -(camRight dot eyePos),
+                camUp.x, camUp.y, camUp.z, -(camUp dot eyePos),
+                camDir.x, camDir.y, camDir.z, -(camDir dot eyePos),
+                0f, 0f, 0f, 1f
+            )
+            return viewMatrix
+        }
+    }
 }
