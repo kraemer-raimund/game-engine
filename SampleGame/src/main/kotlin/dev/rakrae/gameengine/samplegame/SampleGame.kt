@@ -30,27 +30,34 @@ class SampleGame : Game {
         val queen = AssetLoader().loadMesh("/assets/chesspieces/queen.obj")
         val bishop = AssetLoader().loadMesh("/assets/chesspieces/bishop.obj")
         val knight = AssetLoader().loadMesh("/assets/chesspieces/knight.obj")
+        val rook = AssetLoader().loadMesh("/assets/chesspieces/rook.obj")
 
-        val meshes = sequenceOf(king, queen, bishop, knight)
+        val meshes = sequenceOf(king, queen, bishop, knight, rook)
         meshes.mapIndexed { i, mesh ->
-            val position = Vec3f((2f * i.toFloat() - 2.5f), 0f, 5f)
+            val position = Vec3f(
+                x = -2.5f + 2f * i.mod(3),
+                y = 0f,
+                z = 5f + 2f * (i / 3)
+            )
             val material = when (i) {
                 0 -> Material(color = Color(80u, 80u, 190u, 255u))
                 1 -> Material(color = Color(255u, 0u, 0u, 255u), glossiness = 12f)
                 2 -> Material()
-                else -> Material(color = Color(50u, 120u, 180u, 255u), glossiness = 0.5f)
+                3 -> Material(color = Color(50u, 120u, 180u, 255u), glossiness = 0.5f)
+                4 -> Material(color = Color(80u, 80u, 20u, 255u), glossiness = 4f)
+                else -> Material.default
             }
             val vertexShader = when (i) {
-                0 -> DefaultVertexShader()
-                1 -> DummyAnimationVertexShader()
-                2 -> DefaultVertexShader()
-                else -> DummyAnimationVertexShader()
+                1, 3 -> DummyAnimationVertexShader()
+                else -> DefaultVertexShader()
             }
             val fragmentShader = when (i) {
                 0 -> DefaultFragmentShader()
                 1 -> GouraudFragmentShader()
                 2 -> DepthFragmentShader()
-                else -> GouraudFragmentShader()
+                3 -> GouraudFragmentShader()
+                4 -> UvTextureFragmentShader()
+                else -> DefaultFragmentShader()
             }
             Node(
                 RenderComponent(
