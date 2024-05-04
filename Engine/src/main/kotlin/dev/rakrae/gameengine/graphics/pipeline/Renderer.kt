@@ -51,7 +51,6 @@ class Renderer {
                                 viewportCoordinates,
                                 triangle.normal,
                                 framebuffer,
-                                zBuffer,
                                 renderComponent.material,
                                 renderComponent.fragmentShader,
                                 renderContext

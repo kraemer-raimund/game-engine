@@ -1,7 +1,6 @@
 package dev.rakrae.gameengine.graphics.pipeline
 
 import dev.rakrae.gameengine.graphics.Bitmap
-import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.*
@@ -12,7 +11,6 @@ internal class Rasterizer {
         triangle: Triangle,
         normalWorldSpace: Vec3f,
         framebuffer: Bitmap,
-        zBuffer: Buffer2f,
         material: Material,
         fragmentShader: FragmentShader,
         renderContext: RenderContext
@@ -23,6 +21,7 @@ internal class Rasterizer {
         val boundingBox = AABB2i
             .calculateBoundingBox(triangle2i)
             .clampWithin(framebuffer.imageBounds())
+        val zBuffer = renderContext.zBuffer
 
         // For each point within the triangle's AABB, render the point if it lies within the triangle.
         for (x in boundingBox.min.x..boundingBox.max.x) {
