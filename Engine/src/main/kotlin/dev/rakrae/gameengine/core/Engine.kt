@@ -45,6 +45,7 @@ class Engine(game: Game) {
             game.onTick()
         },
         onRender = suspend {
+            gameTime.onRender()
             fpsCounter.onRenderFrame()
             screen.clear()
             renderer.render(game.scene, screen)

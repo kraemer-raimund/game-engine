@@ -9,6 +9,10 @@ class GameTime {
         previousFrameTimeMillis = currentTimeMillis
     }
 
+    fun onRender() {
+        frameTime = elapsedTime
+    }
+
     companion object {
         /**
          * Timestamp at the start of the game in milliseconds.
@@ -31,6 +35,14 @@ class GameTime {
          * same throughout the duration of the current tick.
          */
         var tickTime = 0.0f
+            private set
+
+        /**
+         * Elapsed time in seconds at the __start of the current render frame__. This time remains
+         * the same throughout the duration of the current render frame, and is independent of
+         * the logical tick rate.
+         */
+        var frameTime = 0.0f
             private set
 
         /**

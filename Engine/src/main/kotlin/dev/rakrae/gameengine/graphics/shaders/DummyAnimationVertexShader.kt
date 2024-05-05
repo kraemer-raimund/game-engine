@@ -14,7 +14,7 @@ import kotlin.math.*
 class DummyAnimationVertexShader : VertexShader {
 
     override fun process(position: Vec3f, inputs: VertexShaderInputs): Vec4f {
-        val rotatedPos = rotate(position, GameTime.tickTime)
+        val rotatedPos = rotate(position, GameTime.frameTime)
         return inputs.projection * inputs.modelView * Vec4f(rotatedPos, 1f)
     }
 
