@@ -50,7 +50,8 @@ internal class Renderer {
                                     triangleClipSpace.v0.position.w,
                                     triangleClipSpace.v1.position.w,
                                     triangleClipSpace.v2.position.w
-                                )
+                                ),
+                                projectionViewModelMatrix = projectionMatrix * modelViewMatrix
                             )
 
                             rasterizer.rasterize(

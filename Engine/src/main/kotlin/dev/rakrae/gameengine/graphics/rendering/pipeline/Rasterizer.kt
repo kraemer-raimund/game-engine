@@ -32,6 +32,7 @@ internal class Rasterizer {
                             zBuffer.set(x, y, interpolatedDepth)
                             val inputFragment = InputFragment(
                                 windowSpacePosition = Vec2i(x, y),
+                                renderContext = renderContext,
                                 interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
                                 faceNormalWorldSpace = normalWorldSpace,
                                 depth = interpolatedDepth,
