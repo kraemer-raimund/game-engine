@@ -2,8 +2,12 @@ package dev.rakrae.gameengine.core
 
 import dev.rakrae.gameengine.scene.Scene
 
-interface Game : GameLifeCycleReceiver {
+abstract class Game : GameLifeCycleReceiver {
 
-    val title: String
-    val scene: Scene
+    abstract val title: String
+    abstract val scene: Scene
+
+    fun start() {
+        Engine(this).start()
+    }
 }

@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.seconds
 
-class Chess : Game {
+class Chess : Game() {
 
     override val title = "Chess (Sample Game)"
 

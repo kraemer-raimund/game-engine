@@ -11,7 +11,7 @@ import dev.rakrae.gameengine.platform.SwingWindow
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-class Engine(game: Game) {
+internal class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val swingWindow = SwingWindow(game.title, defaultScreenSize)
