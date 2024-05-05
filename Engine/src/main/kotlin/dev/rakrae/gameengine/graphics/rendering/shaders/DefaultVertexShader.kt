@@ -1,7 +1,7 @@
-package dev.rakrae.gameengine.graphics.shaders
+package dev.rakrae.gameengine.graphics.rendering.shaders
 
-import dev.rakrae.gameengine.graphics.pipeline.VertexShader
-import dev.rakrae.gameengine.graphics.pipeline.VertexShaderInputs
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 

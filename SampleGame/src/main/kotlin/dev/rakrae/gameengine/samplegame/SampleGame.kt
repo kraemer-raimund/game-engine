@@ -6,7 +6,7 @@ import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Texture
-import dev.rakrae.gameengine.graphics.shaders.*
+import dev.rakrae.gameengine.graphics.rendering.shaders.*
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Node

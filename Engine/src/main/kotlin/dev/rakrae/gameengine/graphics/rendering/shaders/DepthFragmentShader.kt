@@ -1,9 +1,9 @@
-package dev.rakrae.gameengine.graphics.shaders
+package dev.rakrae.gameengine.graphics.rendering.shaders
 
 import dev.rakrae.gameengine.graphics.Color
-import dev.rakrae.gameengine.graphics.pipeline.FragmentShader
-import dev.rakrae.gameengine.graphics.pipeline.InputFragment
-import dev.rakrae.gameengine.graphics.pipeline.OutputFragment
+import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
+import dev.rakrae.gameengine.graphics.rendering.pipeline.InputFragment
+import dev.rakrae.gameengine.graphics.rendering.pipeline.OutputFragment
 
 /**
  * Visualizes the depth buffer (z buffer) by assigning to each pixel a greyscale value based on

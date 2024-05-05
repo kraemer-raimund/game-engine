@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 interface FragmentShader {
 

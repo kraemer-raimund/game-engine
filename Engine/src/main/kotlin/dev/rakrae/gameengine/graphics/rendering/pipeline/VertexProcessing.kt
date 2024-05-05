@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f

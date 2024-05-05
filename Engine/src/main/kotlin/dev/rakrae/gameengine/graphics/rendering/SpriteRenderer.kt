@@ -1,4 +1,6 @@
-package dev.rakrae.gameengine.graphics
+package dev.rakrae.gameengine.graphics.rendering
+
+import dev.rakrae.gameengine.graphics.Bitmap
 
 class SpriteRenderer {
 

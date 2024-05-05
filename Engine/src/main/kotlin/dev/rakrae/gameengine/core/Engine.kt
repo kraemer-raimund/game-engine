@@ -2,8 +2,8 @@ package dev.rakrae.gameengine.core
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.ScreenSize
-import dev.rakrae.gameengine.graphics.SpriteRenderer
-import dev.rakrae.gameengine.graphics.pipeline.Renderer
+import dev.rakrae.gameengine.graphics.rendering.Renderer
+import dev.rakrae.gameengine.graphics.rendering.SpriteRenderer
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.platform.AwtKeyboardInputAdapter
 import dev.rakrae.gameengine.platform.AwtMouseInputAdapter

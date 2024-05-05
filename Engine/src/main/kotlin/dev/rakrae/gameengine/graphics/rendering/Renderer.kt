@@ -1,8 +1,11 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.rendering
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Triangle
+import dev.rakrae.gameengine.graphics.rendering.pipeline.Rasterizer
+import dev.rakrae.gameengine.graphics.rendering.pipeline.RenderContext
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexProcessing
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f

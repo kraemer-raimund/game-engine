@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.graphics.pipeline
+package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.math.Vec2f
