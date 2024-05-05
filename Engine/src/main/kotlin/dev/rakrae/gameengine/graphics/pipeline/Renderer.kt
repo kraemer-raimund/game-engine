@@ -39,12 +39,14 @@ class Renderer {
                     launch {
                         for (triangleWorldSpace in trianglesChunk) {
                             val triangleClipSpace = transform(triangleWorldSpace, finalMatrix)
-                            val triangleNormalizedDeviceCoords = applyPerspectiveDivide(triangleClipSpace)
 
                             // Frustum culling.
-                            if (!isInsideViewFrustum(triangleNormalizedDeviceCoords)) {
+                            if (!isInsideViewFrustum(triangleClipSpace)) {
                                 continue
                             }
+
+                            val triangleNormalizedDeviceCoords = applyPerspectiveDivide(triangleClipSpace)
+
                             // Back face culling.
                             if (!isFrontFace(triangleNormalizedDeviceCoords)) {
                                 continue
@@ -129,13 +131,21 @@ class Renderer {
         )
     }
 
-    private fun isInsideViewFrustum(triangleNormalizedDeviceCoords: Triangle): Boolean {
-        val vertices = with(triangleNormalizedDeviceCoords) { listOf(v0, v1, v2) }
+    private fun isInsideViewFrustum(triangleClipSpace: Triangle): Boolean {
+        // View volume test in clip coordinates. In NDC it would be more intuitive (simply check
+        // whether all 3 vertices of the triangle are within -1..1 in all 3 coordinates), but
+        // it would project points from behind the camera in front of it (and invert their
+        // coordinates, like a pinhole camera) due to perspective divide with negative w.
+        // https://gamedev.stackexchange.com/a/158859/71768
+        // https://stackoverflow.com/a/76094339/3726133
+        // https://stackoverflow.com/a/31687061/3726133
+        // https://gamedev.stackexchange.com/a/65798/71768
+        val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
         return vertexPositions.any { position ->
-            position.x in -1f..1f
-                    && position.y in -1f..1f
-                    && position.z in -1f..1f
+            position.x in -position.w..position.w
+                    && position.y in -position.w..position.w
+                    && position.z in -position.w..position.w
         }
     }
 
