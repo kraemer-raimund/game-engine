@@ -8,6 +8,7 @@ import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Texture
 import dev.rakrae.gameengine.graphics.rendering.shaders.*
 import dev.rakrae.gameengine.input.Input
+import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
 import dev.rakrae.gameengine.scene.Node
@@ -101,7 +102,8 @@ class Chess : Game() {
                         normal = Texture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_normal.png"
                         ),
-                        glossiness = 3f
+                        glossiness = 3f,
+                        uvScale = Vec2f(6f, 6f)
                     ),
                     fragmentShader = UvTextureFragmentShader()
                 )
@@ -118,7 +120,8 @@ class Chess : Game() {
                         normal = Texture(
                             "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_normal.png"
                         ),
-                        glossiness = 1.5f
+                        glossiness = 1.5f,
+                        uvScale = Vec2f(10f, 10f)
                     ),
                     fragmentShader = UvTextureFragmentShader()
                 )
@@ -133,7 +136,8 @@ class Chess : Game() {
                             "/assets/textures/scifi-panel/TCom_Scifi_Panel_512_albedo.png"
                         ),
                         normal = Texture("/assets/textures/scifi-panel/TCom_Scifi_Panel_512_normal.png"),
-                        glossiness = 8f
+                        glossiness = 8f,
+                        uvScale = Vec2f(4f, 4f)
                     ),
                     fragmentShader = UvTextureFragmentShader()
                 )
