@@ -22,9 +22,9 @@ class Bitmap(val width: Int, val height: Int) {
         return Color.fromIntARGB(intValue)
     }
 
-    fun clear() {
+    fun clear(color: Color = Color(0u, 0u, 0u, 255u)) {
         for (i in 0 until width * height) {
-            pixels[i] = 0
+            pixels[i] = color.asIntARGB.toInt()
         }
     }
 }

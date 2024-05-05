@@ -13,7 +13,7 @@ class OutlinePostProcessingShader(
     private val outlineColor: Color
 ) : PostProcessingShader {
 
-    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
+    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color? {
         val depth = zBuffer.get(position.x, position.y)
         for (x in position.x - thickness..position.x + thickness) {
             for (y in position.y - thickness..position.y + thickness) {
@@ -25,6 +25,6 @@ class OutlinePostProcessingShader(
                 }
             }
         }
-        return framebuffer.getPixel(position.x, position.y)
+        return null
     }
 }

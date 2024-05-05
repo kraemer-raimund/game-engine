@@ -32,8 +32,9 @@ class Chess : Game() {
         val bishop = AssetLoader().loadMesh("/assets/chesspieces/bishop.obj")
         val knight = AssetLoader().loadMesh("/assets/chesspieces/knight.obj")
         val rook = AssetLoader().loadMesh("/assets/chesspieces/rook.obj")
+        val pawn = AssetLoader().loadMesh("/assets/chesspieces/pawn.obj")
 
-        val chessPieces = listOf(king, queen, bishop, knight, rook)
+        val chessPieces = listOf(king, queen, bishop, knight, rook, pawn)
         val chessNodes = chessPieces.mapIndexed { i, mesh ->
             val position = Vec3f(
                 x = -2.5f + 2f * i.mod(3),
@@ -51,6 +52,11 @@ class Chess : Game() {
                     albedo = Texture("/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png")
                 )
 
+                5 -> Material(
+                    color = Color(80u, 160u, 80u, 255u),
+                    glossiness = 4f
+                )
+
                 else -> Material.default
             }
             val vertexShader = when (i) {
@@ -63,6 +69,7 @@ class Chess : Game() {
                 2 -> DepthFragmentShader()
                 3 -> GouraudFragmentShader()
                 4 -> UvTextureFragmentShader()
+                5 -> DefaultFragmentShader()
                 else -> DefaultFragmentShader()
             }
             Node(
@@ -72,7 +79,11 @@ class Chess : Game() {
                     scale = Vec3f(1f, 1f, 1f),
                     material = material,
                     vertexShader = vertexShader,
-                    fragmentShader = fragmentShader
+                    fragmentShader = fragmentShader,
+                    deferredShader = when (i) {
+                        5 -> OutlineDeferredShader(2, 0.2f, Color(255u, 255u, 0u, 255u))
+                        else -> null
+                    }
                 )
             )
         }

@@ -19,6 +19,7 @@ internal class ImagePostProcessing {
             launch {
                 for (y in (0..<target.height)) {
                     val color = postProcessingShader.postProcess(Vec2i(x, y), framebuffer, zBuffer)
+                        ?: framebuffer.getPixel(x, y)
                     target.setPixel(x, y, color)
                 }
             }
