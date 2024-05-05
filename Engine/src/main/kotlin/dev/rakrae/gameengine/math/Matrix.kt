@@ -12,6 +12,16 @@ data class Mat4x4f(
     val a41: Float, val a42: Float, val a43: Float, val a44: Float
 ) {
 
+    val transposed: Mat4x4f
+        get() {
+            return Mat4x4f(
+                a11, a21, a31, a41,
+                a12, a22, a32, a42,
+                a13, a23, a33, a43,
+                a14, a24, a34, a44
+            )
+        }
+
     private val asList
         get() = listOf(
             a11, a12, a13, a14,
