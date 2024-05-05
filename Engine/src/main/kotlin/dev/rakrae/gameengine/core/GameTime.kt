@@ -4,6 +4,7 @@ class GameTime {
 
     fun onTick() {
         tickTime = elapsedTime
+        ticksSinceStartup++
         deltaTime = (currentTimeMillis - previousFrameTimeMillis) / 1000.0f
         scaledDeltaTime = deltaTime * timeScale
         previousFrameTimeMillis = currentTimeMillis
@@ -11,6 +12,16 @@ class GameTime {
 
     fun onRender() {
         frameTime = elapsedTime
+        framesSinceStartup++
+
+        val millis = currentTimeMillis
+        if (millis - lastTimeMillis >= 1000) {
+            currentFps = framesInCurrentSecond
+            framesInCurrentSecond = 0
+            lastTimeMillis = millis
+        } else {
+            framesInCurrentSecond++
+        }
     }
 
     companion object {
@@ -73,5 +84,27 @@ class GameTime {
          * Timestamp at the previous frame in seconds.
          */
         private var previousFrameTimeMillis = startTimeMillis
+
+        /**
+         * Number of logical ticks since the start of the game.
+         */
+        var ticksSinceStartup = 0
+            private set
+
+        /**
+         * The current frames per second at a granularity of 1 second.
+         */
+        var currentFps = 0
+            private set
+
+        private var framesInCurrentSecond = 0
+
+        /**
+         * Number of frames since the start of the game.
+         */
+        var framesSinceStartup = 0
+            private set
+
+        private var lastTimeMillis = currentTimeMillis
     }
 }

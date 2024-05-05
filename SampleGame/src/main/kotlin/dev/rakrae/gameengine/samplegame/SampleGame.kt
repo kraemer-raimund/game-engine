@@ -1,7 +1,6 @@
 package dev.rakrae.gameengine.samplegame
 
 import dev.rakrae.gameengine.assets.AssetLoader
-import dev.rakrae.gameengine.core.FpsCounter
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
@@ -162,8 +161,8 @@ class SampleGame : Game {
     private suspend fun startFpsCounterCoroutine() {
         fpsCounterCoroutine = CoroutineScope(coroutineContext).launch {
             while (true) {
-                delay(1.seconds)
-                println("FPS: ${FpsCounter.currentFps}")
+                delay(0.5.seconds)
+                println("FPS: ${GameTime.currentFps}")
             }
         }
     }

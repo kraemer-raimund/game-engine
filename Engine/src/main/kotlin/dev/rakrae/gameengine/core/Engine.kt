@@ -33,7 +33,6 @@ class Engine(game: Game) {
     private val spriteRenderer = SpriteRenderer()
 
     private val gameTime = GameTime()
-    private val fpsCounter = FpsCounter()
 
     private val gameLoop = GameLoop(
         onStart = suspend {
@@ -46,7 +45,6 @@ class Engine(game: Game) {
         },
         onRender = suspend {
             gameTime.onRender()
-            fpsCounter.onRenderFrame()
             screen.clear()
             renderer.render(game.scene, screen)
             spriteRenderer.render(screen)
