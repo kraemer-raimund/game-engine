@@ -2,10 +2,8 @@ package dev.rakrae.gameengine.graphics.rendering
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
-import dev.rakrae.gameengine.graphics.rendering.pipeline.Rasterizer
-import dev.rakrae.gameengine.graphics.rendering.pipeline.RenderContext
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexPostProcessing
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexProcessing
+import dev.rakrae.gameengine.graphics.rendering.pipeline.*
+import dev.rakrae.gameengine.graphics.rendering.shaders.DefaultPostProcessingShader
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
@@ -16,11 +14,21 @@ internal class Renderer {
     private val vertexProcessing = VertexProcessing()
     private val vertexPostProcessing = VertexPostProcessing()
     private val rasterizer = Rasterizer()
+    private val imagePostProcessing = ImagePostProcessing()
 
-    suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
+    suspend fun render(scene: Scene, displayFrame: Bitmap) = coroutineScope {
+        val framebuffer = Bitmap(displayFrame.width, displayFrame.height)
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
-        val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+        renderImage(scene, framebuffer, zBuffer)
+        imagePostProcessing.postProcess(DefaultPostProcessingShader(), framebuffer, zBuffer, displayFrame)
+    }
 
+    private suspend fun renderImage(
+        scene: Scene,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f
+    ) = coroutineScope {
+        val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
         for (renderComponent in renderComponents) {
             launch {
                 val modelMatrix = renderComponent.transformMatrix
