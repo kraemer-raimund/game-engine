@@ -2,9 +2,7 @@ package dev.rakrae.gameengine.graphics.pipeline
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
-import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
@@ -16,6 +14,7 @@ import kotlin.math.acos
 
 class Renderer {
 
+    private val vertexProcessing = VertexProcessing()
     private val rasterizer = Rasterizer()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
@@ -24,21 +23,20 @@ class Renderer {
 
         for (renderComponent in renderComponents) {
             launch {
-                val vertexShadedMesh = applyVertexShader(
-                    renderComponent.mesh,
-                    renderComponent.vertexShader
-                )
-
                 val modelMatrix = renderComponent.transformMatrix
                 val viewMatrix = scene.activeCamera.viewMatrix
+                val modelViewMatrix = viewMatrix * modelMatrix
                 val projectionMatrix = scene.activeCamera.projectionMatrix
 
-                val finalMatrix = projectionMatrix * viewMatrix * modelMatrix
-
-                for (trianglesChunk in vertexShadedMesh.triangles.chunked(20)) {
+                for (trianglesChunk in renderComponent.mesh.triangles.chunked(20)) {
                     launch {
                         for (triangleWorldSpace in trianglesChunk) {
-                            val triangleClipSpace = transform(triangleWorldSpace, finalMatrix)
+                            val triangleClipSpace = vertexProcessing.process(
+                                triangleWorldSpace,
+                                renderComponent.vertexShader,
+                                projectionMatrix,
+                                modelViewMatrix
+                            )
 
                             // Frustum culling.
                             if (!isInsideViewFrustum(triangleClipSpace)) {
@@ -76,25 +74,6 @@ class Renderer {
                 }
             }
         }
-    }
-
-    private fun applyVertexShader(mesh: Mesh, vertexShader: VertexShader): Mesh {
-        val processedTriangles = mesh.triangles.map { inputTriangle ->
-            Triangle(
-                vertexShader.process(inputTriangle.v0),
-                vertexShader.process(inputTriangle.v1),
-                vertexShader.process(inputTriangle.v2)
-            )
-        }
-        return Mesh(processedTriangles)
-    }
-
-    private fun transform(triangle: Triangle, matrix: Mat4x4f): Triangle {
-        return Triangle(
-            triangle.v0.copy(position = matrix * triangle.v0.position),
-            triangle.v1.copy(position = matrix * triangle.v1.position),
-            triangle.v2.copy(position = matrix * triangle.v2.position)
-        )
     }
 
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
