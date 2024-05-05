@@ -120,6 +120,17 @@ data class Mat4x4f(
      */
     private val trace = a11 + a22 + a33 + a44
 
+    /**
+     * https://en.wikipedia.org/wiki/Determinant#Two_by_two_matrices
+     */
+    private fun determinant2x2(matrix2x2: Array<Array<Float>>): Float {
+        val a = matrix2x2[0][0]
+        val b = matrix2x2[1][0]
+        val c = matrix2x2[0][1]
+        val d = matrix2x2[1][1]
+        return a * d - b * c
+    }
+
     companion object {
         val identity = Mat4x4f(
             1f, 0f, 0f, 0f,
