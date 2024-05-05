@@ -36,8 +36,8 @@ class UvTextureFragmentShader : FragmentShader {
             inputFragment.interpolatedNormal
         } else {
             val uv = inputFragment.uv
-            val x = uv.x * (normalMap.width - 1)
-            val y = uv.y * (normalMap.height - 1)
+            val x = 10f * uv.x * (normalMap.width - 1)
+            val y = 10f * uv.y * (normalMap.height - 1)
             val normalColor = normalMap.getPixel(
                 x = x.toInt().coerceIn(0, normalMap.width - 1),
                 y = y.toInt().coerceIn(0, normalMap.height - 1)
