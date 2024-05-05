@@ -8,9 +8,9 @@ import dev.rakrae.gameengine.math.Vec2i
 import kotlin.math.abs
 
 class OutlinePostProcessingShader(
-    val thickness: Int,
-    val threshold: Float,
-    val outlineColor: Color
+    private val thickness: Int,
+    private val threshold: Float,
+    private val outlineColor: Color
 ) : PostProcessingShader {
 
     override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
