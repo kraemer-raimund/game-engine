@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.samplegame
+package dev.rakrae.gameengine.samplegame.chess
 
 import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.core.Game
@@ -9,6 +9,7 @@ import dev.rakrae.gameengine.graphics.Texture
 import dev.rakrae.gameengine.graphics.rendering.shaders.*
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
 import dev.rakrae.gameengine.scene.Node
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 import kotlin.time.Duration.Companion.seconds
 
-class SampleGame : Game {
+class Chess : Game {
 
     override val title = "Chess (Sample Game)"
 

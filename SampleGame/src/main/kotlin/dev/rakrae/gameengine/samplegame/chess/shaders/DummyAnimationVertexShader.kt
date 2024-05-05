@@ -1,4 +1,4 @@
-package dev.rakrae.gameengine.graphics.rendering.shaders
+package dev.rakrae.gameengine.samplegame.chess.shaders
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
