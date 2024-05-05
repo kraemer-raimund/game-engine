@@ -6,12 +6,12 @@ import dev.rakrae.gameengine.math.Mat4x4f
 class VertexProcessing {
 
     fun process(
-        triangleWorldSpace: Triangle,
+        triangleObjectSpace: Triangle,
         vertexShader: VertexShader,
         projection: Mat4x4f,
         modelView: Mat4x4f
     ): Triangle {
-        with(triangleWorldSpace) {
+        with(triangleObjectSpace) {
             val vertexShaderInputs = VertexShaderInputs(projection, modelView)
             val positionsClipSpace = listOf(v0, v1, v2)
                 .map { vertexShader.process(it.position.toVec3f(), vertexShaderInputs) }
