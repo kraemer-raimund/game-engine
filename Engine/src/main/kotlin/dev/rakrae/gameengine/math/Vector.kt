@@ -81,6 +81,8 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
 
 data class Vec4f(val x: Float, val y: Float, val z: Float, val w: Float) {
 
+    constructor(vector: Vec3f, w: Float) : this(vector.x, vector.y, vector.z, w)
+
     fun toVec3f(): Vec3f {
         return Vec3f(x, y, z)
     }

@@ -1,8 +1,9 @@
 package dev.rakrae.gameengine.graphics.shaders
 
 import dev.rakrae.gameengine.core.GameTime
-import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.graphics.pipeline.VertexShader
+import dev.rakrae.gameengine.graphics.pipeline.VertexShaderInputs
+import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.*
 
@@ -12,12 +13,12 @@ import kotlin.math.*
  */
 class DummyAnimationVertexShader : VertexShader {
 
-    override fun process(vertex: Vertex): Vertex {
-        val rotatedPos = rotate(vertex.position, GameTime.tickTime)
-        return Vertex(rotatedPos, vertex.textureCoordinates, vertex.normal)
+    override fun process(position: Vec3f, inputs: VertexShaderInputs): Vec4f {
+        val rotatedPos = rotate(position, GameTime.tickTime)
+        return inputs.projection * inputs.modelView * Vec4f(rotatedPos, 1f)
     }
 
-    private fun rotate(vector: Vec4f, radians: Float): Vec4f {
+    private fun rotate(vector: Vec3f, radians: Float): Vec3f {
         /*
         https://en.wikipedia.org/wiki/Atan2
         https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
@@ -28,11 +29,6 @@ class DummyAnimationVertexShader : VertexShader {
         val x = distance * cos(newAngleRadians)
         val z = distance * sin(newAngleRadians)
 
-        return Vec4f(
-            x,
-            vector.y,
-            z,
-            vector.w
-        )
+        return Vec3f(x, vector.y, z)
     }
 }
