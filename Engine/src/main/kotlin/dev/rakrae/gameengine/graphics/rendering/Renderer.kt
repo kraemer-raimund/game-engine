@@ -25,6 +25,7 @@ internal class Renderer {
         val projectionMatrix = scene.activeCamera.projectionMatrix
         val framebuffer = Bitmap(displayFrame.width, displayFrame.height)
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
+
         val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
         for (renderComponent in renderComponents) {
             val modelMatrix = renderComponent.transformMatrix
@@ -37,25 +38,7 @@ internal class Renderer {
         val deferredRenderingComponents = scene.nodes
             .mapNotNull { it.renderComponent }
             .filter { it.deferredShader != null }
-        for (renderComponent in deferredRenderingComponents) {
-            val deferredFramebuffer = Bitmap(displayFrame.width, displayFrame.height)
-                .apply { clear(Color(0u, 0u, 0u, 0u)) }
-            val deferredZBuffer = Buffer2f(
-                framebuffer.width,
-                framebuffer.height,
-                initValue = Float.POSITIVE_INFINITY
-            )
-            val modelMatrix = renderComponent.transformMatrix
-            val modelViewMatrix = viewMatrix * modelMatrix
-            render(renderComponent, deferredFramebuffer, deferredZBuffer, modelViewMatrix, projectionMatrix)
-            deferredRendering.postProcess(
-                renderComponent.deferredShader!!,
-                displayFrame,
-                zBuffer,
-                deferredFramebuffer,
-                deferredZBuffer
-            )
-        }
+        renderDeferred(deferredRenderingComponents, displayFrame, framebuffer, viewMatrix, projectionMatrix, zBuffer)
     }
 
     private suspend fun render(
@@ -101,6 +84,37 @@ internal class Renderer {
                         )
                     }
                 }
+            }
+        }
+    }
+
+    private suspend fun renderDeferred(
+        deferredRenderingComponents: List<RenderComponent>,
+        displayFrame: Bitmap,
+        framebuffer: Bitmap,
+        viewMatrix: Mat4x4f,
+        projectionMatrix: Mat4x4f,
+        zBuffer: Buffer2f
+    ) = coroutineScope {
+        for (renderComponent in deferredRenderingComponents) {
+            launch {
+                val deferredFramebuffer = Bitmap(displayFrame.width, displayFrame.height)
+                    .apply { clear(Color(0u, 0u, 0u, 0u)) }
+                val deferredZBuffer = Buffer2f(
+                    framebuffer.width,
+                    framebuffer.height,
+                    initValue = Float.POSITIVE_INFINITY
+                )
+                val modelMatrix = renderComponent.transformMatrix
+                val modelViewMatrix = viewMatrix * modelMatrix
+                render(renderComponent, deferredFramebuffer, deferredZBuffer, modelViewMatrix, projectionMatrix)
+                deferredRendering.postProcess(
+                    renderComponent.deferredShader!!,
+                    displayFrame,
+                    zBuffer,
+                    deferredFramebuffer,
+                    deferredZBuffer
+                )
             }
         }
     }
