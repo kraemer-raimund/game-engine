@@ -113,6 +113,13 @@ data class Mat4x4f(
         return (0..thisAsList.lastIndex).all { i -> similar(thisAsList[i], otherAsList[i]) }
     }
 
+    /**
+     * The trace of a square matrix is the sum of elements on the main diagonal.
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/Trace_(linear_algebra)">Wikipedia</a>
+     */
+    private val trace = a11 + a22 + a33 + a44
+
     companion object {
         val identity = Mat4x4f(
             1f, 0f, 0f, 0f,
