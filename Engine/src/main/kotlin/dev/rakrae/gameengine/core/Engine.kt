@@ -25,10 +25,11 @@ internal class Engine(game: Game) {
 
         swingWindow.container.addMouseMotionListener(awtMouseInputAdapter)
         Input.axisPairProvider2 = awtMouseInputAdapter
+
+        window = swingWindow
     }
 
-    private val window: Window = swingWindow
-    private val screen = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
+    private var displayBuffer = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
     private val renderer = Renderer()
     private val spriteRenderer = SpriteRenderer()
 
@@ -45,10 +46,10 @@ internal class Engine(game: Game) {
         },
         onRender = suspend {
             gameTime.onRender()
-            screen.clear()
-            renderer.render(game.scene, screen)
-            spriteRenderer.render(screen)
-            window.displayPixels(screen)
+            displayBuffer = Bitmap(window.size.width, window.size.height)
+            renderer.render(game.scene, displayBuffer)
+            spriteRenderer.render(displayBuffer)
+            window.displayPixels(displayBuffer)
         },
         onPause = suspend {
             game.onPause()
@@ -59,7 +60,7 @@ internal class Engine(game: Game) {
         onStop = suspend {
             game.onStop()
             delay(0.5.seconds)
-            screen.clear()
+            displayBuffer.clear()
         }
     )
 
@@ -71,7 +72,9 @@ internal class Engine(game: Game) {
         private const val DEFAULT_WIDTH = 1920
         private const val DEFAULT_HEIGHT = 1080
 
+        private lateinit var window: Window
+
         val aspectRatio: Float
-            get() = DEFAULT_WIDTH / DEFAULT_HEIGHT.toFloat()
+            get() = window.size.width / window.size.height.toFloat()
     }
 }

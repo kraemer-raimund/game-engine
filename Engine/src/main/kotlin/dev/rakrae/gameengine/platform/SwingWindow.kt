@@ -9,23 +9,16 @@ import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import javax.swing.JFrame
 
-/**
- * The window with the rendered pixels visible to the player.
- */
 internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
 
     internal val container get() = canvas
     private val frame = JFrame()
     private val canvas = Canvas()
-    private val bufferedImage = BufferedImage(
+    private var bufferedImage = BufferedImage(
         screenSize.width,
         screenSize.height,
-        BufferedImage.TYPE_INT_RGB
+        BufferedImage.TYPE_INT_ARGB
     )
-    private val pixels = bufferedImage.run {
-        val dataBuffer = raster.dataBuffer as DataBufferInt
-        dataBuffer.data
-    }
 
     init {
         frame.apply {
@@ -41,7 +34,14 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         canvas.requestFocus()
     }
 
+    override val size get() = canvas.size.run { ScreenSize(width, height) }
+
     override fun displayPixels(bitmap: Bitmap) {
+        val bufferedImage = this.bufferedImage
+            .takeIf { it.width == bitmap.width && it.height == bitmap.height }
+            ?: BufferedImage(bitmap.width, bitmap.height, BufferedImage.TYPE_INT_ARGB)
+        val pixels = (bufferedImage.raster.dataBuffer as DataBufferInt).data
+
         val bufferStrategy = canvas.bufferStrategy
         if (bufferStrategy == null) {
             canvas.createBufferStrategy(NUMBER_OF_BUFFERS)
