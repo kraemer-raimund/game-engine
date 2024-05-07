@@ -14,20 +14,24 @@ internal class VertexPostProcessing {
      * due to culling, clipping, and potentially geometry generation (via tesselation/geometry shaders).
      */
     fun postProcess(triangleClipSpace: Triangle, viewportSize: Vec2i): List<Triangle> {
+        val clippedTriangles = clip(triangleClipSpace)
+        return clippedTriangles
+            .map(::applyPerspectiveDivide)
+            .filter(::isFrontFace)
+            .map { viewportTransform(it, viewportSize) }
+    }
+
+    /**
+     * https://www.cs.ucr.edu/~shinar/courses/cs130-winter-2021/content/clipping.pdf
+     */
+    private fun clip(triangleClipSpace: Triangle): List<Triangle> {
         // Frustum culling.
         if (isCompletelyOutsideViewFrustum(triangleClipSpace)) {
             return emptyList()
         }
-
-        val triangleNormalizedDeviceCoords = applyPerspectiveDivide(triangleClipSpace)
-
-        // Back face culling.
-        if (!isFrontFace(triangleNormalizedDeviceCoords)) {
-            return emptyList()
-        }
-
-        val triangleViewportCoordinates = viewportTransform(triangleNormalizedDeviceCoords, viewportSize)
-        return listOf(triangleViewportCoordinates)
+        // Clipping not yet implemented. For now, we do a simple check against the viewing volume
+        // and cull the triangle if necessary.
+        return listOf(triangleClipSpace)
     }
 
     private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle): Boolean {
