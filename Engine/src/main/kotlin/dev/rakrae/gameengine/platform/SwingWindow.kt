@@ -6,6 +6,7 @@ import dev.rakrae.gameengine.graphics.ScreenSize
 import java.awt.Canvas
 import java.awt.Dimension
 import java.awt.Point
+import java.awt.event.WindowEvent
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import javax.swing.JFrame
@@ -126,6 +127,10 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
             isVisible = true
         }
         canvas.requestFocus()
+    }
+
+    override fun exit() {
+        frame.dispatchEvent(WindowEvent(frame, WindowEvent.WINDOW_CLOSING))
     }
 
     private fun ScreenSize.toDimension(): Dimension {

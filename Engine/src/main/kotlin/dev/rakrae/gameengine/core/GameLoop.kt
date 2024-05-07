@@ -5,7 +5,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.yield
 
-class GameLoop(
+internal class GameLoop(
     val onStart: suspend () -> Unit,
     val onTick: suspend () -> Unit,
     val onRender: suspend () -> Unit,

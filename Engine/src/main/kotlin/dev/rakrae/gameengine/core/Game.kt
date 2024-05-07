@@ -7,7 +7,14 @@ abstract class Game : GameLifeCycleReceiver {
     abstract val title: String
     abstract val scene: Scene
 
+    private lateinit var engine: Engine
+
     fun start() {
-        Engine(this).start()
+        engine = Engine(this)
+        engine.start()
+    }
+
+    fun stop() {
+        engine.stop()
     }
 }

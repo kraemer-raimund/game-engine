@@ -15,6 +15,8 @@ interface Window {
      */
     fun requestWindowState(requestedState: State)
 
+    fun exit()
+
     enum class State {
         FullScreen,
         Windowed

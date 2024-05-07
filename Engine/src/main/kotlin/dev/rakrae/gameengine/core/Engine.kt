@@ -61,11 +61,16 @@ class Engine(game: Game) {
             game.onStop()
             delay(0.5.seconds)
             displayBuffer.clear()
+            window.exit()
         }
     )
 
     internal fun start() {
         gameLoop.start()
+    }
+
+    internal fun stop() {
+        gameLoop.stop()
     }
 
     companion object {

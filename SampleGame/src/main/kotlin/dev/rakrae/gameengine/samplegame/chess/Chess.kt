@@ -32,12 +32,18 @@ class Chess : Game() {
 
         startFpsCounterCoroutine()
 
-        CoroutineScope(coroutineContext).launch {
-            while (true) {
-                delay(5.seconds)
-                Engine.activeWindow.requestWindowState(Window.State.FullScreen)
-                delay(5.seconds)
-                Engine.activeWindow.requestWindowState(Window.State.Windowed)
+        CoroutineScope(coroutineContext).run {
+            launch {
+                while (true) {
+                    delay(5.seconds)
+                    Engine.activeWindow.requestWindowState(Window.State.FullScreen)
+                    delay(5.seconds)
+                    Engine.activeWindow.requestWindowState(Window.State.Windowed)
+                }
+            }
+            launch {
+                delay(8.seconds)
+                stop()
             }
         }
     }
