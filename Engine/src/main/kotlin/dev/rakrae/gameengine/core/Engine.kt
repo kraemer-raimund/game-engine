@@ -14,20 +14,20 @@ import kotlin.time.Duration.Companion.seconds
 class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
-    private val swingWindow = SwingWindow(game.title, defaultScreenSize)
-
-    private val awtKeyboardInputAdapter = AwtKeyboardInputAdapter()
     private val awtMouseInputAdapter = AwtMouseInputAdapter()
+    val window: Window = SwingWindow(game.title, defaultScreenSize)
+        .also { swingWindow ->
+            AwtKeyboardInputAdapter().also { awtKeyboardInputAdapter ->
+                swingWindow.container.addKeyListener(awtKeyboardInputAdapter)
+                Input.axisPairProvider1 = awtKeyboardInputAdapter
+            }
 
-    init {
-        swingWindow.container.addKeyListener(awtKeyboardInputAdapter)
-        Input.axisPairProvider1 = awtKeyboardInputAdapter
-
-        swingWindow.container.addMouseMotionListener(awtMouseInputAdapter)
-        Input.axisPairProvider2 = awtMouseInputAdapter
-
-        window = swingWindow
-    }
+            awtMouseInputAdapter.also { awtMouseInputAdapter ->
+                swingWindow.container.addMouseMotionListener(awtMouseInputAdapter)
+                Input.axisPairProvider2 = awtMouseInputAdapter
+            }
+            Companion.window = swingWindow
+        }
 
     private var displayBuffer = Bitmap(defaultScreenSize.width, defaultScreenSize.height)
     private val renderer = Renderer()
@@ -78,7 +78,6 @@ class Engine(game: Game) {
         private const val DEFAULT_HEIGHT = 1080
 
         private lateinit var window: Window
-        val activeWindow get() = window
 
         val aspectRatio: Float
             get() = window.size.width / window.size.height.toFloat()

@@ -1,6 +1,5 @@
 package dev.rakrae.gameengine.samplegame.chess
 
-import dev.rakrae.gameengine.core.Engine
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.core.Window
@@ -36,9 +35,9 @@ class Chess : Game() {
             launch {
                 while (true) {
                     delay(5.seconds)
-                    Engine.activeWindow.requestWindowState(Window.State.FullScreen)
+                    window.requestWindowState(Window.State.FullScreen)
                     delay(5.seconds)
-                    Engine.activeWindow.requestWindowState(Window.State.Windowed)
+                    window.requestWindowState(Window.State.Windowed)
                 }
             }
             launch {

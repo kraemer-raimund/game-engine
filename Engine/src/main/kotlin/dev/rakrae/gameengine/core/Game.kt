@@ -9,6 +9,8 @@ abstract class Game : GameLifeCycleReceiver {
 
     private lateinit var engine: Engine
 
+    val window get() = engine.window
+
     fun start() {
         engine = Engine(this)
         engine.start()
