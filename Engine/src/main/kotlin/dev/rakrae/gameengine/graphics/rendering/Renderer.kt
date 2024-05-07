@@ -11,6 +11,7 @@ import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.time.measureTime
 
 internal class Renderer {
 
@@ -26,19 +27,38 @@ internal class Renderer {
         val framebuffer = Bitmap(displayFrame.width, displayFrame.height)
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
-        val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
-        for (renderComponent in renderComponents) {
-            val modelMatrix = renderComponent.transformMatrix
-            val modelViewMatrix = viewMatrix * modelMatrix
-            render(renderComponent, framebuffer, zBuffer, modelViewMatrix, projectionMatrix)
+        val renderingTime = measureTime {
+            val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+            for (renderComponent in renderComponents) {
+                val modelMatrix = renderComponent.transformMatrix
+                val modelViewMatrix = viewMatrix * modelMatrix
+                render(renderComponent, framebuffer, zBuffer, modelViewMatrix, projectionMatrix)
+            }
         }
 
-        imagePostProcessing.postProcess(DepthDarkeningPostProcessingShader(), framebuffer, zBuffer, displayFrame)
+        val imagePostProcessingTime = measureTime {
+            imagePostProcessing.postProcess(DepthDarkeningPostProcessingShader(), framebuffer, zBuffer, displayFrame)
+        }
 
-        val deferredRenderingComponents = scene.nodes
-            .mapNotNull { it.renderComponent }
-            .filter { it.deferredShader != null }
-        renderDeferred(deferredRenderingComponents, displayFrame, framebuffer, viewMatrix, projectionMatrix, zBuffer)
+        val deferredRenderingTime = measureTime {
+            val deferredRenderingComponents = scene.nodes
+                .mapNotNull { it.renderComponent }
+                .filter { it.deferredShader != null }
+            renderDeferred(
+                deferredRenderingComponents,
+                displayFrame,
+                framebuffer,
+                viewMatrix,
+                projectionMatrix,
+                zBuffer
+            )
+        }
+
+        println(
+            "Rendering time: $renderingTime\n" +
+                    "Image post processing time: $imagePostProcessingTime\n" +
+                    "Deferred rendering time: $deferredRenderingTime"
+        )
     }
 
     private suspend fun render(
