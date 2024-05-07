@@ -19,17 +19,21 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         screenSize.height,
         BufferedImage.TYPE_INT_ARGB
     )
+    private var currentState = Window.State.Windowed
+    private var requestedState: Window.State? = null
 
     init {
         frame.apply {
             add(canvas)
+            frame.title = title
+            isResizable = true
+            isUndecorated = false
             pack()
-            this.title = title
+            extendedState = JFrame.NORMAL
             size = Dimension(screenSize.width, screenSize.height)
             setLocationRelativeTo(null)
-            isResizable = true
-            isVisible = true
             defaultCloseOperation = JFrame.EXIT_ON_CLOSE
+            isVisible = true
         }
         canvas.requestFocus()
     }
@@ -37,6 +41,12 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
     override val size get() = canvas.size.run { ScreenSize(width, height) }
 
     override fun displayPixels(bitmap: Bitmap) {
+        requestedState?.let {
+            currentState = it
+            requestedState = null
+            applyWindowSettings(currentState)
+        }
+
         val bufferedImage = this.bufferedImage
             .takeIf { it.width == bitmap.width && it.height == bitmap.height }
             ?: BufferedImage(bitmap.width, bitmap.height, BufferedImage.TYPE_INT_ARGB)
@@ -77,6 +87,32 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
             }
         }
         return flipped
+    }
+
+    override fun requestWindowState(requestedState: Window.State) {
+        // Set the requested state, but don't immediately apply the respective window settings
+        // in order to prevent concurrency issues. The render thread will apply the settings upon
+        // rendering the next frame.
+        this.requestedState = requestedState
+    }
+
+    private fun applyWindowSettings(requestedState: Window.State) {
+        val requestedFullScreen = requestedState == Window.State.FullScreen
+        val isAlreadyFullScreen = frame.extendedState == JFrame.MAXIMIZED_BOTH
+
+        if (requestedFullScreen == isAlreadyFullScreen) {
+            return
+        }
+
+        frame.apply {
+            dispose()
+            isResizable = !requestedFullScreen
+            isUndecorated = requestedFullScreen
+            pack()
+            extendedState = if (requestedFullScreen) JFrame.MAXIMIZED_BOTH else JFrame.NORMAL
+            isVisible = true
+        }
+        canvas.requestFocus()
     }
 
     companion object {

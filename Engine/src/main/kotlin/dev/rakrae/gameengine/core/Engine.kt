@@ -11,7 +11,7 @@ import dev.rakrae.gameengine.platform.SwingWindow
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-internal class Engine(game: Game) {
+class Engine(game: Game) {
 
     private val defaultScreenSize = ScreenSize(DEFAULT_WIDTH, DEFAULT_HEIGHT)
     private val swingWindow = SwingWindow(game.title, defaultScreenSize)
@@ -64,7 +64,7 @@ internal class Engine(game: Game) {
         }
     )
 
-    fun start() {
+    internal fun start() {
         gameLoop.start()
     }
 
@@ -73,6 +73,7 @@ internal class Engine(game: Game) {
         private const val DEFAULT_HEIGHT = 1080
 
         private lateinit var window: Window
+        val activeWindow get() = window
 
         val aspectRatio: Float
             get() = window.size.width / window.size.height.toFloat()
