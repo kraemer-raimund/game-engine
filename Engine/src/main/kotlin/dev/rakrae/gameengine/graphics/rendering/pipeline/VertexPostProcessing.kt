@@ -15,7 +15,7 @@ internal class VertexPostProcessing {
      */
     fun postProcess(triangleClipSpace: Triangle, viewportSize: Vec2i): Triangle? {
         // Frustum culling.
-        if (!isInsideViewFrustum(triangleClipSpace)) {
+        if (isCompletelyOutsideViewFrustum(triangleClipSpace)) {
             return null
         }
 
@@ -30,7 +30,7 @@ internal class VertexPostProcessing {
         return viewportCoordinates
     }
 
-    private fun isInsideViewFrustum(triangleClipSpace: Triangle): Boolean {
+    private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle): Boolean {
         // View volume test in clip coordinates. In NDC it would be more intuitive (simply check
         // whether all 3 vertices of the triangle are within -1..1 in all 3 coordinates), but
         // it would project points from behind the camera in front of it (and invert their
@@ -41,7 +41,7 @@ internal class VertexPostProcessing {
         // https://gamedev.stackexchange.com/a/65798/71768
         val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
-        return vertexPositions.any { position ->
+        return vertexPositions.none { position ->
             position.x in -position.w..position.w
                     && position.y in -position.w..position.w
                     && position.z in -position.w..position.w
