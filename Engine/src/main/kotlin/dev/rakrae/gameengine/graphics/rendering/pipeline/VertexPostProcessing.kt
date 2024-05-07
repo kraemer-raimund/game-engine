@@ -10,24 +10,24 @@ import kotlin.math.acos
 internal class VertexPostProcessing {
 
     /**
-     * Converts clip space coordinates to viewport coordinates, culling and clipping triangles
-     * that are completely or partially outside the view frustum.
+     * Converts clip space coordinates to viewport coordinates. Returns zero, one or multiple triangles
+     * due to culling, clipping, and potentially geometry generation (via tesselation/geometry shaders).
      */
-    fun postProcess(triangleClipSpace: Triangle, viewportSize: Vec2i): Triangle? {
+    fun postProcess(triangleClipSpace: Triangle, viewportSize: Vec2i): List<Triangle> {
         // Frustum culling.
         if (isCompletelyOutsideViewFrustum(triangleClipSpace)) {
-            return null
+            return emptyList()
         }
 
         val triangleNormalizedDeviceCoords = applyPerspectiveDivide(triangleClipSpace)
 
         // Back face culling.
         if (!isFrontFace(triangleNormalizedDeviceCoords)) {
-            return null
+            return emptyList()
         }
 
-        val viewportCoordinates = viewportTransform(triangleNormalizedDeviceCoords, viewportSize)
-        return viewportCoordinates
+        val triangleViewportCoordinates = viewportTransform(triangleNormalizedDeviceCoords, viewportSize)
+        return listOf(triangleViewportCoordinates)
     }
 
     private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle): Boolean {

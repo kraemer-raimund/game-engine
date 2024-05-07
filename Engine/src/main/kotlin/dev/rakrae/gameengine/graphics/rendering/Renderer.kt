@@ -79,29 +79,31 @@ internal class Renderer {
                             modelViewMatrix
                         )
 
-                        val triangleViewportCoordinates = vertexPostProcessing.postProcess(
+                        val trianglesViewportCoordinates = vertexPostProcessing.postProcess(
                             triangleClipSpace,
                             viewportSize = Vec2i(framebuffer.width, framebuffer.height)
-                        ) ?: continue
-
-                        val renderContext = RenderContext(
-                            framebuffer,
-                            zBuffer,
-                            wComponents = RenderContext.WComponents(
-                                triangleClipSpace.v0.position.w,
-                                triangleClipSpace.v1.position.w,
-                                triangleClipSpace.v2.position.w
-                            ),
-                            projectionViewModelMatrix = projectionMatrix * modelViewMatrix
                         )
 
-                        rasterizer.rasterize(
-                            triangleViewportCoordinates,
-                            triangleWorldSpace.normal,
-                            renderComponent.material,
-                            renderComponent.fragmentShader,
-                            renderContext
-                        )
+                        for (triangleViewportCoordinates in trianglesViewportCoordinates) {
+                            val renderContext = RenderContext(
+                                framebuffer,
+                                zBuffer,
+                                wComponents = RenderContext.WComponents(
+                                    triangleClipSpace.v0.position.w,
+                                    triangleClipSpace.v1.position.w,
+                                    triangleClipSpace.v2.position.w
+                                ),
+                                projectionViewModelMatrix = projectionMatrix * modelViewMatrix
+                            )
+
+                            rasterizer.rasterize(
+                                triangleViewportCoordinates,
+                                triangleWorldSpace.normal,
+                                renderComponent.material,
+                                renderComponent.fragmentShader,
+                                renderContext
+                            )
+                        }
                     }
                 }
             }
