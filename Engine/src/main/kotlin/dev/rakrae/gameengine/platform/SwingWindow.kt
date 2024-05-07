@@ -73,7 +73,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         val flipped = Bitmap(bitmap.width, bitmap.height)
         for (x in 0..<bitmap.width) {
             for (y in 0..<bitmap.height) {
-                flipped.setPixelIfInBounds(x, flipped.height - y, bitmap.getPixel(x, y))
+                flipped.setPixel(x, flipped.height - y - 1, bitmap.getPixel(x, y))
             }
         }
         return flipped

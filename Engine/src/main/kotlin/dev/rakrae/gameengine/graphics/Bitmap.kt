@@ -8,11 +8,6 @@ class Bitmap(val width: Int, val height: Int) {
         pixels[x + y * width] = color.asIntARGB.toInt()
     }
 
-    fun setPixelIfInBounds(x: Int, y: Int, color: Color) {
-        if (!isInBounds(x, y)) return
-        pixels[x + y * width] = color.asIntARGB.toInt()
-    }
-
     private fun isInBounds(x: Int, y: Int): Boolean {
         return x in 0..<width && y in 0..<height
     }
