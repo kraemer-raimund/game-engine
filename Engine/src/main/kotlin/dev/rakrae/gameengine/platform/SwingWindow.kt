@@ -48,10 +48,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
             return
         }
 
-        val flippedVertically = flipVertically(bitmap)
-        for (i in 0 until flippedVertically.width * flippedVertically.height) {
-            pixels[i] = flippedVertically.pixels[i]
-        }
+        flipVertically(bitmap).pixels.copyInto(pixels)
 
         bufferStrategy.drawGraphics.apply {
             drawImage(
