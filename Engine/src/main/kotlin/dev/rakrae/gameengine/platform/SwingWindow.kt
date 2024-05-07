@@ -5,6 +5,7 @@ import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.ScreenSize
 import java.awt.Canvas
 import java.awt.Dimension
+import java.awt.Point
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
 import javax.swing.JFrame
@@ -22,6 +23,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
     private var currentState = Window.State.Windowed
     private var requestedState: Window.State? = null
     private var windowedSize: Dimension = screenSize.toDimension()
+    private var windowedPosition: Point = Point(0, 0)
 
     init {
         frame.apply {
@@ -106,6 +108,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
 
         if (requestedFullScreen) {
             windowedSize = size.toDimension()
+            windowedPosition = frame.locationOnScreen
         }
 
         frame.apply {
@@ -117,6 +120,9 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
             }
             pack()
             extendedState = if (requestedFullScreen) JFrame.MAXIMIZED_BOTH else JFrame.NORMAL
+            if (!requestedFullScreen) {
+                location = windowedPosition
+            }
             isVisible = true
         }
         canvas.requestFocus()
