@@ -21,16 +21,16 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
     )
     private var currentState = Window.State.Windowed
     private var requestedState: Window.State? = null
+    private var windowedSize: Dimension = screenSize.toDimension()
 
     init {
         frame.apply {
-            add(canvas)
+            add(canvas.also { it.size = screenSize.toDimension() })
             frame.title = title
             isResizable = true
             isUndecorated = false
             pack()
             extendedState = JFrame.NORMAL
-            size = Dimension(screenSize.width, screenSize.height)
             setLocationRelativeTo(null)
             defaultCloseOperation = JFrame.EXIT_ON_CLOSE
             isVisible = true
@@ -38,7 +38,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         canvas.requestFocus()
     }
 
-    override val size get() = canvas.size.run { ScreenSize(width, height) }
+    override val size get() = canvas.size.toScreenSize()
 
     override fun displayPixels(bitmap: Bitmap) {
         requestedState?.let {
@@ -104,15 +104,30 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
             return
         }
 
+        if (requestedFullScreen) {
+            windowedSize = size.toDimension()
+        }
+
         frame.apply {
             dispose()
             isResizable = !requestedFullScreen
             isUndecorated = requestedFullScreen
+            if (!requestedFullScreen) {
+                canvas.size = windowedSize
+            }
             pack()
             extendedState = if (requestedFullScreen) JFrame.MAXIMIZED_BOTH else JFrame.NORMAL
             isVisible = true
         }
         canvas.requestFocus()
+    }
+
+    private fun ScreenSize.toDimension(): Dimension {
+        return Dimension(width, height)
+    }
+
+    private fun Dimension.toScreenSize(): ScreenSize {
+        return ScreenSize(width, height)
     }
 
     companion object {
