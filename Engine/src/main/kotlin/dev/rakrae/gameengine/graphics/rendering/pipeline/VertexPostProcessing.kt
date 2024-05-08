@@ -19,8 +19,13 @@ internal class VertexPostProcessing {
     }
 
     /**
-     * https://en.wikipedia.org/wiki/Clipping_(computer_graphics)
-     * https://www.cs.ucr.edu/~shinar/courses/cs130-winter-2021/content/clipping.pdf
+     * Clip the triangle into multiple triangles if it intersects one or multiple of the view
+     * frustums planes. If the triangle lies completely inside the view frustum, it remains as is.
+     * If it lies completely outside the view frustum, it is culled (i.e., no triangles are
+     * returned).
+     *
+     * @see <a href="https://en.wikipedia.org/wiki/Clipping_(computer_graphics)">https://en.wikipedia.org/wiki/Clipping_(computer_graphics)<a/>
+     * @see <a href="https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm">https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm<a/>
      */
     private fun clip(triangleClipSpace: Triangle): List<Triangle> {
         // Frustum culling.
