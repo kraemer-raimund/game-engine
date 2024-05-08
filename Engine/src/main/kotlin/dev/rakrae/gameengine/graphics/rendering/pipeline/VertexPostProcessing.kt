@@ -82,8 +82,9 @@ internal class VertexPostProcessing {
     }
 
     /**
-     * See section 14.6.1 of the OpenGL specification:
-     * https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf
+     * See section 14.6.1 of the OpenGL specification (as of version 4.6.)
+     *
+     * @see <a href="https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf">https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf</a>
      */
     private fun determineWindingOrder(triangleNormalizedDeviceCoordinates: Triangle): WindingOrder {
         val v0 = with(triangleNormalizedDeviceCoordinates.v0.position) { Vec2f(x, y) }
