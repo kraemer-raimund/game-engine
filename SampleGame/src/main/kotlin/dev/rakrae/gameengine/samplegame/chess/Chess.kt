@@ -2,7 +2,6 @@ package dev.rakrae.gameengine.samplegame.chess
 
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
-import dev.rakrae.gameengine.core.Window
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.levels.ChessExampleLevel
@@ -30,21 +29,6 @@ class Chess : Game() {
         scene.activeCamera.translate(Vec3f(0f, 1.8f, 0f))
 
         startFpsCounterCoroutine()
-
-        CoroutineScope(coroutineContext).run {
-            launch {
-                while (true) {
-                    delay(5.seconds)
-                    window.requestWindowState(Window.State.FullScreen)
-                    delay(5.seconds)
-                    window.requestWindowState(Window.State.Windowed)
-                }
-            }
-            launch {
-                delay(8.seconds)
-                stop()
-            }
-        }
     }
 
     override suspend fun onTick() {
