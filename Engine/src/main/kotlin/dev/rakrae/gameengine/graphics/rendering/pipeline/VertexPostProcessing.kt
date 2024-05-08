@@ -1,11 +1,9 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
+import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec2i
-import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
-import kotlin.math.PI
-import kotlin.math.acos
 
 internal class VertexPostProcessing {
 
@@ -14,14 +12,14 @@ internal class VertexPostProcessing {
      * due to culling, clipping, and potentially geometry generation (via tesselation/geometry shaders).
      */
     fun postProcess(triangleClipSpace: Triangle, viewportSize: Vec2i): List<Triangle> {
-        val clippedTriangles = clip(triangleClipSpace)
-        return clippedTriangles
+        return clip(triangleClipSpace)
             .map(::applyPerspectiveDivide)
             .filter(::isFrontFace)
             .map { viewportTransform(it, viewportSize) }
     }
 
     /**
+     * https://en.wikipedia.org/wiki/Clipping_(computer_graphics)
      * https://www.cs.ucr.edu/~shinar/courses/cs130-winter-2021/content/clipping.pdf
      */
     private fun clip(triangleClipSpace: Triangle): List<Triangle> {
@@ -52,17 +50,6 @@ internal class VertexPostProcessing {
         }
     }
 
-    /**
-     * True if the polygon's front face is oriented towards the camera.
-     * If back face culling is desired/enabled, the polygon will only be rendered if this is true.
-     */
-    private fun isFrontFace(triangleClipSpace: Triangle): Boolean {
-        val n = triangleClipSpace.normal.normalized
-        val view = Vec3f(0f, 0f, 1f)
-        val angleRad = acos(view dot n)
-        return angleRad < 0.5f * PI
-    }
-
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
         return Triangle(
             triangle.v0.copy(position = applyPerspectiveDivide(triangle.v0.position)),
@@ -78,6 +65,37 @@ internal class VertexPostProcessing {
             vector.z / vector.w,
             1f
         )
+    }
+
+    /**
+     * True if the polygon's front face is oriented towards the camera.
+     * If back face culling is desired/enabled, the polygon will only be rendered if this is true.
+     */
+    private fun isFrontFace(triangleNormalizedDeviceCoordinates: Triangle): Boolean {
+        val windingOrder = determineWindingOrder(triangleNormalizedDeviceCoordinates)
+        return windingOrder == WindingOrder.CounterClockwise
+    }
+
+    /**
+     * See section 14.6.1 of the OpenGL specification:
+     * https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf
+     */
+    private fun determineWindingOrder(triangleNormalizedDeviceCoordinates: Triangle): WindingOrder {
+        val v0 = with(triangleNormalizedDeviceCoordinates.v0.position) { Vec2f(x, y) }
+        val v1 = with(triangleNormalizedDeviceCoordinates.v1.position) { Vec2f(x, y) }
+        val v2 = with(triangleNormalizedDeviceCoordinates.v2.position) { Vec2f(x, y) }
+
+        val signedArea = 0.5f * (
+                listOf(
+                    (v0.x * v1.y) - (v1.x * v0.y),
+                    (v1.x * v2.y) - (v2.x * v1.y),
+                    (v2.x * v0.y) - (v0.x * v2.y)
+                ).sum())
+
+        return when {
+            signedArea >= 0 -> WindingOrder.Clockwise
+            else -> WindingOrder.CounterClockwise
+        }
     }
 
     private fun viewportTransform(triangle: Triangle, screenSize: Vec2i): Triangle {
