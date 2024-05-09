@@ -24,8 +24,20 @@ internal class VertexPostProcessing {
      * If it lies completely outside the view frustum, it is culled (i.e., no triangles are
      * returned).
      *
-     * @see <a href="https://en.wikipedia.org/wiki/Clipping_(computer_graphics)">https://en.wikipedia.org/wiki/Clipping_(computer_graphics)<a/>
-     * @see <a href="https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm">https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm<a/>
+     * - [Clipping (Wikipedia)](https://en.wikipedia.org/wiki/Clipping_(computer_graphics))
+     * - [Sutherland–Hodgman algorithm (Wikipedia)](https://en.wikipedia.org/wiki/Sutherland%E2%80%93Hodgman_algorithm)
+     *
+     * **Note:** View volume test (frustum culling) and clipping must happen in clip coordinates.
+     * In NDC it would be more intuitive (simply check whether all 3 vertices of the triangle
+     * are within -1..1 in all 3 coordinates), but it would project points from behind the
+     * camera in front of it (and invert their coordinates, like a pinhole camera) due to
+     * perspective divide with negative w.
+     *
+     * - [https://gamedev.stackexchange.com/a/158859/71768](https://gamedev.stackexchange.com/a/158859/71768)
+     * - [https://stackoverflow.com/a/20180585/3726133](https://stackoverflow.com/a/20180585/3726133)
+     * - [https://stackoverflow.com/a/76094339/3726133](https://stackoverflow.com/a/76094339/3726133)
+     * - [https://stackoverflow.com/a/31687061/3726133](https://stackoverflow.com/a/31687061/3726133)
+     * - [https://gamedev.stackexchange.com/a/65798/71768](https://gamedev.stackexchange.com/a/65798/71768)
      */
     private fun clip(triangleClipSpace: Triangle): List<Triangle> {
         // Frustum culling.
@@ -38,14 +50,7 @@ internal class VertexPostProcessing {
     }
 
     private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle): Boolean {
-        // View volume test in clip coordinates. In NDC it would be more intuitive (simply check
-        // whether all 3 vertices of the triangle are within -1..1 in all 3 coordinates), but
-        // it would project points from behind the camera in front of it (and invert their
-        // coordinates, like a pinhole camera) due to perspective divide with negative w.
-        // https://gamedev.stackexchange.com/a/158859/71768
-        // https://stackoverflow.com/a/76094339/3726133
-        // https://stackoverflow.com/a/31687061/3726133
-        // https://gamedev.stackexchange.com/a/65798/71768
+
         val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
         return vertexPositions.none { position ->
