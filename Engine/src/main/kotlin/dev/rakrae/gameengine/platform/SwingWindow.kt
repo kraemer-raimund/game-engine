@@ -41,8 +41,6 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         canvas.requestFocus()
     }
 
-    override val size get() = canvas.size.toScreenSize()
-
     override fun displayPixels(bitmap: Bitmap) {
         requestedState?.let {
             currentState = it
@@ -108,7 +106,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         }
 
         if (requestedFullScreen) {
-            windowedSize = size.toDimension()
+            windowedSize = canvas.size
             windowedPosition = frame.locationOnScreen
         }
 
