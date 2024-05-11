@@ -30,7 +30,7 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         frame.apply {
             add(canvas.also { it.size = screenSize.toDimension() })
             frame.title = title
-            isResizable = true
+            isResizable = false
             isUndecorated = false
             pack()
             extendedState = JFrame.NORMAL
@@ -114,7 +114,6 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
 
         frame.apply {
             dispose()
-            isResizable = !requestedFullScreen
             isUndecorated = requestedFullScreen
             if (!requestedFullScreen) {
                 canvas.size = windowedSize
