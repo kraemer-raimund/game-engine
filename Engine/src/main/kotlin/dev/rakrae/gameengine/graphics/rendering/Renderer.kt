@@ -4,7 +4,7 @@ import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
-import dev.rakrae.gameengine.graphics.rendering.shaders.DepthDarkeningPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.scene.RenderComponent
@@ -37,7 +37,7 @@ internal class Renderer {
         }
 
         val imagePostProcessingTime = measureTime {
-            imagePostProcessing.postProcess(DepthDarkeningPostProcessingShader(), framebuffer, zBuffer, displayFrame)
+            imagePostProcessing.postProcess(DepthOfFieldPostProcessingShader(), framebuffer, zBuffer, displayFrame)
         }
 
         val deferredRenderingTime = measureTime {
