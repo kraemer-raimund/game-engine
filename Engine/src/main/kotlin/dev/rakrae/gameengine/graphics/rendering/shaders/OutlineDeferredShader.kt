@@ -38,6 +38,6 @@ class OutlineDeferredShader(
                 }
             }
         }
-        return framebuffer.getPixel(position.x, position.y)
+        return null
     }
 }
