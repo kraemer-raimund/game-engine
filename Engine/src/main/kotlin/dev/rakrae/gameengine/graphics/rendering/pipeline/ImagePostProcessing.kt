@@ -13,15 +13,25 @@ internal class ImagePostProcessing {
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
         target: Bitmap
-    ) = coroutineScope {
+    ) {
+
+        val postProcessingBuffer = Bitmap(target.width, target.height)
+
+        coroutineScope {
+            for (x in 0..<postProcessingBuffer.width) {
+                launch {
+                    for (y in (0..<postProcessingBuffer.height)) {
+                        val color = postProcessingShader.postProcess(Vec2i(x, y), framebuffer, zBuffer)
+                            ?: framebuffer.getPixel(x, y)
+                        postProcessingBuffer.setPixel(x, y, color)
+                    }
+                }
+            }
+        }
 
         for (x in 0..<target.width) {
-            launch {
-                for (y in (0..<target.height)) {
-                    val color = postProcessingShader.postProcess(Vec2i(x, y), framebuffer, zBuffer)
-                        ?: framebuffer.getPixel(x, y)
-                    target.setPixel(x, y, color)
-                }
+            for (y in 0..<target.height) {
+                target.setPixel(x, y, postProcessingBuffer.getPixel(x, y))
             }
         }
     }
