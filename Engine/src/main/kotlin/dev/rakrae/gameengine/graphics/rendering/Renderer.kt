@@ -24,6 +24,7 @@ internal class Renderer {
     suspend fun render(scene: Scene, displayFrame: Bitmap) = coroutineScope {
         val viewMatrix = scene.activeCamera.viewMatrix
         val projectionMatrix = scene.activeCamera.projectionMatrix
+        val clippingPlanes = with(scene.activeCamera) { ClippingPlanes(nearPlane, farPlane) }
         val framebuffer = Bitmap(displayFrame.width, displayFrame.height)
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
@@ -32,7 +33,14 @@ internal class Renderer {
             for (renderComponent in renderComponents) {
                 val modelMatrix = renderComponent.transformMatrix
                 val modelViewMatrix = viewMatrix * modelMatrix
-                render(renderComponent, framebuffer, zBuffer, modelViewMatrix, projectionMatrix)
+                render(
+                    renderComponent,
+                    framebuffer,
+                    zBuffer,
+                    modelViewMatrix,
+                    projectionMatrix,
+                    clippingPlanes
+                )
             }
         }
 
@@ -50,7 +58,8 @@ internal class Renderer {
                 framebuffer,
                 viewMatrix,
                 projectionMatrix,
-                zBuffer
+                zBuffer,
+                clippingPlanes
             )
         }
 
@@ -67,6 +76,7 @@ internal class Renderer {
         zBuffer: Buffer2f,
         modelViewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
+        clippingPlanes: ClippingPlanes
     ) = coroutineScope {
         launch {
             for (trianglesChunk in renderComponent.mesh.triangles.chunked(20)) {
@@ -81,7 +91,8 @@ internal class Renderer {
 
                         val trianglesViewportCoordinates = vertexPostProcessing.postProcess(
                             triangleClipSpace,
-                            viewportSize = Vec2i(framebuffer.width, framebuffer.height)
+                            viewportSize = Vec2i(framebuffer.width, framebuffer.height),
+                            clippingPlanes = clippingPlanes
                         )
 
                         for (triangleViewportCoordinates in trianglesViewportCoordinates) {
@@ -116,7 +127,8 @@ internal class Renderer {
         framebuffer: Bitmap,
         viewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
-        zBuffer: Buffer2f
+        zBuffer: Buffer2f,
+        clippingPlanes: ClippingPlanes
     ) = coroutineScope {
         for (renderComponent in deferredRenderingComponents) {
             launch {
@@ -129,7 +141,14 @@ internal class Renderer {
                 )
                 val modelMatrix = renderComponent.transformMatrix
                 val modelViewMatrix = viewMatrix * modelMatrix
-                render(renderComponent, deferredFramebuffer, deferredZBuffer, modelViewMatrix, projectionMatrix)
+                render(
+                    renderComponent,
+                    deferredFramebuffer,
+                    deferredZBuffer,
+                    modelViewMatrix,
+                    projectionMatrix,
+                    clippingPlanes
+                )
                 deferredRendering.postProcess(
                     renderComponent.deferredShader!!,
                     displayFrame,

@@ -1,8 +1,10 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
+import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec2i
+import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 
 internal class VertexPostProcessing {
@@ -11,8 +13,12 @@ internal class VertexPostProcessing {
      * Converts clip space coordinates to viewport coordinates. Returns zero, one or multiple triangles
      * due to culling, clipping, and potentially geometry generation (via tesselation/geometry shaders).
      */
-    fun postProcess(triangleClipSpace: Triangle, viewportSize: Vec2i): List<Triangle> {
-        return clip(triangleClipSpace)
+    fun postProcess(
+        triangleClipSpace: Triangle,
+        viewportSize: Vec2i,
+        clippingPlanes: ClippingPlanes
+    ): List<Triangle> {
+        return clip(triangleClipSpace, clippingPlanes)
             .map(::applyPerspectiveDivide)
             .filter(::isFrontFace)
             .map { viewportTransform(it, viewportSize) }
@@ -39,25 +45,122 @@ internal class VertexPostProcessing {
      * - [https://stackoverflow.com/a/31687061/3726133](https://stackoverflow.com/a/31687061/3726133)
      * - [https://gamedev.stackexchange.com/a/65798/71768](https://gamedev.stackexchange.com/a/65798/71768)
      */
-    private fun clip(triangleClipSpace: Triangle): List<Triangle> {
+    private fun clip(triangleClipSpace: Triangle, clippingPlanes: ClippingPlanes): List<Triangle> {
         // Frustum culling.
-        if (isCompletelyOutsideViewFrustum(triangleClipSpace)) {
+        if (isCompletelyOutsideViewFrustum(triangleClipSpace, clippingPlanes.near)) {
             return emptyList()
         }
-        // Clipping not yet implemented. For now, we do a simple check against the viewing volume
-        // and cull the triangle if necessary.
-        return listOf(triangleClipSpace)
+        return clipNear(triangleClipSpace, clippingPlanes.near)
     }
 
-    private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle): Boolean {
-
+    private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle, nearClippingPlane: Float): Boolean {
         val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
         return vertexPositions.none { position ->
             position.x in -position.w..position.w
                     && position.y in -position.w..position.w
                     && position.z in -position.w..position.w
+                    && position.w >= nearClippingPlane
         }
+    }
+
+    /**
+     * Simplified Sutherland-Hodgman algorithm clipping only at the near clipping plane.
+     * Clipping at other planes may improve performance (although not necessarily), but at the
+     * near clipping plane it is necessary in order to prevent spilling vertices from behind the
+     * plane into visible coordinates during perspective divide.
+     */
+    private fun clipNear(triangleClipSpace: Triangle, nearClippingPlane: Float): List<Triangle> {
+        val vertices = with(triangleClipSpace) { mutableListOf(v0, v1, v2) }
+
+        val lines = (0..2)
+            .map { i -> Pair(vertices[i], vertices[(i + 1) % vertices.size]) }
+
+        val clippedLines = lines.mapNotNull { line ->
+            val (v0, v1) = line
+            val w0 = v0.position.w
+            val w1 = v1.position.w
+            val near = nearClippingPlane
+            when {
+                // Both vertices are in front of the near clipping plane.
+                w0 >= near && w1 >= near -> return@mapNotNull line
+
+                // The line crosses the near clipping plane with v0 visible and v1 behind
+                // the near clipping plane.
+                w0 >= near && w1 < near -> clipLine(line, near)
+
+                // The line crosses the near clipping plane with v1 visible and v0 behind
+                // the near clipping plane.
+                w0 < near && w1 >= near -> clipLine(Pair(v1, v0), near)
+
+                // Both vertices are behind the near clipping plane.
+                else -> null
+            }
+        }
+
+        val clippedVertices = clippedLines
+            .flatMap { listOf(it.first, it.second) }
+            .toSet()
+            .toList()
+
+        return when {
+            clippedVertices.size < 3 -> emptyList()
+            clippedVertices.size == 3 -> listOf(Triangle(clippedVertices[0], clippedVertices[1], clippedVertices[2]))
+            clippedVertices.size == 4 -> assembleTriangles(clippedVertices)
+            else -> throw UnsupportedOperationException(
+                "Clipping resulted in more than 4 unique vertices, but only up to 4 were expected."
+            )
+        }
+    }
+
+    private fun clipLine(line: Pair<Vertex, Vertex>, nearClippingPlane: Float): Pair<Vertex, Vertex> {
+        val (v0, v1) = line
+        val (x0, y0, z0, w0) = v0.position
+        val (x1, y1, z1, w1) = v1.position
+
+        val weight = (w0 - nearClippingPlane) / (w0 - w1)
+        val clippedPos = Vec4f(
+            // Lerp each coordinate, with the relative distance from the near plane as the weight.
+            x = (weight * x0) + ((1 - weight) * x1),
+            y = (weight * y0) + ((1 - weight) * y1),
+            z = (weight * z0) + ((1 - weight) * z1),
+            w = nearClippingPlane
+        )
+        val clippedVertex = Vertex(
+            clippedPos,
+            lerpUVs(line, weight),
+            lerpNormal(line, weight)
+        )
+        return Pair(v0, clippedVertex)
+    }
+
+    private fun lerpUVs(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
+        val (v0, v1) = line
+        val uv0 = v0.textureCoordinates
+        val uv1 = v1.textureCoordinates
+        return uv0 * (1f - weight) + uv1 * weight
+    }
+
+    private fun lerpNormal(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
+        val (v0, v1) = line
+        val n0 = v0.normal
+        val n1 = v1.normal
+        return n0 * (1f - weight) + n1 * weight
+    }
+
+    private fun assembleTriangles(clippedVertices: List<Vertex>): List<Triangle> {
+        return listOf(
+            Triangle(
+                clippedVertices[0],
+                clippedVertices[1],
+                clippedVertices[2]
+            ),
+            Triangle(
+                clippedVertices[2],
+                clippedVertices[3],
+                clippedVertices[0]
+            )
+        )
     }
 
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {

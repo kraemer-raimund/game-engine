@@ -13,10 +13,10 @@ class Camera(
     private var rot: Vec3f = Vec3f.zero
 ) {
 
+    val nearPlane: Float = 1f
+    val farPlane: Float = 100f
     private val horizontalFovRadians: Float get() = 0.5f * PI.toFloat()
     private val verticalFovRadians: Float get() = horizontalFovRadians / Engine.aspectRatio
-    private var nearPlane: Float = 1f
-    private var farPlane: Float = 100f
 
     // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
     val projectionMatrix: Mat4x4f
