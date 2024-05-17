@@ -118,20 +118,20 @@ internal class VertexPostProcessing {
         val (x0, y0, z0, w0) = v0.position
         val (x1, y1, z1, w1) = v1.position
 
-        val weight = (w0 - nearClippingPlane) / (w0 - w1)
+        val weight = (w1 - nearClippingPlane) / (w1 - w0)
         val clippedPos = Vec4f(
             // Lerp each coordinate, with the relative distance from the near plane as the weight.
-            x = (weight * x0) + ((1 - weight) * x1),
-            y = (weight * y0) + ((1 - weight) * y1),
-            z = (weight * z0) + ((1 - weight) * z1),
+            x = (weight * x0) + ((1f - weight) * x1),
+            y = (weight * y0) + ((1f - weight) * y1),
+            z = (weight * z0) + ((1f - weight) * z1),
             w = nearClippingPlane
         )
         val clippedVertex = Vertex(
-            clippedPos,
-            lerpUVs(line, weight),
-            lerpNormal(line, weight)
+            position = clippedPos,
+            textureCoordinates = lerpUVs(line, weight).normalized,
+            normal = lerpNormal(line, weight).normalized
         )
-        return Pair(v0, clippedVertex)
+        return Pair(clippedVertex, v0)
     }
 
     private fun lerpUVs(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
