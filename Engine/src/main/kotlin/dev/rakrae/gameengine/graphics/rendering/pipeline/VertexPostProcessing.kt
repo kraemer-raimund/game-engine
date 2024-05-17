@@ -46,22 +46,26 @@ internal class VertexPostProcessing {
      * - [https://gamedev.stackexchange.com/a/65798/71768](https://gamedev.stackexchange.com/a/65798/71768)
      */
     private fun clip(triangleClipSpace: Triangle, clippingPlanes: ClippingPlanes): List<Triangle> {
-        // Frustum culling.
-        if (isCompletelyOutsideViewFrustum(triangleClipSpace, clippingPlanes.near)) {
+        if (shouldCull(triangleClipSpace)) {
             return emptyList()
         }
         return clipNear(triangleClipSpace, clippingPlanes.near)
     }
 
-    private fun isCompletelyOutsideViewFrustum(triangleClipSpace: Triangle, nearClippingPlane: Float): Boolean {
+    private fun shouldCull(triangleClipSpace: Triangle): Boolean {
         val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
-        return vertexPositions.none { position ->
-            position.x in -position.w..position.w
-                    && position.y in -position.w..position.w
-                    && position.z in -position.w..position.w
-                    && position.w >= nearClippingPlane
-        }
+
+        // Note: If all vertices are outside the view frustum, its edges may still intersect the
+        // view frustum (e.g., one vertex's x coordinate is outside the range, but another
+        // vertex's y coordinate is outside the range). Therefore, we only cull a triangle if
+        // all of its vertices are outside the view frustum relative to the same clip plane.
+        return vertexPositions.all { pos -> pos.x < -pos.w }
+                || vertexPositions.all { pos -> pos.x > pos.w }
+                || vertexPositions.all { pos -> pos.y < -pos.w }
+                || vertexPositions.all { pos -> pos.y > pos.w }
+                || vertexPositions.all { pos -> pos.z < -pos.w }
+                || vertexPositions.all { pos -> pos.z > pos.w }
     }
 
     /**
