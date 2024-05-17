@@ -151,5 +151,59 @@ internal class LinearAlgebraTest {
 
             assertTrue(v.normalized.isCloseTo(expectedNormalized, epsilon = 0.01f))
         }
+
+        private fun vectorLerpTestArgs(): Stream<Arguments> {
+            return Stream.of(
+                arguments(
+                    Vec3f(0f, 0f, 0f),
+                    Vec3f(100f, 100f, 100f),
+                    0f,
+                    Vec3f(0f, 0f, 0f)
+                ),
+                arguments(
+                    Vec3f(0f, 0f, 0f),
+                    Vec3f(100f, 100f, 100f),
+                    0.2f,
+                    Vec3f(20f, 20f, 20f)
+                ),
+                arguments(
+                    Vec3f(0f, 0f, 0f),
+                    Vec3f(100f, 100f, 100f),
+                    0.5f,
+                    Vec3f(50f, 50f, 50f)
+                ),
+                arguments(
+                    Vec3f(0f, 0f, 0f),
+                    Vec3f(100f, 100f, 100f),
+                    1f,
+                    Vec3f(100f, 100f, 100f)
+                ),
+                arguments(
+                    Vec3f(69f, 69f, 69f),
+                    Vec3f(100f, 100f, 100f),
+                    -42f,
+                    Vec3f(69f, 69f, 69f)
+                ),
+                arguments(
+                    Vec3f(69f, 69f, 69f),
+                    Vec3f(100f, 100f, 100f),
+                    42f,
+                    Vec3f(100f, 100f, 100f),
+                )
+            )
+        }
+
+        @ParameterizedTest
+        @MethodSource("vectorLerpTestArgs")
+        fun `interpolates between two vectors`(
+            v1: Vec3f,
+            v2: Vec3f,
+            t: Float,
+            expected: Vec3f
+        ) {
+            val actual = Vec3f.lerp(v1, v2, t)
+
+            assertTrue(actual.isCloseTo(expected, epsilon = 0.01f))
+        }
     }
 }

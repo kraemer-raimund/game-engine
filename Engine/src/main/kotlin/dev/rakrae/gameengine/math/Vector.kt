@@ -76,6 +76,16 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
 
     companion object {
         val zero = Vec3f(0f, 0f, 0f)
+
+        /**
+         * Linearly interpolate (lerp) between [v1] and [v2] with weight [t].
+         * [t] is clamped to the range (0, 1).
+         */
+        fun lerp(v1: Vec3f, v2: Vec3f, t: Float): Vec3f {
+            t.coerceIn(0f..1f).let { weight ->
+                return v1 * (1f - weight) + v2 * weight
+            }
+        }
     }
 }
 
