@@ -140,16 +140,12 @@ internal class VertexPostProcessing {
 
     private fun lerpUVs(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
         val (v0, v1) = line
-        val uv0 = v0.textureCoordinates
-        val uv1 = v1.textureCoordinates
-        return uv0 * (1f - weight) + uv1 * weight
+        return Vec3f.lerp(v0.textureCoordinates, v1.textureCoordinates, weight)
     }
 
     private fun lerpNormal(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
         val (v0, v1) = line
-        val n0 = v0.normal
-        val n1 = v1.normal
-        return n0 * (1f - weight) + n1 * weight
+        return Vec3f.lerp(v0.normal, v1.normal, weight)
     }
 
     private fun assembleTriangles(clippedVertices: List<Vertex>): List<Triangle> {
