@@ -226,6 +226,12 @@ internal class VertexPostProcessing {
      * If back face culling is desired/enabled, the polygon will only be rendered if this is true.
      */
     private fun isFrontFace(triangleNormalizedDeviceCoordinates: Triangle): Boolean {
+        // We temporarily disable back-face culling until we get the winding order right
+        // when generating triangles during clipping. This may hurt performance, but the
+        // visual quality is better with near plane clipping but without back-face culling
+        // than vice versa.
+        return true
+
         val windingOrder = determineWindingOrder(triangleNormalizedDeviceCoordinates)
         return windingOrder == WindingOrder.CounterClockwise
     }
