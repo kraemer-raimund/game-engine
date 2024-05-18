@@ -228,6 +228,15 @@ internal class VertexPostProcessing {
         val signedArea = 0.5f * (x0 * (y1 - y2) + x1 * (y2 - y0) + x2 * (y0 - y1));
 
         return when {
+            // Note: Normally these should be the other way around. A positive signed area
+            // corresponds to counter-clockwise winding order, and a negative signed area
+            // corresponds to clockwise winding. There is probably a mistake somewhere else
+            // causing the winding order (or the signed area) to be flipped, and causing it
+            // to be rendered correctly this way.
+            // It's possible that the 3D models are using the wrong winding order, which
+            // should be standardized by the asset importer to only use CCW internally,
+            // but after a first look it seems like the 3D model assets are correct.
+            // We'll accept it as is for now since the rendered result works as expected.
             signedArea >= 0 -> WindingOrder.Clockwise
             else -> WindingOrder.CounterClockwise
         }
