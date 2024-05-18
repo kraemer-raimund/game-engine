@@ -32,13 +32,13 @@ class Chess : Game() {
     }
 
     override suspend fun onTick() {
-        val moveSpeed = 2f
+        val moveSpeed = 3f
         val forwardOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.x
         val sidewaysOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.y
         scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * forwardOffset)
         scene.activeCamera.translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
 
-        val mouseSensitivity = 0.2f
+        val mouseSensitivity = 0.12f
         scene.activeCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
         scene.activeCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
     }
