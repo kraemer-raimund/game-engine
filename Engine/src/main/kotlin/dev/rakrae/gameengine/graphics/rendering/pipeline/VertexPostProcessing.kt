@@ -87,7 +87,7 @@ internal class VertexPostProcessing {
             val near = nearClippingPlane
             when {
                 // Both vertices are in front of the near clipping plane.
-                w0 >= near && w1 >= near -> return@mapNotNull line
+                w0 >= near && w1 >= near -> line
 
                 // The line crosses the near clipping plane with v0 visible and v1 behind
                 // the near clipping plane.
