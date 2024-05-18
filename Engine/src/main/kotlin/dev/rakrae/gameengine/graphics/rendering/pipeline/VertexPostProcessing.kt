@@ -149,18 +149,12 @@ internal class VertexPostProcessing {
     }
 
     private fun assembleTriangles(clippedVertices: List<Vertex>): List<Triangle> {
-        return listOf(
-            Triangle(
-                clippedVertices[0],
-                clippedVertices[1],
-                clippedVertices[2]
-            ),
-            Triangle(
-                clippedVertices[2],
-                clippedVertices[3],
-                clippedVertices[0]
+        clippedVertices.let {
+            return listOf(
+                Triangle(it[0], it[1], it[2]),
+                Triangle(it[2], it[1], it[3])
             )
-        )
+        }
     }
 
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
