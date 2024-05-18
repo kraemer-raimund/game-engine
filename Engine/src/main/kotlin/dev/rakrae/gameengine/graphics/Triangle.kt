@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.math.Vec3f
 
-class Triangle(val v0: Vertex, val v1: Vertex, val v2: Vertex) {
+data class Triangle(val v0: Vertex, val v1: Vertex, val v2: Vertex) {
 
     val normal: Vec3f
         get() {

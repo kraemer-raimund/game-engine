@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.graphics
 
 import dev.rakrae.gameengine.math.Vec2f
 
-class Material(
+data class Material(
     val color: Color = Color(255u, 255u, 255u, 255u),
     val glossiness: Float = 0f,
     val albedo: Texture? = null,
