@@ -82,23 +82,13 @@ internal class VertexPostProcessing {
 
         val clippedLines = lines.mapNotNull { line ->
             val (v0, v1) = line
-            val w0 = v0.position.w
-            val w1 = v1.position.w
-            val near = nearClippingPlane
+            val isV0InFront = v0.position.w >= nearClippingPlane
+            val isV1InFront = v1.position.w >= nearClippingPlane
             when {
-                // Both vertices are in front of the near clipping plane.
-                w0 >= near && w1 >= near -> line
-
-                // The line crosses the near clipping plane with v0 visible and v1 behind
-                // the near clipping plane.
-                w0 >= near && w1 < near -> clipLine(line, near)
-
-                // The line crosses the near clipping plane with v1 visible and v0 behind
-                // the near clipping plane.
-                w0 < near && w1 >= near -> clipLine(Pair(v1, v0), near)
-
-                // Both vertices are behind the near clipping plane.
-                else -> null
+                isV0InFront && isV1InFront -> line
+                isV0InFront && !isV1InFront -> clipLine(line, nearClippingPlane)
+                !isV0InFront && isV1InFront -> clipLine(Pair(v1, v0), nearClippingPlane)
+                else -> null // Both vertices are behind the near clipping plane.
             }
         }
 
