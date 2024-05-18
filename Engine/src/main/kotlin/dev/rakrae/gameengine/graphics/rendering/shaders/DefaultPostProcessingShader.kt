@@ -11,6 +11,6 @@ class DefaultPostProcessingShader : PostProcessingShader {
     override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
         val (x, y) = position
         val color = framebuffer.getPixel(x, y)
-        return color
+        return color.copy(a = 255u)
     }
 }
