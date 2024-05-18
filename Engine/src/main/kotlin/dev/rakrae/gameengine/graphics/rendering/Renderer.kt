@@ -81,21 +81,20 @@ internal class Renderer {
         launch {
             for (trianglesChunk in renderComponent.mesh.triangles.chunked(20)) {
                 launch {
-                    for (triangleWorldSpace in trianglesChunk) {
-                        val triangleClipSpace = vertexProcessing.process(
-                            triangleWorldSpace,
+                    for (triangleObjectSpace in trianglesChunk) {
+                        val clipSpace = vertexProcessing.process(
+                            triangleObjectSpace,
                             renderComponent.vertexShader,
                             projectionMatrix,
                             modelViewMatrix
                         )
+                        val clippedTriangles = vertexPostProcessing.clip(clipSpace, clippingPlanes)
 
-                        val clippedTrianglesClipSpace = vertexPostProcessing.clip(triangleClipSpace, clippingPlanes)
-
-                        for (clippedTriangleClipSpace in clippedTrianglesClipSpace) {
+                        clippedTriangles.forEach { triangleClipSpace ->
                             val triangleViewportCoordinates = vertexPostProcessing.toViewport(
-                                clippedTriangleClipSpace,
+                                triangleClipSpace,
                                 viewportSize = Vec2i(framebuffer.width, framebuffer.height)
-                            ) ?: continue
+                            ) ?: return@forEach
                             val renderContext = RenderContext(
                                 framebuffer,
                                 zBuffer,
@@ -109,7 +108,7 @@ internal class Renderer {
 
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
-                                triangleWorldSpace.normal,
+                                triangleObjectSpace.normal,
                                 renderComponent.material,
                                 renderComponent.fragmentShader,
                                 renderContext
