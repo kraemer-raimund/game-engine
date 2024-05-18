@@ -31,8 +31,8 @@ package dev.rakrae.gameengine.graphics.rendering.pipeline
  * Mathematically, the winding order can be calculated by determining the sign of the triangle's
  * area.
  *
- * @see <a href="https://www.khronos.org/opengl/wiki/Face_Culling#Winding_order">Winding order (OpenGL)</a>
- * @see <a href="https://en.wikipedia.org/wiki/Back-face_culling">Back-face culling (Wikipedia)</a>
+ * - [Winding order (OpenGL)](https://www.khronos.org/opengl/wiki/Face_Culling#Winding_order)
+ * - [Back-face culling (Wikipedia)](https://en.wikipedia.org/wiki/Back-face_culling)
  */
 enum class WindingOrder {
     CounterClockwise,
