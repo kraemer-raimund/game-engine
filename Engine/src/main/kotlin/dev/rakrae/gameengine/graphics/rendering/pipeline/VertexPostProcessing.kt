@@ -76,9 +76,7 @@ internal class VertexPostProcessing {
      */
     private fun clipNear(triangleClipSpace: Triangle, nearClippingPlane: Float): List<Triangle> {
         val vertices = with(triangleClipSpace) { mutableListOf(v0, v1, v2) }
-
-        val lines = (0..2)
-            .map { i -> Pair(vertices[i], vertices[(i + 1) % vertices.size]) }
+        val lines = (0..2).map { i -> Pair(vertices[i], vertices[(i + 1) % vertices.size]) }
 
         val clippedLines = lines.mapNotNull { line ->
             val (v0, v1) = line
@@ -96,7 +94,6 @@ internal class VertexPostProcessing {
             .flatMap { listOf(it.first, it.second) }
             .toSet()
             .toList()
-
         return assembleTriangles(clippedVertices)
     }
 
