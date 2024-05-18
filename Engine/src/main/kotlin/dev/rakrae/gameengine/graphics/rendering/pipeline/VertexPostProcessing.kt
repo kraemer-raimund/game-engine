@@ -191,19 +191,6 @@ internal class VertexPostProcessing {
         }
     }
 
-    private fun assembleTriangles(clippedVertices: List<Vertex>): List<Triangle> {
-        clippedVertices.let {
-            return when {
-                clippedVertices.size < 3 -> emptyList()
-                clippedVertices.size == 3 -> listOf(Triangle(it[0], it[1], it[2]))
-                clippedVertices.size == 4 -> listOf(Triangle(it[0], it[1], it[2]), Triangle(it[2], it[1], it[3]))
-                else -> throw UnsupportedOperationException(
-                    "Clipping resulted in more than 4 unique vertices, but only up to 4 were expected."
-                )
-            }
-        }
-    }
-
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
         return Triangle(
             triangle.v0.copy(position = applyPerspectiveDivide(triangle.v0.position)),
