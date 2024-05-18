@@ -89,13 +89,13 @@ internal class Renderer {
                             modelViewMatrix
                         )
 
-                        val trianglesViewportCoordinates = vertexPostProcessing.postProcess(
-                            triangleClipSpace,
-                            viewportSize = Vec2i(framebuffer.width, framebuffer.height),
-                            clippingPlanes = clippingPlanes
-                        )
+                        val clippedTrianglesClipSpace = vertexPostProcessing.clip(triangleClipSpace, clippingPlanes)
 
-                        for (triangleViewportCoordinates in trianglesViewportCoordinates) {
+                        for (clippedTriangleClipSpace in clippedTrianglesClipSpace) {
+                            val triangleViewportCoordinates = vertexPostProcessing.toViewport(
+                                clippedTriangleClipSpace,
+                                viewportSize = Vec2i(framebuffer.width, framebuffer.height)
+                            ) ?: continue
                             val renderContext = RenderContext(
                                 framebuffer,
                                 zBuffer,

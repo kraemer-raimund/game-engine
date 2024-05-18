@@ -10,18 +10,13 @@ import dev.rakrae.gameengine.math.Vec4f
 internal class VertexPostProcessing {
 
     /**
-     * Converts clip space coordinates to viewport coordinates. Returns zero, one or multiple triangles
-     * due to culling, clipping, and potentially geometry generation (via tesselation/geometry shaders).
+     * Converts clip space coordinates to viewport coordinates. In the case of back-face culling,
+     * no triangle will be returned.
      */
-    fun postProcess(
-        triangleClipSpace: Triangle,
-        viewportSize: Vec2i,
-        clippingPlanes: ClippingPlanes
-    ): List<Triangle> {
-        return clip(triangleClipSpace, clippingPlanes)
-            .map(::applyPerspectiveDivide)
-            .filter(::isFrontFace)
-            .map { viewportTransform(it, viewportSize) }
+    fun toViewport(triangleClipSpace: Triangle, viewportSize: Vec2i): Triangle? {
+        return applyPerspectiveDivide(triangleClipSpace)
+            .takeIf { isFrontFace(it) }
+            ?.let { viewportTransform(it, viewportSize) }
     }
 
     /**
@@ -45,7 +40,7 @@ internal class VertexPostProcessing {
      * - [https://stackoverflow.com/a/31687061/3726133](https://stackoverflow.com/a/31687061/3726133)
      * - [https://gamedev.stackexchange.com/a/65798/71768](https://gamedev.stackexchange.com/a/65798/71768)
      */
-    private fun clip(triangleClipSpace: Triangle, clippingPlanes: ClippingPlanes): List<Triangle> {
+    fun clip(triangleClipSpace: Triangle, clippingPlanes: ClippingPlanes): List<Triangle> {
         return when {
             isCompletelyInsideViewFrustum(triangleClipSpace, clippingPlanes.near) -> listOf(triangleClipSpace)
             shouldCull(triangleClipSpace) -> emptyList()
