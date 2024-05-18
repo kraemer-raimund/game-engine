@@ -49,10 +49,6 @@ internal class VertexPostProcessing {
     }
 
     private fun shouldCull(triangleClipSpace: Triangle): Boolean {
-        if (!isFrontFace(applyPerspectiveDivide(triangleClipSpace))) {
-            return true
-        }
-
         val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
         val vertexPositions = vertices.map { it.position }
 
