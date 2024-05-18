@@ -129,7 +129,7 @@ internal class VertexPostProcessing {
             isV0InFront && !isV1InFront && isV2InFront -> {
                 val newV1 = clipLine(v0, v1, nearClippingPlane)
                 val newV3 = clipLine(v2, v1, nearClippingPlane)
-                listOf(Triangle(v0, newV1, v2), Triangle(v2, v1, newV3))
+                listOf(Triangle(v0, newV1, v2), Triangle(v2, newV1, newV3))
             }
 
             !isV0InFront && isV1InFront && isV2InFront -> {
