@@ -217,19 +217,19 @@ internal class VertexPostProcessing {
     /**
      * See section 14.6.1 of the OpenGL specification (as of version 4.6.)
      *
-     * @see <a href="https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf">https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf</a>
+     * [https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf](https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf)
      */
     private fun determineWindingOrder(triangleNormalizedDeviceCoordinates: Triangle): WindingOrder {
         val v0 = with(triangleNormalizedDeviceCoordinates.v0.position) { Vec2f(x, y) }
         val v1 = with(triangleNormalizedDeviceCoordinates.v1.position) { Vec2f(x, y) }
         val v2 = with(triangleNormalizedDeviceCoordinates.v2.position) { Vec2f(x, y) }
 
-        val signedArea = 0.5f * (
-                listOf(
-                    (v0.x * v1.y) - (v1.x * v0.y),
-                    (v1.x * v2.y) - (v2.x * v1.y),
-                    (v2.x * v0.y) - (v0.x * v2.y)
-                ).sum())
+        val (x0, y0) = v0
+        val (x1, y1) = v1
+        val (x2, y2) = v2
+
+        // https://en.wikipedia.org/wiki/Shoelace_formula#Other_formulas
+        val signedArea = 0.5f * (x0 * (y1 - y2) + x1 * (y2 - y0) + x2 * (y0 - y1));
 
         return when {
             signedArea >= 0 -> WindingOrder.Clockwise
