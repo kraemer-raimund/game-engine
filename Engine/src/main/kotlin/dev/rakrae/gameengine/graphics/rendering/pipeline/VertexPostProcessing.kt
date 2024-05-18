@@ -84,50 +84,80 @@ internal class VertexPostProcessing {
      * plane into visible coordinates during perspective divide.
      */
     private fun clipNear(triangleClipSpace: Triangle, nearClippingPlane: Float): List<Triangle> {
-        val vertices = with(triangleClipSpace) { mutableListOf(v0, v1, v2) }
-        val lines = listOf(
-            Pair(vertices[0], vertices[1]),
-            Pair(vertices[1], vertices[2]),
-            Pair(vertices[2], vertices[0])
-        )
+        val (v0, v1, v2) = with(triangleClipSpace) { listOf(v0, v1, v2) }
 
-        val originalVertices = linkedSetOf<Vertex>()
-        val generatedVertices = linkedSetOf<Vertex>()
-        lines.forEach { line ->
-            val (v0, v1) = line
-            val isV0InFront = v0.position.w >= nearClippingPlane
-            val isV1InFront = v1.position.w >= nearClippingPlane
-            when {
-                isV0InFront && isV1InFront -> {
-                    originalVertices.add(v0)
-                    originalVertices.add(v1)
-                }
+        val isV0InFront = v0.position.w >= nearClippingPlane
+        val isV1InFront = v1.position.w >= nearClippingPlane
+        val isV2InFront = v2.position.w >= nearClippingPlane
 
-                isV0InFront && !isV1InFront -> {
-                    originalVertices.add(v0)
-                    generatedVertices.add(clipLine(Pair(v0, v1), nearClippingPlane))
-                }
+        /*
+        Imagine we go along the triangle's edges in counter-clockwise order, and when we cross
+        the near clipping plane, we replace the vertex behind the near clipping plane with a
+        new one right on the near clipping plane.
+        Example: v1 is in front of the near plane, v0 and v2 are behind it. We now replace v0
+        by interpolating between v1 and v0, replace v2 by doing the same with v1 and v2, and
+        then we generate the new triangle using the new vertices newV0 and newV2, and the
+        original vertex v1, but in the order (newV0, v1, newV2).
+        The winding order is important so that back-face culling will work correctly for the
+        newly generated triangles.
+        */
+        return when {
+            isV0InFront && !isV1InFront && !isV2InFront -> {
+                val newV1 = clipLine(v0, v1, nearClippingPlane)
+                val newV2 = clipLine(v0, v2, nearClippingPlane)
+                listOf(Triangle(v0, newV1, newV2))
+            }
 
-                !isV0InFront && isV1InFront -> {
-                    originalVertices.add(v1)
-                    generatedVertices.add(clipLine(Pair(v1, v0), nearClippingPlane))
-                }
+            !isV0InFront && isV1InFront && !isV2InFront -> {
+                val newV0 = clipLine(v1, v0, nearClippingPlane)
+                val newV2 = clipLine(v1, v2, nearClippingPlane)
+                listOf(Triangle(newV0, v1, newV2))
+            }
 
-                else -> {
-                    // Both vertices are behind the near clipping plane.
-                }
+            !isV0InFront && !isV1InFront && isV2InFront -> {
+                val newV0 = clipLine(v2, v0, nearClippingPlane)
+                val newV1 = clipLine(v2, v1, nearClippingPlane)
+                listOf(Triangle(newV0, newV1, v2))
+            }
+
+            isV0InFront && isV1InFront && !isV2InFront -> {
+                val newV2 = clipLine(v1, v2, nearClippingPlane)
+                val newV3 = clipLine(v0, v2, nearClippingPlane)
+                listOf(Triangle(v0, v1, newV2), Triangle(newV2, newV3, v0))
+            }
+
+            isV0InFront && !isV1InFront && isV2InFront -> {
+                val newV1 = clipLine(v0, v1, nearClippingPlane)
+                val newV3 = clipLine(v2, v1, nearClippingPlane)
+                listOf(Triangle(v0, newV1, v2), Triangle(v2, v1, newV3))
+            }
+
+            !isV0InFront && isV1InFront && isV2InFront -> {
+                val newV0 = clipLine(v1, v0, nearClippingPlane)
+                val newV3 = clipLine(v2, v0, nearClippingPlane)
+                listOf(Triangle(newV0, v1, v2), Triangle(v2, newV3, newV0))
+            }
+
+            isV0InFront && isV1InFront && isV2InFront -> {
+                listOf(Triangle(v0, v1, v2))
+            }
+
+            else -> {
+                // All vertices behind the near clipping plane.
+                emptyList()
             }
         }
-
-        return assembleTriangles(originalVertices, generatedVertices)
     }
 
-    private fun clipLine(line: Pair<Vertex, Vertex>, nearClippingPlane: Float): Vertex {
-        val (vertexInFront, vertexBehind) = line
+    private fun clipLine(
+        vertexInFront: Vertex,
+        vertexBehind: Vertex,
+        nearClippingPlane: Float
+    ): Vertex {
+        val line = Pair(vertexInFront, vertexBehind)
         val w0 = vertexInFront.position.w
         val w1 = vertexBehind.position.w
         val weight = (w0 - nearClippingPlane) / (w0 - w1)
-
         val clippedVertex = Vertex(
             position = lerpPosition(line, weight, nearClippingPlane),
             textureCoordinates = lerpUVs(line, weight),
@@ -158,39 +188,6 @@ internal class VertexPostProcessing {
         return Vec3f.lerp(v0.normal, v1.normal, weight)
     }
 
-    private fun assembleTriangles(
-        originalVertices: LinkedHashSet<Vertex>,
-        generatedVertices: LinkedHashSet<Vertex>
-    ): List<Triangle> {
-        val original = originalVertices.toList()
-        val generated = generatedVertices.toList()
-        return when {
-            originalVertices.size == 3 && generatedVertices.isEmpty() -> {
-                listOf(Triangle(original[0], original[1], original[2]))
-            }
-
-            originalVertices.size + generatedVertices.size < 3 -> {
-                emptyList()
-            }
-
-            originalVertices.size == 1 && generatedVertices.size == 2 -> {
-                listOf(Triangle(original[0], generated[0], generated[1]))
-            }
-
-            originalVertices.size == 2 && generatedVertices.size == 2 -> {
-                listOf(
-                    Triangle(original[0], generated[0], original[1]),
-                    Triangle(generated[0], generated[1], original[1])
-                )
-            }
-
-            else -> throw UnsupportedOperationException(
-                "Expected 1 or 2 original vertices and exactly 2 newly generated ones. " +
-                        "Actual: ${original.size} original vertices and ${generated.size} generated vertices."
-            )
-        }
-    }
-
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
         return Triangle(
             triangle.v0.copy(position = applyPerspectiveDivide(triangle.v0.position)),
@@ -213,12 +210,6 @@ internal class VertexPostProcessing {
      * If back face culling is desired/enabled, the polygon will only be rendered if this is true.
      */
     private fun isFrontFace(triangleNormalizedDeviceCoordinates: Triangle): Boolean {
-        // We temporarily disable back-face culling until we get the winding order right
-        // when generating triangles during clipping. This may hurt performance, but the
-        // visual quality is better with near plane clipping but without back-face culling
-        // than vice versa.
-        return true
-
         val windingOrder = determineWindingOrder(triangleNormalizedDeviceCoordinates)
         return windingOrder == WindingOrder.CounterClockwise
     }
