@@ -118,24 +118,29 @@ internal class VertexPostProcessing {
     }
 
     private fun clipLine(line: Pair<Vertex, Vertex>, nearClippingPlane: Float): Pair<Vertex, Vertex> {
-        val (v0, v1) = line
-        val (x0, y0, z0, w0) = v0.position
-        val (x1, y1, z1, w1) = v1.position
+        val (vertexInFront, vertexBehind) = line
+        val w0 = vertexInFront.position.w
+        val w1 = vertexBehind.position.w
+        val weight = (w0 - nearClippingPlane) / (w0 - w1)
 
-        val weight = (w1 - nearClippingPlane) / (w1 - w0)
-        val clippedPos = Vec4f(
-            // Lerp each coordinate, with the relative distance from the near plane as the weight.
-            x = (weight * x0) + ((1f - weight) * x1),
-            y = (weight * y0) + ((1f - weight) * y1),
-            z = (weight * z0) + ((1f - weight) * z1),
-            w = nearClippingPlane
-        )
         val clippedVertex = Vertex(
-            position = clippedPos,
-            textureCoordinates = lerpUVs(line, weight).normalized,
-            normal = lerpNormal(line, weight).normalized
+            position = lerpPosition(line, weight, nearClippingPlane),
+            textureCoordinates = lerpUVs(line, weight),
+            normal = lerpNormal(line, weight)
         )
-        return Pair(clippedVertex, v0)
+        return Pair(clippedVertex, vertexInFront)
+    }
+
+    private fun lerpPosition(
+        line: Pair<Vertex, Vertex>,
+        weight: Float,
+        nearClippingPlane: Float
+    ): Vec4f {
+        val (vertexInFront, vertexBehind) = line
+        val posInFront = vertexInFront.position
+        val posBehind = vertexBehind.position
+        val clippedPos = Vec3f.lerp(posInFront.toVec3f(), posBehind.toVec3f(), weight)
+        return Vec4f(clippedPos, w = nearClippingPlane)
     }
 
     private fun lerpUVs(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
