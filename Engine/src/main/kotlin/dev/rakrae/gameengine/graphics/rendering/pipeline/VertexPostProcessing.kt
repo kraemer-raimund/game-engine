@@ -46,10 +46,11 @@ internal class VertexPostProcessing {
      * - [https://gamedev.stackexchange.com/a/65798/71768](https://gamedev.stackexchange.com/a/65798/71768)
      */
     private fun clip(triangleClipSpace: Triangle, clippingPlanes: ClippingPlanes): List<Triangle> {
-        if (shouldCull(triangleClipSpace)) {
-            return emptyList()
+        return when {
+            isCompletelyInsideViewFrustum(triangleClipSpace, clippingPlanes.near) -> listOf(triangleClipSpace)
+            shouldCull(triangleClipSpace) -> emptyList()
+            else -> clipNear(triangleClipSpace, clippingPlanes.near)
         }
-        return clipNear(triangleClipSpace, clippingPlanes.near)
     }
 
     private fun shouldCull(triangleClipSpace: Triangle): Boolean {
@@ -66,6 +67,15 @@ internal class VertexPostProcessing {
                 || vertexPositions.all { pos -> pos.y > pos.w }
                 || vertexPositions.all { pos -> pos.z < -pos.w }
                 || vertexPositions.all { pos -> pos.z > pos.w }
+    }
+
+    private fun isCompletelyInsideViewFrustum(triangleClipSpace: Triangle, nearClippingPlane: Float): Boolean {
+        val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
+        val vertexPositions = vertices.map { it.position }
+        return vertexPositions.all { pos ->
+            listOf(pos.x, pos.y, pos.z)
+                .all { it > -pos.w && it < pos.w } && pos.w >= nearClippingPlane
+        }
     }
 
     /**
