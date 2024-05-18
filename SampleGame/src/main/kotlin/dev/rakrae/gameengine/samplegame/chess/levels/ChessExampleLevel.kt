@@ -77,9 +77,9 @@ class ChessExampleLevel {
         val exampleObjects = listOf(
             dev.rakrae.gameengine.scene.Node(
                 renderComponent = RenderComponent(
-                    mesh = AssetLoader().loadMesh("/assets/floor.obj"),
+                    mesh = AssetLoader().loadMesh("/assets/plane.obj"),
                     position = Vec3f(-10f, 0f, 0f),
-                    scale = Vec3f(8f, 1f, 8f),
+                    scale = Vec3f(4f, 1f, 4f),
                     material = Material(
                         albedo = Texture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_albedo.png"
@@ -88,7 +88,7 @@ class ChessExampleLevel {
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_normal.png"
                         ),
                         glossiness = 3f,
-                        uvScale = Vec2f(6f, 6f)
+                        uvScale = Vec2f(2f, 2f)
                     ),
                     fragmentShader = UvTextureFragmentShader()
                 )
