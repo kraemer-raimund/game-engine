@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.scene
 import dev.rakrae.gameengine.core.Engine
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -66,7 +67,13 @@ class Camera(
         )
 
     fun translate(offset: Vec3f) {
-        loc += offset
+        val revertedRotY = Mat4x4f(
+            cos(-rot.y), 0f, sin(-rot.y), 0f,
+            0f, 1f, 0f, 0f,
+            -sin(-rot.y), 0f, cos(-rot.y), 0f,
+            0f, 0f, 0f, 1f
+        )
+        loc += (revertedRotY * Vec4f(offset, 1f)).toVec3f()
     }
 
     fun rotate(euler: Vec3f) {
