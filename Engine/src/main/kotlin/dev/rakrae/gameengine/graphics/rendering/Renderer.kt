@@ -4,7 +4,6 @@ import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
-import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.scene.RenderComponent
@@ -21,12 +20,14 @@ internal class Renderer {
     private val imagePostProcessing = ImagePostProcessing()
     private val deferredRendering = DeferredRendering()
 
+    private val postProcessingShader: PostProcessingShader? = null
+
     suspend fun render(scene: Scene, displayFrame: Bitmap) = coroutineScope {
+        displayFrame.clear(Color(0u, 0u, 0u, 255u))
         val viewMatrix = scene.activeCamera.viewMatrix
         val projectionMatrix = scene.activeCamera.projectionMatrix
         val clippingPlanes = with(scene.activeCamera) { ClippingPlanes(nearPlane, farPlane) }
-        val framebuffer = Bitmap(displayFrame.width, displayFrame.height)
-        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
+        val zBuffer = Buffer2f(displayFrame.width, displayFrame.height, initValue = 1.0f)
 
         val renderingTime = measureTime {
             val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
@@ -35,7 +36,7 @@ internal class Renderer {
                 val modelViewMatrix = viewMatrix * modelMatrix
                 render(
                     renderComponent,
-                    framebuffer,
+                    displayFrame,
                     zBuffer,
                     modelViewMatrix,
                     projectionMatrix,
@@ -45,7 +46,9 @@ internal class Renderer {
         }
 
         val imagePostProcessingTime = measureTime {
-            imagePostProcessing.postProcess(DepthOfFieldPostProcessingShader(), framebuffer, zBuffer, displayFrame)
+            if (postProcessingShader != null) {
+                imagePostProcessing.postProcess(postProcessingShader, displayFrame, zBuffer)
+            }
         }
 
         val deferredRenderingTime = measureTime {
@@ -55,7 +58,6 @@ internal class Renderer {
             renderDeferred(
                 deferredRenderingComponents,
                 displayFrame,
-                framebuffer,
                 viewMatrix,
                 projectionMatrix,
                 zBuffer,
@@ -122,7 +124,6 @@ internal class Renderer {
 
     private suspend fun renderDeferred(
         deferredRenderingComponents: List<RenderComponent>,
-        displayFrame: Bitmap,
         framebuffer: Bitmap,
         viewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
@@ -131,7 +132,7 @@ internal class Renderer {
     ) = coroutineScope {
         for (renderComponent in deferredRenderingComponents) {
             launch {
-                val deferredFramebuffer = Bitmap(displayFrame.width, displayFrame.height)
+                val deferredFramebuffer = Bitmap(framebuffer.width, framebuffer.height)
                     .apply { clear(Color(0u, 0u, 0u, 0u)) }
                 val deferredZBuffer = Buffer2f(
                     framebuffer.width,
@@ -150,7 +151,7 @@ internal class Renderer {
                 )
                 deferredRendering.postProcess(
                     renderComponent.deferredShader!!,
-                    displayFrame,
+                    framebuffer,
                     zBuffer,
                     deferredFramebuffer,
                     deferredZBuffer

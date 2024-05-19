@@ -11,11 +11,10 @@ internal class ImagePostProcessing {
     suspend fun postProcess(
         postProcessingShader: PostProcessingShader,
         framebuffer: Bitmap,
-        zBuffer: Buffer2f,
-        target: Bitmap
+        zBuffer: Buffer2f
     ) {
 
-        val postProcessingBuffer = Bitmap(target.width, target.height)
+        val postProcessingBuffer = Bitmap(framebuffer.width, framebuffer.height)
 
         coroutineScope {
             for (x in 0..<postProcessingBuffer.width) {
@@ -29,9 +28,9 @@ internal class ImagePostProcessing {
             }
         }
 
-        for (x in 0..<target.width) {
-            for (y in 0..<target.height) {
-                target.setPixel(x, y, postProcessingBuffer.getPixel(x, y))
+        for (x in 0..<framebuffer.width) {
+            for (y in 0..<framebuffer.height) {
+                framebuffer.setPixel(x, y, postProcessingBuffer.getPixel(x, y))
             }
         }
     }
