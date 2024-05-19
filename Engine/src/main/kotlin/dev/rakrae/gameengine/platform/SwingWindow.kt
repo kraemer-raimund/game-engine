@@ -41,6 +41,9 @@ internal class SwingWindow(title: String, screenSize: ScreenSize) : Window {
         canvas.requestFocus()
     }
 
+    override val aspectRatio
+        get() = canvas.width.toFloat() / canvas.height.toFloat()
+
     override fun displayPixels(bitmap: Bitmap) {
         requestedState?.let {
             currentState = it

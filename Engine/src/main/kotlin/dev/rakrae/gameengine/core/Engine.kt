@@ -78,6 +78,6 @@ class Engine(game: Game) {
         private lateinit var window: Window
 
         val aspectRatio: Float
-            get() = renderResolution.width / renderResolution.height.toFloat()
+            get() = window.aspectRatio
     }
 }

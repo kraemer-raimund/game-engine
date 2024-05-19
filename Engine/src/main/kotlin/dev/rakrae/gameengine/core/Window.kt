@@ -4,6 +4,8 @@ import dev.rakrae.gameengine.graphics.Bitmap
 
 interface Window {
 
+    val aspectRatio: Float
+
     fun displayPixels(bitmap: Bitmap)
 
     /**
