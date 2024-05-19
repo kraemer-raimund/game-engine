@@ -8,7 +8,6 @@ import dev.rakrae.gameengine.math.Vec2i
 
 class OutlineDeferredShader(
     private val thickness: Int,
-    private val threshold: Float,
     private val outlineColor: Color
 ) : DeferredShader {
 
@@ -19,20 +18,19 @@ class OutlineDeferredShader(
         deferredFramebuffer: Bitmap,
         deferredZBuffer: Buffer2f
     ): Color? {
-        val depthOriginal = zBuffer.get(position.x, position.y)
         val depthDeferred = deferredZBuffer.get(position.x, position.y)
-        if (depthDeferred > depthOriginal) {
+        if (depthDeferred == Float.POSITIVE_INFINITY) {
             return null
         }
-        if (depthDeferred == Float.POSITIVE_INFINITY) {
+        val depthOriginal = zBuffer.get(position.x, position.y)
+        if (depthDeferred > depthOriginal) {
             return null
         }
 
         for (x in position.x - thickness..position.x + thickness) {
             for (y in position.y - thickness..position.y + thickness) {
                 if (x in 0..<zBuffer.width && y in 0..<zBuffer.height) {
-                    val depthAtNeighbor = zBuffer.get(x, y)
-                    if (depthAtNeighbor - depthDeferred > threshold) {
+                    if (deferredZBuffer.get(x, y) == Float.POSITIVE_INFINITY) {
                         return outlineColor
                     }
                 }

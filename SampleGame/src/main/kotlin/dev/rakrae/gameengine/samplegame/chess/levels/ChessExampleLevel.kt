@@ -67,7 +67,7 @@ class ChessExampleLevel {
                     vertexShader = vertexShader,
                     fragmentShader = fragmentShader,
                     deferredShader = when (i) {
-                        5 -> OutlineDeferredShader(2, 0.2f, Color(255u, 255u, 0u, 255u))
+                        5 -> OutlineDeferredShader(2, Color(255u, 255u, 0u, 255u))
                         else -> null
                     }
                 )
