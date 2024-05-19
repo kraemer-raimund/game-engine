@@ -2,10 +2,7 @@ package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.graphics.Vertex
-import dev.rakrae.gameengine.math.Vec2f
-import dev.rakrae.gameengine.math.Vec2i
-import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.math.Vec4f
+import dev.rakrae.gameengine.math.*
 
 internal class VertexPostProcessing {
 
@@ -251,11 +248,23 @@ internal class VertexPostProcessing {
     }
 
     private fun viewportTransform(vector: Vec4f, screenSize: Vec2i): Vec4f {
-        return Vec4f(
-            0.5f * screenSize.x + (vector.x * 0.5f * screenSize.x),
-            0.5f * screenSize.y + (vector.y * 0.5f * screenSize.y),
-            vector.z,
-            1f
+        val (width, height) = screenSize
+        val halfW = 0.5f * width
+        val halfH = 0.5f * height
+        /*
+        We could use this if we wanted to offset the viewport within another viewport,
+        for example to create a split screen or a minimap. For now, we just set it to
+        the bottom left corner.
+         */
+        val viewportOffset = Vec2i(0, 0)
+
+        // https://learnwebgl.brown37.net/08_projections/projections_viewport.html
+        val viewportMatrix = Mat4x4f(
+            halfW, 0f, 0f, viewportOffset.x + halfW,
+            0f, halfH, 0f, viewportOffset.y + halfH,
+            0f, 0f, 0.5f, 0.5f,
+            0f, 0f, 0f, 1f
         )
+        return viewportMatrix * vector
     }
 }
