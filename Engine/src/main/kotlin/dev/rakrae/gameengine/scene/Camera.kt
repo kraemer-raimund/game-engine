@@ -54,7 +54,7 @@ class Camera(
                 0f, 0f, 1f, 0f,
                 0f, 0f, 0f, 1f
             )
-            return rotZ * rotY * rotX
+            return rotX * rotZ * rotY
         }
 
     private val translationMatrix: Mat4x4f
