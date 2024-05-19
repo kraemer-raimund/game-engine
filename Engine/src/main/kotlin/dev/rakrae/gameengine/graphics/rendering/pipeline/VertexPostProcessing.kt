@@ -2,7 +2,10 @@ package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.graphics.Vertex
-import dev.rakrae.gameengine.math.*
+import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.math.Vec2f
+import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.math.Vec4f
 
 internal class VertexPostProcessing {
 
@@ -10,10 +13,13 @@ internal class VertexPostProcessing {
      * Converts clip space coordinates to viewport coordinates. In the case of back-face culling,
      * no triangle will be returned.
      */
-    fun toViewport(triangleClipSpace: Triangle, viewportSize: Vec2i): Triangle? {
+    fun toViewport(
+        triangleClipSpace: Triangle,
+        viewportMatrix: Mat4x4f
+    ): Triangle? {
         return applyPerspectiveDivide(triangleClipSpace)
             .takeIf { isFrontFace(it) }
-            ?.let { viewportTransform(it, viewportSize) }
+            ?.let { viewportTransform(it, viewportMatrix) }
     }
 
     /**
@@ -239,32 +245,16 @@ internal class VertexPostProcessing {
         }
     }
 
-    private fun viewportTransform(triangle: Triangle, screenSize: Vec2i): Triangle {
-        return Triangle(
-            triangle.v0.copy(position = viewportTransform(triangle.v0.position, screenSize)),
-            triangle.v1.copy(position = viewportTransform(triangle.v1.position, screenSize)),
-            triangle.v2.copy(position = viewportTransform(triangle.v2.position, screenSize))
-        )
-    }
-
-    private fun viewportTransform(vector: Vec4f, screenSize: Vec2i): Vec4f {
-        val (width, height) = screenSize
-        val halfW = 0.5f * width
-        val halfH = 0.5f * height
-        /*
-        We could use this if we wanted to offset the viewport within another viewport,
-        for example to create a split screen or a minimap. For now, we just set it to
-        the bottom left corner.
-         */
-        val viewportOffset = Vec2i(0, 0)
-
-        // https://learnwebgl.brown37.net/08_projections/projections_viewport.html
-        val viewportMatrix = Mat4x4f(
-            halfW, 0f, 0f, viewportOffset.x + halfW,
-            0f, halfH, 0f, viewportOffset.y + halfH,
-            0f, 0f, 0.5f, 0.5f,
-            0f, 0f, 0f, 1f
-        )
-        return viewportMatrix * vector
+    private fun viewportTransform(
+        triangle: Triangle,
+        viewportMatrix: Mat4x4f
+    ): Triangle {
+        with(triangle) {
+            return Triangle(
+                v0.copy(position = viewportMatrix * v0.position),
+                v1.copy(position = viewportMatrix * v1.position),
+                v2.copy(position = viewportMatrix * v2.position)
+            )
+        }
     }
 }

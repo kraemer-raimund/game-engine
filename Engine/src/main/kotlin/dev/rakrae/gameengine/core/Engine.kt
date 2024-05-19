@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.core
 
 import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.ScreenSize
 import dev.rakrae.gameengine.graphics.rendering.Renderer
 import dev.rakrae.gameengine.graphics.rendering.SpriteRenderer
@@ -28,7 +29,7 @@ class Engine(game: Game) {
             Companion.window = swingWindow
         }
 
-    private var displayBuffer = Bitmap(renderResolution.width, renderResolution.height)
+    private var displayBuffer = with(renderResolution) { Bitmap(width, height) }
     private val renderer = Renderer()
     private val spriteRenderer = SpriteRenderer()
 
@@ -45,9 +46,12 @@ class Engine(game: Game) {
         },
         onRender = suspend {
             gameTime.onRender()
-            displayBuffer = Bitmap(renderResolution.width, renderResolution.height)
-            renderer.render(game.scene, displayBuffer)
-            spriteRenderer.render(displayBuffer)
+            val activeCamera = game.scene.activeCamera
+            displayBuffer = with(renderResolution) { Bitmap(width, height) }
+                .apply { clear(Color(0u, 0u, 0u, 255u)) }
+            val viewportBuffer = with(activeCamera.viewportSize) { Bitmap(x, y) }
+            renderer.render(game.scene, viewportBuffer)
+            spriteRenderer.draw(displayBuffer, viewportBuffer, activeCamera.viewportOffset)
             window.displayPixels(displayBuffer)
         },
         onPause = suspend {
@@ -77,7 +81,7 @@ class Engine(game: Game) {
 
         private lateinit var window: Window
 
-        val aspectRatio: Float
-            get() = window.aspectRatio
+        val screenSize: ScreenSize
+            get() = renderResolution
     }
 }

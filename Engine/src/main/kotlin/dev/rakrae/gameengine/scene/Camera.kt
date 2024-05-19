@@ -1,9 +1,7 @@
 package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.core.Engine
-import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.math.Vec4f
+import dev.rakrae.gameengine.math.*
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -17,7 +15,48 @@ class Camera(
     val nearPlane: Float = 1f
     val farPlane: Float = 100f
     private val horizontalFovRadians: Float get() = 0.5f * PI.toFloat()
-    private val verticalFovRadians: Float get() = horizontalFovRadians / Engine.aspectRatio
+    private val verticalFovRadians: Float get() = horizontalFovRadians / viewportAspectRatio
+
+    /**
+     * The offset of the viewport on the screen or within the window.
+     */
+    private val viewportOffsetNormalized = Vec2f(0.4f, 0.2f)
+
+    val viewportOffset
+        get() = Vec2i(
+            (viewportOffsetNormalized.x * Engine.screenSize.width).toInt(),
+            (viewportOffsetNormalized.y * Engine.screenSize.height).toInt(),
+        )
+
+    /**
+     * The size of the viewport relative to the screen or window.
+     */
+    private val viewportScaleNormalized = Vec2f(0.6f, 0.4f)
+
+    val viewportSize
+        get() = Vec2i(
+            (viewportScaleNormalized.x * Engine.screenSize.width).toInt(),
+            (viewportScaleNormalized.y * Engine.screenSize.height).toInt(),
+        )
+
+    private val viewportAspectRatio
+        get() = with(viewportSize) { x.toFloat() / y.toFloat() }
+
+    /**
+     * Transforms normalized device coordinates into screen coordinates.
+     * - [https://learnwebgl.brown37.net/08_projections/projections_viewport.html](https://learnwebgl.brown37.net/08_projections/projections_viewport.html)
+     */
+    val viewportMatrix: Mat4x4f
+        get() {
+            val halfW = 0.5f * viewportSize.x
+            val halfH = 0.5f * viewportSize.y
+            return Mat4x4f(
+                halfW, 0f, 0f, halfW,
+                0f, halfH, 0f, halfH,
+                0f, 0f, 0.5f, 0.5f,
+                0f, 0f, 0f, 1f
+            )
+        }
 
     // https://en.wikipedia.org/wiki/Transformation_matrix#Perspective_projection
     val projectionMatrix: Mat4x4f

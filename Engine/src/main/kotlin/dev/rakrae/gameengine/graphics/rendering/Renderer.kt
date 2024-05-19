@@ -5,7 +5,6 @@ import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec2i
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
@@ -26,6 +25,7 @@ internal class Renderer {
         displayFrame.clear(Color(0u, 0u, 0u, 255u))
         val viewMatrix = scene.activeCamera.viewMatrix
         val projectionMatrix = scene.activeCamera.projectionMatrix
+        val viewportMatrix = scene.activeCamera.viewportMatrix
         val clippingPlanes = with(scene.activeCamera) { ClippingPlanes(nearPlane, farPlane) }
         val zBuffer = Buffer2f(displayFrame.width, displayFrame.height, initValue = 1.0f)
 
@@ -40,6 +40,7 @@ internal class Renderer {
                     zBuffer,
                     modelViewMatrix,
                     projectionMatrix,
+                    viewportMatrix,
                     clippingPlanes
                 )
             }
@@ -60,6 +61,7 @@ internal class Renderer {
                 displayFrame,
                 viewMatrix,
                 projectionMatrix,
+                viewportMatrix,
                 zBuffer,
                 clippingPlanes
             )
@@ -78,6 +80,7 @@ internal class Renderer {
         zBuffer: Buffer2f,
         modelViewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
+        viewportMatrix: Mat4x4f,
         clippingPlanes: ClippingPlanes
     ) = coroutineScope {
         launch {
@@ -95,7 +98,7 @@ internal class Renderer {
                         clippedTriangles.forEach { triangleClipSpace ->
                             val triangleViewportCoordinates = vertexPostProcessing.toViewport(
                                 triangleClipSpace,
-                                viewportSize = Vec2i(framebuffer.width, framebuffer.height)
+                                viewportMatrix
                             ) ?: return@forEach
                             val renderContext = RenderContext(
                                 framebuffer,
@@ -127,6 +130,7 @@ internal class Renderer {
         framebuffer: Bitmap,
         viewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
+        viewportMatrix: Mat4x4f,
         zBuffer: Buffer2f,
         clippingPlanes: ClippingPlanes
     ) = coroutineScope {
@@ -147,6 +151,7 @@ internal class Renderer {
                     deferredZBuffer,
                     modelViewMatrix,
                     projectionMatrix,
+                    viewportMatrix,
                     clippingPlanes
                 )
                 deferredRendering.postProcess(
