@@ -1,7 +1,7 @@
 # Educational Game Engine
 
-If you want to learn how game engines work and how to create your own engine,
-this project is for you.
+**If you want to learn how game engines and 3D graphics work and how to create
+your own engine, this project is for you.**
 
 The goal of this educational game engine project is to help you learn what
 happens under the hood, just like creating it helped me learn more about the
