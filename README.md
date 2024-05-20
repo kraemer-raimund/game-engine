@@ -19,10 +19,10 @@ one of the [early game consoles](https://en.wikipedia.org/wiki/Sixth_generation_
 Along with the game engine I'm developing a sample game to incrementally
 drive the engine's requirements and demo its features.
 
-# Contribution
+## Contribution
 
 Currently I am not taking any feature requests or bug reports.
 
-# License
+## License
 
 The MIT License. Please refer to the license file.
