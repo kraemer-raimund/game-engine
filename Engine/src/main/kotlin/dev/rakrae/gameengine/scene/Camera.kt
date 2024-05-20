@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.core.Engine
+import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.math.*
 import kotlin.math.PI
 import kotlin.math.cos
@@ -41,6 +42,8 @@ class Camera(
 
     private val viewportAspectRatio
         get() = with(viewportSize) { x.toFloat() / y.toFloat() }
+
+    val renderbuffer = with(viewportSize) { Bitmap(x, y) }
 
     /**
      * Transforms normalized device coordinates into screen coordinates.
