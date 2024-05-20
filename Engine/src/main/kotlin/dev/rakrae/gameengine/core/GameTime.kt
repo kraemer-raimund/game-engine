@@ -2,7 +2,7 @@ package dev.rakrae.gameengine.core
 
 class GameTime {
 
-    fun onTick() {
+    internal fun onTick() {
         tickTime = elapsedTime
         ticksSinceStartup++
         deltaTime = (currentTimeMillis - previousFrameTimeMillis) / 1000.0f
@@ -10,7 +10,7 @@ class GameTime {
         previousFrameTimeMillis = currentTimeMillis
     }
 
-    fun onRender() {
+    internal fun onRender() {
         frameTime = elapsedTime
         framesSinceStartup++
 
