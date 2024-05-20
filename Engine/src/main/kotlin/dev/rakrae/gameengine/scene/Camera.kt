@@ -2,7 +2,9 @@ package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.core.Engine
 import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.RenderTexture
+import dev.rakrae.gameengine.graphics.rendering.pipeline.PostProcessingShader
 import dev.rakrae.gameengine.math.*
 import kotlin.math.PI
 import kotlin.math.cos
@@ -10,7 +12,6 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 class Camera(
-    val renderTexture: RenderTexture? = null,
     private val horizontalFovRadians: Float = 0.5f * PI.toFloat(),
     private val viewportOffsetNormalized: Vec2f = Vec2f(0f, 0f),
     private val viewportScaleNormalized: Vec2f = Vec2f(1f, 1f),
@@ -18,12 +19,14 @@ class Camera(
     private var rot: Vec3f = Vec3f.zero
 ) {
 
+    var renderTexture: RenderTexture? = null
+
+    val postProcessingShaders: MutableList<PostProcessingShader> = mutableListOf()
+
     val nearPlane: Float = 1f
     val farPlane: Float = 100f
     private val verticalFovRadians: Float
-        get() {
-            return if (renderTexture == null) horizontalFovRadians / viewportAspectRatio else 1f
-        }
+        get() = if (renderTexture == null) horizontalFovRadians / viewportAspectRatio else 1f
 
     val viewportOffset
         get() = Vec2i(
@@ -41,6 +44,7 @@ class Camera(
         get() = with(viewportSize) { x.toFloat() / y.toFloat() }
 
     val renderBuffer = with(viewportSize) { Bitmap(x, y) }
+    val zBuffer = with(viewportSize) { Buffer2f(x, y) }
 
     /**
      * Transforms normalized device coordinates into screen coordinates.

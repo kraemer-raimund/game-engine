@@ -3,7 +3,10 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.core.Window
+import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.RenderTexture
+import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.shaders.OutlinePostProcessingShader
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -28,15 +31,17 @@ class Chess : Game() {
             Camera(
                 viewportOffsetNormalized = Vec2f(0f, 0.05f),
                 viewportScaleNormalized = Vec2f(1f, 0.9f)
-            ),
+            ).apply {
+                postProcessingShaders.add(DepthOfFieldPostProcessingShader(effectStrength = 1.1f))
+                postProcessingShaders.add(OutlinePostProcessingShader(2, 0.01f, Color.red))
+            },
             Camera(
                 viewportOffsetNormalized = Vec2f(0.85f, 0.1f),
                 viewportScaleNormalized = Vec2f(0.1f, 0.2f)
             ),
-            Camera(
-                renderTexture = RenderTexture(0),
-                horizontalFovRadians = 0.6f * PI.toFloat()
-            )
+            Camera(horizontalFovRadians = 0.6f * PI.toFloat()).apply {
+                renderTexture = RenderTexture(0)
+            }
         )
         Scene(cameras, level.nodes)
     }
