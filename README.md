@@ -1,26 +1,27 @@
-# Game Engine
+# Educational Game Engine
 
-A so far unnamed game engine built from scratch in Kotlin, reinventing many
-wheels for fun and learning.
+If you want to learn how game engines work and how to create your own engine,
+this project is for you.
 
-**Work in progress.** This project is far from stable (and likely never will
-be), as I use it for experimentation and learning.
+The goal of this educational game engine project is to help you learn what
+happens under the hood, just like creating it helped me learn more about the
+technical details. It's not intended to be used for serious game projects,
+although you can use it to create your own games if you want to understand
+in detail what happens between the player's input and the final image on
+the screen.
 
-The goal is to create a simple game engine from scratch, intentionally without
-using any graphics libraries like OpenGL or any frameworks besides basic
-windowing and user input, instead building many of these things from scratch,
-for example using canvas-based rendering. Besides learning more of the technical
-details myself, I intend to use it as an educational project to help others
-learn about game engines, graphics programming, and game development.
+This engine does many things in code running on the CPU that would normally
+happen in hardware, e.g., on the GPU. As a result, although you can achieve
+pretty nice looking graphics with it, if you want decent framerates for your
+game you will have to pretend it's the nineties and you're programming for
+one of the [early game consoles](https://en.wikipedia.org/wiki/Sixth_generation_of_video_game_consoles).
 
-Along with the game engine I develop a (small) sample game to incrementally
-drive the requirements of the engine.
+Along with the game engine I'm developing a sample game to incrementally
+drive the engine's requirements and demo its features.
 
 # Contribution
 
-As of now, this is just a personal for-fun project. If you find a bug, feel
-free to open an issue, but feature requests are out of scope until further
-notice.
+Currently I am not taking any feature requests or bug reports.
 
 # License
 
