@@ -9,6 +9,7 @@ import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
 import dev.rakrae.gameengine.scene.RenderComponent
+import kotlin.math.PI
 
 class ChessExampleLevel {
 
@@ -123,6 +124,19 @@ class ChessExampleLevel {
                         normal = Texture("/assets/textures/scifi-panel/TCom_Scifi_Panel_512_normal.png"),
                         glossiness = 8f,
                         uvScale = Vec2f(4f, 4f)
+                    ),
+                    fragmentShader = UvTextureFragmentShader()
+                )
+            ),
+            dev.rakrae.gameengine.scene.Node(
+                renderComponent = RenderComponent(
+                    mesh = AssetLoader().loadMesh("/assets/plane.obj"),
+                    position = Vec3f(4f, 1f, 4f),
+                    rotationEulerRad = Vec3f(-0.5f * PI.toFloat(), 0.25f * PI.toFloat(), 0f),
+                    scale = Vec3f(1f, 1f, 1f),
+                    material = Material(
+                        glossiness = 3f,
+                        uvScale = Vec2f(1f, 1f)
                     ),
                     fragmentShader = UvTextureFragmentShader()
                 )

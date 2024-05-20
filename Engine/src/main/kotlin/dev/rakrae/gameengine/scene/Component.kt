@@ -9,29 +9,55 @@ import dev.rakrae.gameengine.graphics.rendering.shaders.DefaultFragmentShader
 import dev.rakrae.gameengine.graphics.rendering.shaders.DefaultVertexShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
+import kotlin.math.cos
+import kotlin.math.sin
 
 sealed class Component
 
 class RenderComponent(
     val mesh: Mesh,
     position: Vec3f,
-    scale: Vec3f = Vec3f(1f, 1f, 1f),
+    rotationEulerRad: Vec3f = Vec3f.zero,
+    scale: Vec3f = Vec3f.one,
     val material: Material = Material.default,
     val vertexShader: VertexShader = DefaultVertexShader(),
     val fragmentShader: FragmentShader = DefaultFragmentShader(),
     val deferredShader: DeferredShader? = null
 ) : Component() {
 
-    val transformMatrix by lazy { translationMatrix * scaleMatrix }
+    val transformMatrix by lazy { translationMatrix * rotationMatrix * scaleMatrix }
 
-    val translationMatrix = Mat4x4f(
+    private val translationMatrix = Mat4x4f(
         1f, 0f, 0f, position.x,
         0f, 1f, 0f, position.y,
         0f, 0f, 1f, position.z,
         0f, 0f, 0f, 1f
     )
 
-    val scaleMatrix = Mat4x4f(
+    private val rotationMatrix by lazy {
+        val rot = rotationEulerRad
+        val rotX = Mat4x4f(
+            1f, 0f, 0f, 0f,
+            0f, cos(rot.x), -sin(rot.x), 0f,
+            0f, sin(rot.x), cos(rot.x), 0f,
+            0f, 0f, 0f, 1f
+        )
+        val rotY = Mat4x4f(
+            cos(rot.y), 0f, sin(rot.y), 0f,
+            0f, 1f, 0f, 0f,
+            -sin(rot.y), 0f, cos(rot.y), 0f,
+            0f, 0f, 0f, 1f
+        )
+        val rotZ = Mat4x4f(
+            cos(rot.z), -sin(rot.z), 0f, 0f,
+            sin(rot.z), cos(rot.z), 0f, 0f,
+            0f, 0f, 1f, 0f,
+            0f, 0f, 0f, 1f
+        )
+        rotZ * rotY * rotX
+    }
+
+    private val scaleMatrix = Mat4x4f(
         scale.x, 0f, 0f, 0f,
         0f, scale.y, 0f, 0f,
         0f, 0f, scale.z, 0f,

@@ -76,6 +76,7 @@ data class Vec3f(val x: Float, val y: Float, val z: Float) {
 
     companion object {
         val zero = Vec3f(0f, 0f, 0f)
+        val one = Vec3f(1f, 1f, 1f)
 
         /**
          * Linearly interpolate (lerp) between [v1] and [v2] with weight [t].
