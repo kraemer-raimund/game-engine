@@ -24,8 +24,6 @@ internal class Renderer {
     private val imagePostProcessing = ImagePostProcessing()
     private val deferredRendering = DeferredRendering()
 
-    private val postProcessingShader: PostProcessingShader? = null
-
     suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
         for (renderTextureCamera in scene.cameras.filter { it.renderTexture != null }) {
             val renderTextureIndex = renderTextureCamera.renderTexture?.index ?: continue
@@ -37,29 +35,22 @@ internal class Renderer {
 
         for (viewportCamera in scene.cameras.filter { it.renderTexture == null }) {
             launch {
-                val viewportRenderBuffer = viewportCamera.renderBuffer.apply { clear(Color.black) }
-                render(viewportCamera, scene, viewportRenderBuffer)
-                spriteRenderer.draw(
-                    framebuffer,
-                    viewportCamera.renderBuffer,
-                    viewportCamera.viewportOffset
-                )
+                val viewportBuffer = with(viewportCamera.viewportSize) { Bitmap(x, y, Color.black) }
+                render(viewportCamera, scene, viewportBuffer)
+                spriteRenderer.draw(framebuffer, viewportBuffer, viewportCamera.viewportOffset)
             }
         }
     }
 
     private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) {
-        val viewMatrix = camera.viewMatrix
-        val projectionMatrix = camera.projectionMatrix
-        val viewportMatrix = camera.viewportMatrix
-        val clippingPlanes = with(camera) { ClippingPlanes(nearPlane, farPlane) }
         render(
-            framebuffer,
-            viewMatrix,
-            projectionMatrix,
-            viewportMatrix,
-            clippingPlanes,
-            scene
+            framebuffer = framebuffer,
+            viewMatrix = camera.viewMatrix,
+            projectionMatrix = camera.projectionMatrix,
+            viewportMatrix = camera.viewportMatrix,
+            clippingPlanes = with(camera) { ClippingPlanes(nearPlane, farPlane) },
+            scene = scene,
+            postProcessingShaders = camera.postProcessingShaders
         )
     }
 
@@ -69,7 +60,8 @@ internal class Renderer {
         projectionMatrix: Mat4x4f,
         viewportMatrix: Mat4x4f,
         clippingPlanes: ClippingPlanes,
-        scene: Scene
+        scene: Scene,
+        postProcessingShaders: List<PostProcessingShader>
     ) = coroutineScope {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
@@ -88,7 +80,7 @@ internal class Renderer {
             )
         }
 
-        if (postProcessingShader != null) {
+        for (postProcessingShader in postProcessingShaders) {
             imagePostProcessing.postProcess(postProcessingShader, framebuffer, zBuffer)
         }
 
@@ -104,7 +96,6 @@ internal class Renderer {
             zBuffer,
             clippingPlanes
         )
-
     }
 
     private suspend fun render(

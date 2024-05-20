@@ -132,7 +132,7 @@ class ChessExampleLevel {
             dev.rakrae.gameengine.scene.Node(
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/plane.obj"),
-                    position = Vec3f(4f, 1f, 4f),
+                    position = Vec3f(2f, 1f, 3f),
                     rotationEulerRad = Vec3f(-0.5f * PI.toFloat(), -0.25f * PI.toFloat(), PI.toFloat()),
                     scale = Vec3f(1f, 1f, 1f),
                     material = Material(
@@ -140,7 +140,7 @@ class ChessExampleLevel {
                         glossiness = 3f,
                         uvScale = Vec2f(1f, 1f)
                     ),
-                    fragmentShader = UvTextureFragmentShader(),
+                    fragmentShader = ShadelessUvTextureFragmentShader(),
                     deferredShader = OutlineDeferredShader(2, Color(80u, 80u, 80u, 255u))
                 )
             )

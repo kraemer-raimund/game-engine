@@ -1,8 +1,6 @@
 package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.core.Engine
-import dev.rakrae.gameengine.graphics.Bitmap
-import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.pipeline.PostProcessingShader
 import dev.rakrae.gameengine.math.*
@@ -34,7 +32,7 @@ class Camera(
             (viewportOffsetNormalized.y * Engine.screenSize.height).toInt(),
         )
 
-    private val viewportSize
+    val viewportSize
         get() = if (renderTexture == null) Vec2i(
             (viewportScaleNormalized.x * Engine.screenSize.width).toInt(),
             (viewportScaleNormalized.y * Engine.screenSize.height).toInt(),
@@ -42,9 +40,6 @@ class Camera(
 
     private val viewportAspectRatio
         get() = with(viewportSize) { x.toFloat() / y.toFloat() }
-
-    val renderBuffer = with(viewportSize) { Bitmap(x, y) }
-    val zBuffer = with(viewportSize) { Buffer2f(x, y) }
 
     /**
      * Transforms normalized device coordinates into screen coordinates.
