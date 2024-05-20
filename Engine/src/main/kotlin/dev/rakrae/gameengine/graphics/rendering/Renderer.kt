@@ -5,6 +5,7 @@ import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
@@ -21,13 +22,17 @@ internal class Renderer {
 
     private val postProcessingShader: PostProcessingShader? = null
 
-    suspend fun render(scene: Scene, displayFrame: Bitmap) = coroutineScope {
-        displayFrame.clear(Color(0u, 0u, 0u, 255u))
-        val viewMatrix = scene.activeCamera.viewMatrix
-        val projectionMatrix = scene.activeCamera.projectionMatrix
-        val viewportMatrix = scene.activeCamera.viewportMatrix
-        val clippingPlanes = with(scene.activeCamera) { ClippingPlanes(nearPlane, farPlane) }
-        val zBuffer = Buffer2f(displayFrame.width, displayFrame.height, initValue = 1.0f)
+    suspend fun render(
+        camera: Camera,
+        scene: Scene
+    ) = coroutineScope {
+        val frameBuffer = camera.renderBuffer
+        frameBuffer.clear(Color(0u, 0u, 0u, 255u))
+        val viewMatrix = camera.viewMatrix
+        val projectionMatrix = camera.projectionMatrix
+        val viewportMatrix = camera.viewportMatrix
+        val clippingPlanes = with(camera) { ClippingPlanes(nearPlane, farPlane) }
+        val zBuffer = Buffer2f(frameBuffer.width, frameBuffer.height, initValue = 1.0f)
 
         val renderingTime = measureTime {
             val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
@@ -36,7 +41,7 @@ internal class Renderer {
                 val modelViewMatrix = viewMatrix * modelMatrix
                 render(
                     renderComponent,
-                    displayFrame,
+                    frameBuffer,
                     zBuffer,
                     modelViewMatrix,
                     projectionMatrix,
@@ -48,7 +53,7 @@ internal class Renderer {
 
         val imagePostProcessingTime = measureTime {
             if (postProcessingShader != null) {
-                imagePostProcessing.postProcess(postProcessingShader, displayFrame, zBuffer)
+                imagePostProcessing.postProcess(postProcessingShader, frameBuffer, zBuffer)
             }
         }
 
@@ -58,7 +63,7 @@ internal class Renderer {
                 .filter { it.deferredShader != null }
             renderDeferred(
                 deferredRenderingComponents,
-                displayFrame,
+                frameBuffer,
                 viewMatrix,
                 projectionMatrix,
                 viewportMatrix,

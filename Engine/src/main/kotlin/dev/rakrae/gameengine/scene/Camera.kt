@@ -9,6 +9,8 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 class Camera(
+    private val viewportOffsetNormalized: Vec2f = Vec2f(0f, 0f),
+    private val viewportScaleNormalized: Vec2f = Vec2f(1f, 1f),
     private var loc: Vec3f = Vec3f.zero,
     private var rot: Vec3f = Vec3f.zero
 ) {
@@ -18,23 +20,13 @@ class Camera(
     private val horizontalFovRadians: Float get() = 0.5f * PI.toFloat()
     private val verticalFovRadians: Float get() = horizontalFovRadians / viewportAspectRatio
 
-    /**
-     * The offset of the viewport on the screen or within the window.
-     */
-    private val viewportOffsetNormalized = Vec2f(0.4f, 0.2f)
-
     val viewportOffset
         get() = Vec2i(
             (viewportOffsetNormalized.x * Engine.screenSize.width).toInt(),
             (viewportOffsetNormalized.y * Engine.screenSize.height).toInt(),
         )
 
-    /**
-     * The size of the viewport relative to the screen or window.
-     */
-    private val viewportScaleNormalized = Vec2f(0.6f, 0.4f)
-
-    val viewportSize
+    private val viewportSize
         get() = Vec2i(
             (viewportScaleNormalized.x * Engine.screenSize.width).toInt(),
             (viewportScaleNormalized.y * Engine.screenSize.height).toInt(),
@@ -43,7 +35,7 @@ class Camera(
     private val viewportAspectRatio
         get() = with(viewportSize) { x.toFloat() / y.toFloat() }
 
-    val renderbuffer = with(viewportSize) { Bitmap(x, y) }
+    val renderBuffer = with(viewportSize) { Bitmap(x, y) }
 
     /**
      * Transforms normalized device coordinates into screen coordinates.

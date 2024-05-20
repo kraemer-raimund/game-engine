@@ -4,14 +4,17 @@ import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.core.Window
 import dev.rakrae.gameengine.input.Input
+import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.levels.ChessExampleLevel
+import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
+import kotlin.math.PI
 import kotlin.time.Duration.Companion.seconds
 
 class Chess : Game() {
@@ -20,30 +23,58 @@ class Chess : Game() {
 
     override val scene: Scene by lazy {
         val level = ChessExampleLevel()
-        Scene(level.nodes)
+        val cameras = listOf(
+            Camera(
+                viewportOffsetNormalized = Vec2f(0f, 0.05f),
+                viewportScaleNormalized = Vec2f(0.49f, 0.9f)
+            ),
+            Camera(
+                viewportOffsetNormalized = Vec2f(0.35f, 0.1f),
+                viewportScaleNormalized = Vec2f(0.1f, 0.2f)
+            ),
+            Camera(
+                viewportOffsetNormalized = Vec2f(0.51f, 0.05f),
+                viewportScaleNormalized = Vec2f(0.49f, 0.9f)
+            ),
+            Camera(
+                viewportOffsetNormalized = Vec2f(0.85f, 0.1f),
+                viewportScaleNormalized = Vec2f(0.1f, 0.2f)
+            )
+        )
+        Scene(cameras, level.nodes)
     }
 
     private var fpsCounterCoroutine: Job? = null
 
     override suspend fun onStart() {
         println("Game started")
-        scene.activeCamera.translate(Vec3f(0f, 1.8f, 0f))
 
         window.requestWindowState(Window.State.FullScreen)
-
         startFpsCounterCoroutine()
+
+        scene.cameras[0].translate(Vec3f(0f, 1.8f, 0f))
+
+        scene.cameras[1].translate(Vec3f(0f, 4f, -2f))
+        scene.cameras[1].rotate(Vec3f(-0.35f * PI.toFloat(), 0f, 0f))
+
+        scene.cameras[2].translate(Vec3f(2f, 1.8f, 0f))
+        scene.cameras[2].rotate(Vec3f(0f, 0.25f * PI.toFloat(), 0f))
+
+        scene.cameras[3].translate(Vec3f(0f, 4f, -2f))
+        scene.cameras[3].rotate(Vec3f(-0.35f * PI.toFloat(), 0f, 0f))
     }
 
     override suspend fun onTick() {
+        val mainCamera = scene.cameras[0]
         val moveSpeed = 3f
         val forwardOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.x
         val sidewaysOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.y
-        scene.activeCamera.translate(Vec3f(1f, 0f, 0f) * forwardOffset)
-        scene.activeCamera.translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
+        mainCamera.translate(Vec3f(1f, 0f, 0f) * forwardOffset)
+        mainCamera.translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
 
         val mouseSensitivity = 0.12f
-        scene.activeCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
-        scene.activeCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
+        mainCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
+        mainCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
     }
 
     override suspend fun onPause() {

@@ -48,11 +48,12 @@ class Engine(private val game: Game) {
 
     private suspend fun onRender() {
         gameTime.onRender()
-        val activeCamera = game.scene.activeCamera
         val displayBuffer = with(renderResolution) { Bitmap(width, height) }
             .apply { clear(Color(0u, 0u, 0u, 255u)) }
-        renderer.render(game.scene, activeCamera.renderbuffer)
-        spriteRenderer.draw(displayBuffer, activeCamera.renderbuffer, activeCamera.viewportOffset)
+        game.scene.cameras.forEach { camera ->
+            renderer.render(camera, game.scene)
+            spriteRenderer.draw(displayBuffer, camera.renderBuffer, camera.viewportOffset)
+        }
         window.displayPixels(displayBuffer)
     }
 
