@@ -12,67 +12,72 @@ import dev.rakrae.gameengine.platform.SwingWindow
 import kotlinx.coroutines.delay
 import kotlin.time.Duration.Companion.seconds
 
-class Engine(game: Game) {
+class Engine(private val game: Game) {
 
     private val awtMouseInputAdapter = AwtMouseInputAdapter()
-    val window: Window = SwingWindow(game.title, renderResolution)
-        .also { swingWindow ->
-            AwtKeyboardInputAdapter().also { awtKeyboardInputAdapter ->
-                swingWindow.container.addKeyListener(awtKeyboardInputAdapter)
-                Input.axisPairProvider1 = awtKeyboardInputAdapter
-            }
+    internal val window: Window = initWindow(awtMouseInputAdapter)
 
-            awtMouseInputAdapter.also { awtMouseInputAdapter ->
-                swingWindow.container.addMouseMotionListener(awtMouseInputAdapter)
-                Input.axisPairProvider2 = awtMouseInputAdapter
-            }
-            Companion.window = swingWindow
-        }
-
-    private var displayBuffer = with(renderResolution) { Bitmap(width, height) }
     private val renderer = Renderer()
     private val spriteRenderer = SpriteRenderer()
-
     private val gameTime = GameTime()
-
     private val gameLoop = GameLoop(
-        onStart = suspend {
-            game.onStart()
-        },
-        onTick = suspend {
-            gameTime.onTick()
-            awtMouseInputAdapter.tick()
-            game.onTick()
-        },
-        onRender = suspend {
-            gameTime.onRender()
-            val activeCamera = game.scene.activeCamera
-            displayBuffer = with(renderResolution) { Bitmap(width, height) }
-                .apply { clear(Color(0u, 0u, 0u, 255u)) }
-            renderer.render(game.scene, activeCamera.renderbuffer)
-            spriteRenderer.draw(displayBuffer, activeCamera.renderbuffer, activeCamera.viewportOffset)
-            window.displayPixels(displayBuffer)
-        },
-        onPause = suspend {
-            game.onPause()
-        },
-        onResume = suspend {
-            game.onResume()
-        },
-        onStop = suspend {
-            game.onStop()
-            delay(0.5.seconds)
-            displayBuffer.clear()
-            window.exit()
-        }
+        onStart = ::onStart,
+        onTick = ::onTick,
+        onRender = ::onRender,
+        onPause = ::onPause,
+        onResume = ::onResume,
+        onStop = ::onStop
     )
 
-    internal fun start() {
-        gameLoop.start()
+    private var displayBuffer = with(renderResolution) { Bitmap(width, height) }
+
+    internal fun start() = gameLoop.start()
+
+    internal fun stop() = gameLoop.stop()
+
+    private suspend fun onStart() = game.onStart()
+
+    private suspend fun onTick() {
+        gameTime.onTick()
+        awtMouseInputAdapter.tick()
+        game.onTick()
     }
 
-    internal fun stop() {
-        gameLoop.stop()
+    private suspend fun onRender() {
+        gameTime.onRender()
+        val activeCamera = game.scene.activeCamera
+        displayBuffer = with(renderResolution) { Bitmap(width, height) }
+            .apply { clear(Color(0u, 0u, 0u, 255u)) }
+        renderer.render(game.scene, activeCamera.renderbuffer)
+        spriteRenderer.draw(displayBuffer, activeCamera.renderbuffer, activeCamera.viewportOffset)
+        window.displayPixels(displayBuffer)
+    }
+
+    private suspend fun onPause() = game.onPause()
+
+    private suspend fun onResume() = game.onResume()
+
+    private suspend fun onStop() {
+        game.onStop()
+        delay(0.5.seconds)
+        displayBuffer.clear()
+        window.exit()
+    }
+
+    private fun initWindow(mouseInputAdapter: AwtMouseInputAdapter): Window {
+        return SwingWindow(game.title, renderResolution)
+            .also { swingWindow ->
+                AwtKeyboardInputAdapter().also { awtKeyboardInputAdapter ->
+                    swingWindow.container.addKeyListener(awtKeyboardInputAdapter)
+                    Input.axisPairProvider1 = awtKeyboardInputAdapter
+                }
+
+                mouseInputAdapter.also { awtMouseInputAdapter ->
+                    swingWindow.container.addMouseMotionListener(awtMouseInputAdapter)
+                    Input.axisPairProvider2 = awtMouseInputAdapter
+                }
+                Companion.window = swingWindow
+            }
     }
 
     companion object {
