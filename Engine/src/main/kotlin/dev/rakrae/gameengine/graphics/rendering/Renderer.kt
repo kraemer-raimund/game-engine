@@ -14,7 +14,9 @@ import kotlinx.coroutines.launch
 
 internal class Renderer {
 
-    private val renderTextures = List(16) { Bitmap(512, 512) }
+    private val renderTextures = List(16) {
+        Bitmap(512, 512).apply { clear(Color.black) }
+    }
     private val spriteRenderer = SpriteRenderer()
     private val vertexProcessing = VertexProcessing()
     private val vertexPostProcessing = VertexPostProcessing()
@@ -24,30 +26,25 @@ internal class Renderer {
 
     private val postProcessingShader: PostProcessingShader? = null
 
-    suspend fun render(scene: Scene, framebuffer: Bitmap) {
+    suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
         for (renderTextureCamera in scene.cameras.filter { it.renderTexture != null }) {
             val renderTextureIndex = renderTextureCamera.renderTexture?.index ?: continue
-            val renderTexture = (renderTextures[renderTextureIndex]).apply {
-                clear(Color(0u, 0u, 0u, 255u))
-                render(renderTextureCamera, scene, this)
+            launch {
+                val renderTexture = (renderTextures[renderTextureIndex]).apply { clear(Color.black) }
+                render(renderTextureCamera, scene, renderTexture)
             }
-            spriteRenderer.draw(
-                renderTexture,
-                renderTextureCamera.renderBuffer,
-                renderTextureCamera.viewportOffset
-            )
         }
 
         for (viewportCamera in scene.cameras.filter { it.renderTexture == null }) {
-            val viewportRenderBuffer = viewportCamera.renderBuffer.apply {
-                clear(Color(0u, 0u, 0u, 255u))
+            launch {
+                val viewportRenderBuffer = viewportCamera.renderBuffer.apply { clear(Color.black) }
+                render(viewportCamera, scene, viewportRenderBuffer)
+                spriteRenderer.draw(
+                    framebuffer,
+                    viewportCamera.renderBuffer,
+                    viewportCamera.viewportOffset
+                )
             }
-            render(viewportCamera, scene, viewportRenderBuffer)
-            spriteRenderer.draw(
-                framebuffer,
-                viewportCamera.renderBuffer,
-                viewportCamera.viewportOffset
-            )
         }
     }
 
