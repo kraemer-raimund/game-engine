@@ -4,7 +4,6 @@ import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.ScreenSize
 import dev.rakrae.gameengine.graphics.rendering.Renderer
-import dev.rakrae.gameengine.graphics.rendering.SpriteRenderer
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.platform.AwtKeyboardInputAdapter
 import dev.rakrae.gameengine.platform.AwtMouseInputAdapter
@@ -14,7 +13,6 @@ class Engine(private val game: Game) {
 
     private val gameLifeCycleReceivers = mutableListOf<GameLifeCycleReceiver>(game)
     private val renderer = Renderer()
-    private val spriteRenderer = SpriteRenderer()
     private val gameTime = GameTime()
     private val gameLoop = GameLoop(
         onStart = ::onStart,
