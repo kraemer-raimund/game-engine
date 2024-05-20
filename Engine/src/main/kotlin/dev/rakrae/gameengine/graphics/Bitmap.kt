@@ -1,8 +1,8 @@
 package dev.rakrae.gameengine.graphics
 
-class Bitmap(val width: Int, val height: Int) {
+class Bitmap(val width: Int, val height: Int, initialColor: Color = Color.black) {
 
-    val pixels: IntArray = IntArray(width * height)
+    val pixels: IntArray = IntArray(width * height) { initialColor.asIntARGB.toInt() }
 
     fun setPixel(x: Int, y: Int, color: Color) {
         pixels[x + y * width] = color.asIntARGB.toInt()
