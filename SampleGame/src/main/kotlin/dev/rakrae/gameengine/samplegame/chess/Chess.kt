@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.core.Window
+import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -26,19 +27,15 @@ class Chess : Game() {
         val cameras = listOf(
             Camera(
                 viewportOffsetNormalized = Vec2f(0f, 0.05f),
-                viewportScaleNormalized = Vec2f(0.49f, 0.9f)
-            ),
-            Camera(
-                viewportOffsetNormalized = Vec2f(0.35f, 0.1f),
-                viewportScaleNormalized = Vec2f(0.1f, 0.2f)
-            ),
-            Camera(
-                viewportOffsetNormalized = Vec2f(0.51f, 0.05f),
-                viewportScaleNormalized = Vec2f(0.49f, 0.9f)
+                viewportScaleNormalized = Vec2f(1f, 0.9f)
             ),
             Camera(
                 viewportOffsetNormalized = Vec2f(0.85f, 0.1f),
                 viewportScaleNormalized = Vec2f(0.1f, 0.2f)
+            ),
+            Camera(
+                renderTexture = RenderTexture(0),
+                horizontalFovRadians = 0.6f * PI.toFloat()
             )
         )
         Scene(cameras, level.nodes)
@@ -57,11 +54,8 @@ class Chess : Game() {
         scene.cameras[1].translate(Vec3f(0f, 4f, -2f))
         scene.cameras[1].rotate(Vec3f(-0.35f * PI.toFloat(), 0f, 0f))
 
-        scene.cameras[2].translate(Vec3f(2f, 1.8f, 0f))
-        scene.cameras[2].rotate(Vec3f(0f, 0.25f * PI.toFloat(), 0f))
-
-        scene.cameras[3].translate(Vec3f(0f, 4f, -2f))
-        scene.cameras[3].rotate(Vec3f(-0.35f * PI.toFloat(), 0f, 0f))
+        scene.cameras[2].translate(Vec3f(1f, 2f, 2f))
+        scene.cameras[2].rotate(Vec3f(-0.15f * PI.toFloat(), 0f, 0f))
     }
 
     override suspend fun onTick() {

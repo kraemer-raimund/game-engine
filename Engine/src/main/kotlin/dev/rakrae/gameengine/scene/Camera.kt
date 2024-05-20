@@ -2,6 +2,7 @@ package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.core.Engine
 import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.math.*
 import kotlin.math.PI
 import kotlin.math.cos
@@ -9,6 +10,8 @@ import kotlin.math.sin
 import kotlin.math.tan
 
 class Camera(
+    val renderTexture: RenderTexture? = null,
+    private val horizontalFovRadians: Float = 0.5f * PI.toFloat(),
     private val viewportOffsetNormalized: Vec2f = Vec2f(0f, 0f),
     private val viewportScaleNormalized: Vec2f = Vec2f(1f, 1f),
     private var loc: Vec3f = Vec3f.zero,
@@ -17,8 +20,10 @@ class Camera(
 
     val nearPlane: Float = 1f
     val farPlane: Float = 100f
-    private val horizontalFovRadians: Float get() = 0.5f * PI.toFloat()
-    private val verticalFovRadians: Float get() = horizontalFovRadians / viewportAspectRatio
+    private val verticalFovRadians: Float
+        get() {
+            return if (renderTexture == null) horizontalFovRadians / viewportAspectRatio else 1f
+        }
 
     val viewportOffset
         get() = Vec2i(
@@ -27,10 +32,10 @@ class Camera(
         )
 
     private val viewportSize
-        get() = Vec2i(
+        get() = if (renderTexture == null) Vec2i(
             (viewportScaleNormalized.x * Engine.screenSize.width).toInt(),
             (viewportScaleNormalized.y * Engine.screenSize.height).toInt(),
-        )
+        ) else Vec2i(512, 512)
 
     private val viewportAspectRatio
         get() = with(viewportSize) { x.toFloat() / y.toFloat() }

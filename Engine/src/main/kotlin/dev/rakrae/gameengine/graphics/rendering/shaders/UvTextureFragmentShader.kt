@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.graphics.rendering.shaders
 
 import dev.rakrae.gameengine.graphics.Bitmap
+import dev.rakrae.gameengine.graphics.BitmapTexture
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.InputFragment
@@ -13,14 +14,18 @@ class UvTextureFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
         val normalMap = inputFragment.material.normal?.bitmap
-        val texture = inputFragment.material.albedo?.bitmap
+        val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
 
         val normal =
             (inputFragment.renderContext.projectionViewModelMatrix * Vec4f(
                 normalVector(normalMap, inputFragment),
                 1f
             )).toVec3f().normalized
-        val fragmentColor = color(texture, inputFragment) * lightingBrightness(normal, inputFragment)
+        val fragmentColor = if (albedoTexture != null) {
+            color(albedoTexture, inputFragment) * lightingBrightness(normal, inputFragment)
+        } else {
+            inputFragment.material.color
+        }
 
         return OutputFragment(
             fragmentColor = fragmentColor,

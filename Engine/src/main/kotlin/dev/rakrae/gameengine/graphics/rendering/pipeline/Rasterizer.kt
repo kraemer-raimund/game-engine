@@ -11,6 +11,7 @@ internal class Rasterizer {
         triangle: Triangle,
         normalWorldSpace: Vec3f,
         material: Material,
+        renderTexture: Bitmap?,
         fragmentShader: FragmentShader,
         renderContext: RenderContext
     ) {
@@ -37,6 +38,7 @@ internal class Rasterizer {
                                 faceNormalWorldSpace = normalWorldSpace,
                                 depth = interpolatedDepth,
                                 material = material,
+                                renderTexture = renderTexture,
                                 uv = interpolateUVs(triangle, barycentricCoordinates, renderContext)
                             )
                             val outputFragment = fragmentShader.process(inputFragment)

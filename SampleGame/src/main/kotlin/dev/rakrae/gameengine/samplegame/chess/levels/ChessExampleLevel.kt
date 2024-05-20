@@ -1,9 +1,10 @@
 package dev.rakrae.gameengine.samplegame.chess.levels
 
 import dev.rakrae.gameengine.assets.AssetLoader
+import dev.rakrae.gameengine.graphics.BitmapTexture
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
-import dev.rakrae.gameengine.graphics.Texture
+import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.shaders.*
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -36,7 +37,7 @@ class ChessExampleLevel {
                 4 -> Material(
                     color = Color(80u, 80u, 20u, 255u),
                     glossiness = 4f,
-                    albedo = Texture("/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png")
+                    albedo = BitmapTexture("/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png")
                 )
 
                 5 -> Material(
@@ -82,10 +83,10 @@ class ChessExampleLevel {
                     position = Vec3f(0f, 0f, 0f),
                     scale = Vec3f(10f, 1f, 10f),
                     material = Material(
-                        albedo = Texture(
+                        albedo = BitmapTexture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_albedo.png"
                         ),
-                        normal = Texture(
+                        normal = BitmapTexture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_normal.png"
                         ),
                         glossiness = 3f,
@@ -100,10 +101,10 @@ class ChessExampleLevel {
                     position = Vec3f(-10f, 2f, -10f),
                     scale = Vec3f(2f, 2f, 0.1f),
                     material = Material(
-                        albedo = Texture(
+                        albedo = BitmapTexture(
                             "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_albedo.png"
                         ),
-                        normal = Texture(
+                        normal = BitmapTexture(
                             "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_normal.png"
                         ),
                         glossiness = 1.5f,
@@ -118,10 +119,10 @@ class ChessExampleLevel {
                     position = Vec3f(-10f, 1f, 0f),
                     scale = Vec3f(1f, 1f, 1f),
                     material = Material(
-                        albedo = Texture(
+                        albedo = BitmapTexture(
                             "/assets/textures/scifi-panel/TCom_Scifi_Panel_512_albedo.png"
                         ),
-                        normal = Texture("/assets/textures/scifi-panel/TCom_Scifi_Panel_512_normal.png"),
+                        normal = BitmapTexture("/assets/textures/scifi-panel/TCom_Scifi_Panel_512_normal.png"),
                         glossiness = 8f,
                         uvScale = Vec2f(4f, 4f)
                     ),
@@ -132,13 +133,15 @@ class ChessExampleLevel {
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/plane.obj"),
                     position = Vec3f(4f, 1f, 4f),
-                    rotationEulerRad = Vec3f(-0.5f * PI.toFloat(), 0.25f * PI.toFloat(), 0f),
+                    rotationEulerRad = Vec3f(-0.5f * PI.toFloat(), -0.25f * PI.toFloat(), PI.toFloat()),
                     scale = Vec3f(1f, 1f, 1f),
                     material = Material(
+                        albedo = RenderTexture(0),
                         glossiness = 3f,
                         uvScale = Vec2f(1f, 1f)
                     ),
-                    fragmentShader = UvTextureFragmentShader()
+                    fragmentShader = UvTextureFragmentShader(),
+                    deferredShader = OutlineDeferredShader(2, Color(80u, 80u, 80u, 255u))
                 )
             )
         )

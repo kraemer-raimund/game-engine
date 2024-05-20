@@ -2,7 +2,9 @@ package dev.rakrae.gameengine.graphics
 
 import javax.imageio.ImageIO
 
-class Texture(filePath: String) {
+sealed class Texture
+
+class BitmapTexture(filePath: String) : Texture() {
 
     val bitmap = loadBitmap(filePath)
 
@@ -18,5 +20,21 @@ class Texture(filePath: String) {
             bitmap.pixels[i] = pixels[i] and 0x00FFFFFF
         }
         return bitmap
+    }
+}
+
+data class RenderTexture(val index: Int) : Texture() {
+
+    init {
+        if (index !in 0..15) {
+            throw IndexOutOfBoundsException(
+                "Render texture index mus be in the range ${allowedIndices.first} " +
+                        "to ${allowedIndices.last} (exclusive)."
+            )
+        }
+    }
+
+    companion object {
+        val allowedIndices = 0..15
     }
 }

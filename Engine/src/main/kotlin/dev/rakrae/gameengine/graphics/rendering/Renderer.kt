@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.graphics.rendering
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
 import dev.rakrae.gameengine.graphics.Color
+import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.scene.Camera
@@ -10,10 +11,11 @@ import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.time.measureTime
 
 internal class Renderer {
 
+    private val renderTextures = List(16) { Bitmap(512, 512) }
+    private val spriteRenderer = SpriteRenderer()
     private val vertexProcessing = VertexProcessing()
     private val vertexPostProcessing = VertexPostProcessing()
     private val rasterizer = Rasterizer()
@@ -22,61 +24,90 @@ internal class Renderer {
 
     private val postProcessingShader: PostProcessingShader? = null
 
-    suspend fun render(
-        camera: Camera,
-        scene: Scene
-    ) = coroutineScope {
-        val frameBuffer = camera.renderBuffer
-        frameBuffer.clear(Color(0u, 0u, 0u, 255u))
+    suspend fun render(scene: Scene, framebuffer: Bitmap) {
+        for (renderTextureCamera in scene.cameras.filter { it.renderTexture != null }) {
+            val renderTextureIndex = renderTextureCamera.renderTexture?.index ?: continue
+            val renderTexture = (renderTextures[renderTextureIndex]).apply {
+                clear(Color(0u, 0u, 0u, 255u))
+                render(renderTextureCamera, scene, this)
+            }
+            spriteRenderer.draw(
+                renderTexture,
+                renderTextureCamera.renderBuffer,
+                renderTextureCamera.viewportOffset
+            )
+        }
+
+        for (viewportCamera in scene.cameras.filter { it.renderTexture == null }) {
+            val viewportRenderBuffer = viewportCamera.renderBuffer.apply {
+                clear(Color(0u, 0u, 0u, 255u))
+            }
+            render(viewportCamera, scene, viewportRenderBuffer)
+            spriteRenderer.draw(
+                framebuffer,
+                viewportCamera.renderBuffer,
+                viewportCamera.viewportOffset
+            )
+        }
+    }
+
+    private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) {
         val viewMatrix = camera.viewMatrix
         val projectionMatrix = camera.projectionMatrix
         val viewportMatrix = camera.viewportMatrix
         val clippingPlanes = with(camera) { ClippingPlanes(nearPlane, farPlane) }
-        val zBuffer = Buffer2f(frameBuffer.width, frameBuffer.height, initValue = 1.0f)
+        render(
+            framebuffer,
+            viewMatrix,
+            projectionMatrix,
+            viewportMatrix,
+            clippingPlanes,
+            scene
+        )
+    }
 
-        val renderingTime = measureTime {
-            val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
-            for (renderComponent in renderComponents) {
-                val modelMatrix = renderComponent.transformMatrix
-                val modelViewMatrix = viewMatrix * modelMatrix
-                render(
-                    renderComponent,
-                    frameBuffer,
-                    zBuffer,
-                    modelViewMatrix,
-                    projectionMatrix,
-                    viewportMatrix,
-                    clippingPlanes
-                )
-            }
-        }
+    private suspend fun render(
+        framebuffer: Bitmap,
+        viewMatrix: Mat4x4f,
+        projectionMatrix: Mat4x4f,
+        viewportMatrix: Mat4x4f,
+        clippingPlanes: ClippingPlanes,
+        scene: Scene
+    ) = coroutineScope {
+        val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
-        val imagePostProcessingTime = measureTime {
-            if (postProcessingShader != null) {
-                imagePostProcessing.postProcess(postProcessingShader, frameBuffer, zBuffer)
-            }
-        }
-
-        val deferredRenderingTime = measureTime {
-            val deferredRenderingComponents = scene.nodes
-                .mapNotNull { it.renderComponent }
-                .filter { it.deferredShader != null }
-            renderDeferred(
-                deferredRenderingComponents,
-                frameBuffer,
-                viewMatrix,
+        val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+        for (renderComponent in renderComponents) {
+            val modelMatrix = renderComponent.transformMatrix
+            val modelViewMatrix = viewMatrix * modelMatrix
+            render(
+                renderComponent,
+                framebuffer,
+                zBuffer,
+                modelViewMatrix,
                 projectionMatrix,
                 viewportMatrix,
-                zBuffer,
                 clippingPlanes
             )
         }
 
-        println(
-            "Rendering time: $renderingTime\n" +
-                    "Image post processing time: $imagePostProcessingTime\n" +
-                    "Deferred rendering time: $deferredRenderingTime"
+        if (postProcessingShader != null) {
+            imagePostProcessing.postProcess(postProcessingShader, framebuffer, zBuffer)
+        }
+
+        val deferredRenderingComponents = scene.nodes
+            .mapNotNull { it.renderComponent }
+            .filter { it.deferredShader != null }
+        renderDeferred(
+            deferredRenderingComponents,
+            framebuffer,
+            viewMatrix,
+            projectionMatrix,
+            viewportMatrix,
+            zBuffer,
+            clippingPlanes
         )
+
     }
 
     private suspend fun render(
@@ -116,10 +147,14 @@ internal class Renderer {
                                 projectionViewModelMatrix = projectionMatrix * modelViewMatrix
                             )
 
+                            val renderTexture = (renderComponent.material.albedo as? RenderTexture)?.let {
+                                renderTextures[it.index]
+                            }
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
                                 triangleObjectSpace.normal,
                                 renderComponent.material,
+                                renderTexture,
                                 renderComponent.fragmentShader,
                                 renderContext
                             )
