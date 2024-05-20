@@ -28,6 +28,13 @@ data class Color(
     }
 
     companion object {
+        val white = Color(255u, 255u, 255u, 255u)
+        val black = Color(0u, 0u, 0u, 255u)
+        val red = Color(255u, 0u, 0u, 255u)
+        val green = Color(0u, 255u, 0u, 255u)
+        val blue = Color(0u, 0u, 255u, 255u)
+        val yellow = Color(255u, 255u, 0u, 255u)
+
         fun fromIntARGB(intValue: UInt): Color {
             return Color(
                 a = (intValue shr 24).toUByte(),
