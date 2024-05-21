@@ -14,7 +14,10 @@ import kotlinx.coroutines.launch
 
 internal class Renderer {
 
-    private val renderTextures = List(16) {
+    private var renderTexturesCurrentFrame = List(16) {
+        Bitmap(512, 512).apply { clear(Color.black) }
+    }
+    private var renderTexturesNextFrame = List(16) {
         Bitmap(512, 512).apply { clear(Color.black) }
     }
     private val spriteRenderer = SpriteRenderer()
@@ -24,18 +27,25 @@ internal class Renderer {
     private val imagePostProcessing = ImagePostProcessing()
     private val deferredRendering = DeferredRendering()
 
-    suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
-        for (camera in scene.cameras) {
-            launch {
-                val renderTexture = camera.renderTexture
-                if (renderTexture != null) {
-                    render(camera, scene, renderTextures[renderTexture.index].apply { clear(Color.black) })
-                } else {
-                    val viewportBuffer = with(camera.viewportSize) { Bitmap(x, y, Color.black) }
-                    render(camera, scene, viewportBuffer)
-                    spriteRenderer.draw(framebuffer, viewportBuffer, camera.viewportOffset)
+    suspend fun render(scene: Scene, framebuffer: Bitmap) {
+        coroutineScope {
+            for (camera in scene.cameras) {
+                launch {
+                    val renderTexture = camera.renderTexture
+                    if (renderTexture != null) {
+                        render(camera, scene, renderTexturesNextFrame[renderTexture.index].apply { clear(Color.black) })
+                    } else {
+                        val viewportBuffer = with(camera.viewportSize) { Bitmap(x, y, Color.black) }
+                        render(camera, scene, viewportBuffer)
+                        spriteRenderer.draw(framebuffer, viewportBuffer, camera.viewportOffset)
+                    }
                 }
             }
+        }
+
+        renderTexturesCurrentFrame = renderTexturesNextFrame
+        renderTexturesNextFrame = List(16) {
+            Bitmap(512, 512).apply { clear(Color.black) }
         }
     }
 
@@ -49,30 +59,8 @@ internal class Renderer {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
         coroutineScope {
-            val renderComponents = scene.nodes
-                .mapNotNull { it.renderComponent }
-                .filter { it.material.albedo !is RenderTexture }
+            val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
             for (renderComponent in renderComponents) {
-                launch {
-                    val modelMatrix = renderComponent.transformMatrix
-                    val modelViewMatrix = viewMatrix * modelMatrix
-                    render(
-                        renderComponent,
-                        framebuffer,
-                        zBuffer,
-                        modelViewMatrix,
-                        projectionMatrix,
-                        viewportMatrix,
-                        clippingPlanes
-                    )
-                }
-            }
-        }
-        coroutineScope {
-            val renderComponentsUsingRenderTextures = scene.nodes
-                .mapNotNull { it.renderComponent }
-                .filter { it.material.albedo is RenderTexture }
-            for (renderComponent in renderComponentsUsingRenderTextures) {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
                     val modelViewMatrix = viewMatrix * modelMatrix
@@ -167,7 +155,7 @@ internal class Renderer {
                             )
 
                             val renderTexture = (renderComponent.material.albedo as? RenderTexture)?.let {
-                                renderTextures[it.index]
+                                renderTexturesCurrentFrame[it.index]
                             }
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
