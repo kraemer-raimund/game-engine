@@ -29,7 +29,7 @@ internal class Renderer {
             launch {
                 val renderTexture = camera.renderTexture
                 if (renderTexture != null) {
-                    render(camera, scene, renderTextures[renderTexture.index])
+                    render(camera, scene, renderTextures[renderTexture.index].apply { clear(Color.black) })
                 } else {
                     val viewportBuffer = with(camera.viewportSize) { Bitmap(x, y, Color.black) }
                     render(camera, scene, viewportBuffer)
@@ -49,8 +49,30 @@ internal class Renderer {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
         coroutineScope {
-            val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+            val renderComponents = scene.nodes
+                .mapNotNull { it.renderComponent }
+                .filter { it.material.albedo !is RenderTexture }
             for (renderComponent in renderComponents) {
+                launch {
+                    val modelMatrix = renderComponent.transformMatrix
+                    val modelViewMatrix = viewMatrix * modelMatrix
+                    render(
+                        renderComponent,
+                        framebuffer,
+                        zBuffer,
+                        modelViewMatrix,
+                        projectionMatrix,
+                        viewportMatrix,
+                        clippingPlanes
+                    )
+                }
+            }
+        }
+        coroutineScope {
+            val renderComponentsUsingRenderTextures = scene.nodes
+                .mapNotNull { it.renderComponent }
+                .filter { it.material.albedo is RenderTexture }
+            for (renderComponent in renderComponentsUsingRenderTextures) {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
                     val modelViewMatrix = viewMatrix * modelMatrix
