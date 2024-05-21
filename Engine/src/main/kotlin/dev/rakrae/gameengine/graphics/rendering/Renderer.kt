@@ -39,60 +39,72 @@ internal class Renderer {
         }
     }
 
-    private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) {
-        render(
-            framebuffer = framebuffer,
-            viewMatrix = camera.viewMatrix,
-            projectionMatrix = camera.projectionMatrix,
-            viewportMatrix = camera.viewportMatrix,
-            clippingPlanes = with(camera) { ClippingPlanes(nearPlane, farPlane) },
-            scene = scene,
-            postProcessingShaders = camera.postProcessingShaders
-        )
-    }
+    private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) = coroutineScope {
+        val viewMatrix = camera.viewMatrix
+        val projectionMatrix = camera.projectionMatrix
+        val viewportMatrix = camera.viewportMatrix
+        val clippingPlanes = ClippingPlanes(camera.nearPlane, camera.farPlane)
+        val postProcessingShaders = camera.postProcessingShaders
 
-    private suspend fun render(
-        framebuffer: Bitmap,
-        viewMatrix: Mat4x4f,
-        projectionMatrix: Mat4x4f,
-        viewportMatrix: Mat4x4f,
-        clippingPlanes: ClippingPlanes,
-        scene: Scene,
-        postProcessingShaders: List<PostProcessingShader>
-    ) = coroutineScope {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
-        val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
-        for (renderComponent in renderComponents) {
-            val modelMatrix = renderComponent.transformMatrix
-            val modelViewMatrix = viewMatrix * modelMatrix
-            render(
-                renderComponent,
-                framebuffer,
-                zBuffer,
-                modelViewMatrix,
-                projectionMatrix,
-                viewportMatrix,
-                clippingPlanes
-            )
+        coroutineScope {
+            val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+            for (renderComponent in renderComponents) {
+                launch {
+                    val modelMatrix = renderComponent.transformMatrix
+                    val modelViewMatrix = viewMatrix * modelMatrix
+                    render(
+                        renderComponent,
+                        framebuffer,
+                        zBuffer,
+                        modelViewMatrix,
+                        projectionMatrix,
+                        viewportMatrix,
+                        clippingPlanes
+                    )
+                }
+            }
         }
 
         for (postProcessingShader in postProcessingShaders) {
             imagePostProcessing.postProcess(postProcessingShader, framebuffer, zBuffer)
         }
 
-        val deferredRenderingComponents = scene.nodes
-            .mapNotNull { it.renderComponent }
-            .filter { it.deferredShader != null }
-        renderDeferred(
-            deferredRenderingComponents,
-            framebuffer,
-            viewMatrix,
-            projectionMatrix,
-            viewportMatrix,
-            zBuffer,
-            clippingPlanes
-        )
+        coroutineScope {
+            val deferredRenderingComponents = scene.nodes
+                .mapNotNull { it.renderComponent }
+                .filter { it.deferredShader != null }
+            for (renderComponent in deferredRenderingComponents) {
+                launch {
+                    val modelMatrix = renderComponent.transformMatrix
+                    val modelViewMatrix = viewMatrix * modelMatrix
+                    val deferredFramebuffer = Bitmap(framebuffer.width, framebuffer.height)
+                        .apply { clear(Color(0u, 0u, 0u, 0u)) }
+                    val deferredZBuffer = Buffer2f(
+                        framebuffer.width,
+                        framebuffer.height,
+                        initValue = Float.POSITIVE_INFINITY
+                    )
+                    render(
+                        renderComponent,
+                        deferredFramebuffer,
+                        deferredZBuffer,
+                        modelViewMatrix,
+                        projectionMatrix,
+                        viewportMatrix,
+                        clippingPlanes
+                    )
+                    deferredRendering.postProcess(
+                        renderComponent.deferredShader!!,
+                        framebuffer,
+                        zBuffer,
+                        deferredFramebuffer,
+                        deferredZBuffer
+                    )
+                }
+            }
+        }
     }
 
     private suspend fun render(
@@ -104,23 +116,23 @@ internal class Renderer {
         viewportMatrix: Mat4x4f,
         clippingPlanes: ClippingPlanes
     ) = coroutineScope {
-        launch {
-            for (trianglesChunk in renderComponent.mesh.triangles.chunked(20)) {
-                launch {
-                    for (triangleObjectSpace in trianglesChunk) {
-                        val clipSpace = vertexProcessing.process(
-                            triangleObjectSpace,
-                            renderComponent.vertexShader,
-                            projectionMatrix,
-                            modelViewMatrix
-                        )
-                        val clippedTriangles = vertexPostProcessing.clip(clipSpace, clippingPlanes)
+        for (trianglesChunk in renderComponent.mesh.triangles.chunked(200)) {
+            launch {
+                for (triangleObjectSpace in trianglesChunk) {
+                    val clipSpace = vertexProcessing.process(
+                        triangleObjectSpace,
+                        renderComponent.vertexShader,
+                        projectionMatrix,
+                        modelViewMatrix
+                    )
+                    val clippedTriangles = vertexPostProcessing.clip(clipSpace, clippingPlanes)
 
-                        clippedTriangles.forEach { triangleClipSpace ->
-                            val triangleViewportCoordinates = vertexPostProcessing.toViewport(
-                                triangleClipSpace,
-                                viewportMatrix
-                            ) ?: return@forEach
+                    clippedTriangles.forEach { triangleClipSpace ->
+                        val triangleViewportCoordinates = vertexPostProcessing.toViewport(
+                            triangleClipSpace,
+                            viewportMatrix
+                        ) ?: return@forEach
+                        launch {
                             val renderContext = RenderContext(
                                 framebuffer,
                                 zBuffer,
@@ -146,46 +158,6 @@ internal class Renderer {
                         }
                     }
                 }
-            }
-        }
-    }
-
-    private suspend fun renderDeferred(
-        deferredRenderingComponents: List<RenderComponent>,
-        framebuffer: Bitmap,
-        viewMatrix: Mat4x4f,
-        projectionMatrix: Mat4x4f,
-        viewportMatrix: Mat4x4f,
-        zBuffer: Buffer2f,
-        clippingPlanes: ClippingPlanes
-    ) = coroutineScope {
-        for (renderComponent in deferredRenderingComponents) {
-            launch {
-                val deferredFramebuffer = Bitmap(framebuffer.width, framebuffer.height)
-                    .apply { clear(Color(0u, 0u, 0u, 0u)) }
-                val deferredZBuffer = Buffer2f(
-                    framebuffer.width,
-                    framebuffer.height,
-                    initValue = Float.POSITIVE_INFINITY
-                )
-                val modelMatrix = renderComponent.transformMatrix
-                val modelViewMatrix = viewMatrix * modelMatrix
-                render(
-                    renderComponent,
-                    deferredFramebuffer,
-                    deferredZBuffer,
-                    modelViewMatrix,
-                    projectionMatrix,
-                    viewportMatrix,
-                    clippingPlanes
-                )
-                deferredRendering.postProcess(
-                    renderComponent.deferredShader!!,
-                    framebuffer,
-                    zBuffer,
-                    deferredFramebuffer,
-                    deferredZBuffer
-                )
             }
         }
     }
