@@ -25,19 +25,16 @@ internal class Renderer {
     private val deferredRendering = DeferredRendering()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) = coroutineScope {
-        for (renderTextureCamera in scene.cameras.filter { it.renderTexture != null }) {
-            val renderTextureIndex = renderTextureCamera.renderTexture?.index ?: continue
+        for (camera in scene.cameras) {
             launch {
-                val renderTexture = (renderTextures[renderTextureIndex]).apply { clear(Color.black) }
-                render(renderTextureCamera, scene, renderTexture)
-            }
-        }
-
-        for (viewportCamera in scene.cameras.filter { it.renderTexture == null }) {
-            launch {
-                val viewportBuffer = with(viewportCamera.viewportSize) { Bitmap(x, y, Color.black) }
-                render(viewportCamera, scene, viewportBuffer)
-                spriteRenderer.draw(framebuffer, viewportBuffer, viewportCamera.viewportOffset)
+                val renderTexture = camera.renderTexture
+                if (renderTexture != null) {
+                    render(camera, scene, renderTextures[renderTexture.index])
+                } else {
+                    val viewportBuffer = with(camera.viewportSize) { Bitmap(x, y, Color.black) }
+                    render(camera, scene, viewportBuffer)
+                    spriteRenderer.draw(framebuffer, viewportBuffer, camera.viewportOffset)
+                }
             }
         }
     }
