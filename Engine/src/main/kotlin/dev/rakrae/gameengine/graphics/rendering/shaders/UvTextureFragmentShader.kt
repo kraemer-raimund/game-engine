@@ -164,7 +164,16 @@ class UvTextureFragmentShader : FragmentShader {
     }
 
     enum class Interpolation {
+
+        /**
+         * Rounds the UV coordinate to the nearest texel in the texture.
+         */
         NEAREST,
+
+        /**
+         * Bilinearly interpolates between the 4 pixels surrounding the current UV coordinates,
+         * using the distance from each of those 4 pixels as the interpolation weights.
+         */
         BILINEAR
     }
 }
