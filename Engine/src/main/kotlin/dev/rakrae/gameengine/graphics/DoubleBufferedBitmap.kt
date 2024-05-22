@@ -16,8 +16,11 @@ class DoubleBufferedBitmap(
     initialColor: Color = Color.black
 ) {
 
-    private var frontBuffer = Bitmap(width, height, initialColor)
-    private var backBuffer = Bitmap(width, height, initialColor)
+    var frontBuffer = Bitmap(width, height, initialColor)
+        private set
+
+    var backBuffer = Bitmap(width, height, initialColor)
+        private set
 
     /**
      * Write a pixel to the back buffer.

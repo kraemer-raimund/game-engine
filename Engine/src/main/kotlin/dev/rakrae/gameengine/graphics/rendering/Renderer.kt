@@ -1,9 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering
 
-import dev.rakrae.gameengine.graphics.Bitmap
-import dev.rakrae.gameengine.graphics.Buffer2f
-import dev.rakrae.gameengine.graphics.Color
-import dev.rakrae.gameengine.graphics.RenderTexture
+import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.scene.Camera
@@ -14,11 +11,8 @@ import kotlinx.coroutines.launch
 
 internal class Renderer {
 
-    private var renderTexturesCurrentFrame = List(16) {
-        Bitmap(512, 512).apply { clear(Color.black) }
-    }
-    private var renderTexturesNextFrame = List(16) {
-        Bitmap(512, 512).apply { clear(Color.black) }
+    private var renderTextures = List(16) {
+        DoubleBufferedBitmap(512, 512, Color.black)
     }
     private val spriteRenderer = SpriteRenderer()
     private val vertexProcessing = VertexProcessing()
@@ -33,7 +27,10 @@ internal class Renderer {
                 launch {
                     val renderTexture = camera.renderTexture
                     if (renderTexture != null) {
-                        render(camera, scene, renderTexturesNextFrame[renderTexture.index].apply { clear(Color.black) })
+                        val renderTextureBuffer = renderTextures[renderTexture.index]
+                            .apply { clearBackBuffer(Color.black) }
+                            .backBuffer
+                        render(camera, scene, renderTextureBuffer)
                     } else {
                         val viewportBuffer = with(camera.viewportSize) { Bitmap(x, y, Color.black) }
                         render(camera, scene, viewportBuffer)
@@ -43,10 +40,7 @@ internal class Renderer {
             }
         }
 
-        renderTexturesCurrentFrame = renderTexturesNextFrame
-        renderTexturesNextFrame = List(16) {
-            Bitmap(512, 512).apply { clear(Color.black) }
-        }
+        renderTextures.forEach(DoubleBufferedBitmap::swap)
     }
 
     private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) = coroutineScope {
@@ -154,9 +148,9 @@ internal class Renderer {
                                 projectionViewModelMatrix = projectionMatrix * modelViewMatrix
                             )
 
-                            val renderTexture = (renderComponent.material.albedo as? RenderTexture)?.let {
-                                renderTexturesCurrentFrame[it.index]
-                            }
+                            val renderTexture = (renderComponent.material.albedo as? RenderTexture)
+                                ?.let { renderTextures[it.index] }
+                                ?.frontBuffer
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
                                 triangleObjectSpace.normal,
