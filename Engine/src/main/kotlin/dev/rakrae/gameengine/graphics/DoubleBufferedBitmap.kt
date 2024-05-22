@@ -33,7 +33,14 @@ class DoubleBufferedBitmap(
         return frontBuffer.getPixel(x, y)
     }
 
+    /**
+     * Swap front and back buffer.
+     */
     fun swap() {
         frontBuffer = backBuffer.also { backBuffer = frontBuffer }
+    }
+
+    fun clearBackBuffer(color: Color = Color.black) {
+        backBuffer.clear(color)
     }
 }

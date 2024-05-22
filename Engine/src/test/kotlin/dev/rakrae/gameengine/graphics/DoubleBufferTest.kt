@@ -24,4 +24,15 @@ internal class DoubleBufferTest {
         assertThat(doubleBuffer.readPixel(4, 7)).isEqualTo(Color.blue)
         assertThat(doubleBuffer.readPixel(5, 2)).isEqualTo(Color.white)
     }
+
+    @Test
+    fun `the back buffer can be cleared`() {
+        val doubleBuffer = DoubleBufferedBitmap(width = 10, height = 18, initialColor = Color.black)
+
+        doubleBuffer.writePixel(4, 7, Color.blue)
+        doubleBuffer.clearBackBuffer(Color.black)
+        doubleBuffer.swap()
+
+        assertThat(doubleBuffer.readPixel(4, 7)).isEqualTo(Color.black)
+    }
 }
