@@ -7,6 +7,9 @@ data class Color(
     val a: UByte
 ) {
 
+    constructor(r: Int, g: Int, b: Int, a: Int)
+            : this(r.toUByte(), g.toUByte(), b.toUByte(), a.toUByte())
+
     val asIntARGB: UInt
         get() {
             return (a.toUInt() shl 24) + (r.toUInt() shl 16) + (g.toUInt() shl 8) + b.toUInt()
