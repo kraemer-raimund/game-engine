@@ -14,10 +14,10 @@ data class Color(
 
     override fun toString(): String {
         return "Color(" +
-                "r=${r.toTwoDigitHexString()}, " +
-                "g=${g.toTwoDigitHexString()}, " +
-                "b=${b.toTwoDigitHexString()}, " +
-                "a=${a.toTwoDigitHexString()})"
+                "r=0x${r.toTwoDigitHexString()}, " +
+                "g=0x${g.toTwoDigitHexString()}, " +
+                "b=0x${b.toTwoDigitHexString()}, " +
+                "a=0x${a.toTwoDigitHexString()})"
     }
 
     @OptIn(ExperimentalStdlibApi::class)

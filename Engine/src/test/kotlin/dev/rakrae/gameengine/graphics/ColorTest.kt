@@ -45,9 +45,9 @@ internal class ColorTest {
 
     private fun colorToStringTestArguments(): Stream<Arguments> {
         return Stream.of(
-            arguments(Color(0u, 0u, 0u, 0u), "Color(r=00, g=00, b=00, a=00)"),
-            arguments(Color(255u, 255u, 255u, 255u), "Color(r=FF, g=FF, b=FF, a=FF)"),
-            arguments(Color(0xDDu, 0x9Au, 0x22u, 0x0u), "Color(r=DD, g=9A, b=22, a=00)")
+            arguments(Color(0u, 0u, 0u, 0u), "Color(r=0x00, g=0x00, b=0x00, a=0x00)"),
+            arguments(Color(255u, 255u, 255u, 255u), "Color(r=0xFF, g=0xFF, b=0xFF, a=0xFF)"),
+            arguments(Color(0xDDu, 0x9Au, 0x22u, 0x0u), "Color(r=0xDD, g=0x9A, b=0x22, a=0x00)")
         )
     }
 
