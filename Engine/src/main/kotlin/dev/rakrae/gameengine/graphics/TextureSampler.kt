@@ -11,12 +11,12 @@ internal class TextureSampler(private val filter: Filter) {
         val x = uv.x * (texture.width - 1)
         val y = uv.y * (texture.height - 1)
         return when (filter) {
-            Filter.LINEAR -> interpolateBilinear(x, y, texture)
-            else -> interpolateNearest(x, y, texture)
+            Filter.LINEAR -> filterBilinear(x, y, texture)
+            else -> filterNearest(x, y, texture)
         }
     }
 
-    private fun interpolateNearest(
+    private fun filterNearest(
         x: Float,
         y: Float,
         texture: Bitmap
@@ -26,7 +26,7 @@ internal class TextureSampler(private val filter: Filter) {
         return texture.getPixel(xInterpolated, yInterpolated)
     }
 
-    private fun interpolateBilinear(
+    private fun filterBilinear(
         x: Float,
         y: Float,
         texture: Bitmap
