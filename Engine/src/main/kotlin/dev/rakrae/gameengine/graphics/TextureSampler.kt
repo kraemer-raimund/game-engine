@@ -12,8 +12,10 @@ internal class TextureSampler(
 ) {
 
     fun sample(texture: Bitmap, uv: Vec2f): Color {
-        val x = offset.x * (texture.width - 1) + scale.x * uv.x * (texture.width - 1)
-        val y = offset.y * (texture.height - 1) + scale.y * uv.y * (texture.height - 1)
+        val u = offset.x + scale.x * uv.x
+        val v = offset.y + scale.y * uv.y
+        val x = u * (texture.width - 1)
+        val y = v * (texture.height - 1)
         return when (filter) {
             Filter.LINEAR -> filterBilinear(x, y, texture)
             else -> filterNearest(x, y, texture)
