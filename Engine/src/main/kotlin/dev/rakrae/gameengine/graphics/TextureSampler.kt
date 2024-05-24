@@ -5,11 +5,15 @@ import kotlin.math.ceil
 import kotlin.math.floor
 import kotlin.math.roundToInt
 
-internal class TextureSampler(private val filter: Filter) {
+internal class TextureSampler(
+    private val filter: Filter,
+    private val offset: Vec2f = Vec2f(0f, 0f),
+    private val scale: Vec2f = Vec2f(1f, 1f)
+) {
 
     fun sample(texture: Bitmap, uv: Vec2f): Color {
-        val x = uv.x * (texture.width - 1)
-        val y = uv.y * (texture.height - 1)
+        val x = offset.x * (texture.width - 1) + scale.x * uv.x * (texture.width - 1)
+        val y = offset.y * (texture.height - 1) + scale.y * uv.y * (texture.height - 1)
         return when (filter) {
             Filter.LINEAR -> filterBilinear(x, y, texture)
             else -> filterNearest(x, y, texture)

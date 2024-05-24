@@ -58,4 +58,26 @@ internal class TextureSamplerTest {
 
         assertThat(sampler.sample(bitmap, uv)).isEqualTo(expectedColor)
     }
+
+    private fun filterWithOffsetAndScaleTestArgs(): Stream<Arguments> {
+        return Stream.of(
+            arguments(Vec2f(0.45f, 0.69f), Vec2f(0f, 0f), Vec2f(1f, 1f), Color.blue),
+            arguments(Vec2f(0.25f, 0.89f), Vec2f(0.2f, -0.2f), Vec2f(1f, 1f), Color.blue),
+            arguments(Vec2f(0.9f, 0.6273f), Vec2f(0f, 0f), Vec2f(0.5f, 1.1f), Color.blue),
+            arguments(Vec2f(0.45f, 0.69f), Vec2f(0.5f, 0.5f), Vec2f(1f, 1f), Color.black),
+            arguments(Vec2f(0.45f, 0.69f), Vec2f(0f, 0f), Vec2f(1.5f, 1.5f), Color.black),
+            arguments(Vec2f(0.45f, 0.69f), Vec2f(0f, 0f), Vec2f(0.3f, 0.3f), Color.black)
+        )
+    }
+
+    @ParameterizedTest
+    @MethodSource("filterWithOffsetAndScaleTestArgs")
+    fun `filter with offset and scale`(uv: Vec2f, offset: Vec2f, scale: Vec2f, expectedColor: Color) {
+        val sampler = TextureSampler(TextureSampler.Filter.NEAREST, offset, scale)
+        val bitmap = Bitmap(10, 20, Color.black).apply {
+            setPixel(4, 13, Color.blue)
+        }
+
+        assertThat(sampler.sample(bitmap, uv)).isEqualTo(expectedColor)
+    }
 }
