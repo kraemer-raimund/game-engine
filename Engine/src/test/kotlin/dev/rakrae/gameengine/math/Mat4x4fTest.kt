@@ -263,19 +263,19 @@ internal class Mat4x4fTest {
             a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
             a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
         )
-        val mTransposedExpected = Mat4x4f(
+        val mTransposeExpected = Mat4x4f(
             a11 = 3.2f, a12 = 42.69f, a13 = -2.789f, a14 = 7.654f,
             a21 = 4.1f, a22 = 13.37f, a23 = -6.456f, a24 = 4.357f,
             a31 = 11.7f, a32 = 1f, a33 = 8f, a34 = 8.47f,
             a41 = -11.89f, a42 = 0.9f, a43 = 4.5f, a44 = 6.894f
         )
 
-        val actual = m.transposed
+        val actual = m.transpose
 
         assertTrue(
-            actual.isCloseTo(mTransposedExpected),
+            actual.isCloseTo(mTransposeExpected),
             "Expected matrices to be equal (within margin for rounding error).\n" +
-                    "Expected:\n$mTransposedExpected\n" +
+                    "Expected:\n$mTransposeExpected\n" +
                     "Actual:\n$actual"
         )
     }

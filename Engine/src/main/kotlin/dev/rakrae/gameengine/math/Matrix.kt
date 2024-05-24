@@ -12,7 +12,7 @@ data class Mat4x4f(
     val a41: Float, val a42: Float, val a43: Float, val a44: Float
 ) {
 
-    val transposed: Mat4x4f
+    val transpose: Mat4x4f
         get() = Mat4x4f(
             a11, a21, a31, a41,
             a12, a22, a32, a42,
