@@ -3,7 +3,7 @@ package dev.rakrae.gameengine.math
 import kotlin.math.abs
 
 /**
- * https://en.wikipedia.org/wiki/Matrix_(mathematics)#Notation
+ * [https://en.wikipedia.org/wiki/Matrix_(mathematics)#Notation](https://en.wikipedia.org/wiki/Matrix_(mathematics)#Notation)
  */
 data class Mat4x4f(
     val a11: Float, val a12: Float, val a13: Float, val a14: Float,
@@ -12,6 +12,11 @@ data class Mat4x4f(
     val a41: Float, val a42: Float, val a43: Float, val a44: Float
 ) {
 
+    /**
+     * The transpose of this matrix.
+     *
+     * [https://en.wikipedia.org/wiki/Transpose](https://en.wikipedia.org/wiki/Transpose)
+     */
     val transpose: Mat4x4f
         get() = Mat4x4f(
             a11, a21, a31, a41,
