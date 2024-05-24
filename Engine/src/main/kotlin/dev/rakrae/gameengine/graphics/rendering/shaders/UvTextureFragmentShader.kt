@@ -7,7 +7,6 @@ import dev.rakrae.gameengine.graphics.TextureSampler
 import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.InputFragment
 import dev.rakrae.gameengine.graphics.rendering.pipeline.OutputFragment
-import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.pow
@@ -72,10 +71,11 @@ class UvTextureFragmentShader : FragmentShader {
             inputFragment.material.color
         } else {
             val uv = inputFragment.uv
+            val uvOffset = inputFragment.material.uvOffset
             val uvScale = inputFragment.material.uvScale
-            val x = uvScale.x * uv.x
-            val y = uvScale.y * uv.y
-            TextureSampler(TextureSampler.Filter.LINEAR).sample(texture, Vec2f(x, y))
+
+            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+            textureSampler.sample(texture, uv)
         }
     }
 
