@@ -6,6 +6,8 @@ import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
@@ -23,20 +25,24 @@ internal class Renderer {
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
         coroutineScope {
-            for (camera in scene.cameras) {
-                launch {
+            val renderedImages = scene.cameras.map { camera ->
+                async {
                     val renderTexture = camera.renderTexture
                     if (renderTexture != null) {
                         val renderTextureBuffer = renderTextures[renderTexture.index]
                             .apply { clearBackBuffer(Color.black) }
                             .backBuffer
                         render(camera, scene, renderTextureBuffer)
+                        return@async null
                     } else {
                         val viewportBuffer = with(camera.viewportSize) { Bitmap(x, y, Color.black) }
                         render(camera, scene, viewportBuffer)
-                        spriteRenderer.draw(framebuffer, viewportBuffer, camera.viewportOffset)
+                        return@async Pair(viewportBuffer, camera)
                     }
                 }
+            }
+            renderedImages.awaitAll().filterNotNull().forEach { (viewportBuffer, camera) ->
+                spriteRenderer.draw(framebuffer, viewportBuffer, camera.viewportOffset)
             }
         }
 
