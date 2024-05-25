@@ -175,7 +175,43 @@ internal class Mat4x4fTest {
     }
 
     @Test
-    fun `identity matrix times vector yields original vector`() {
+    fun `identity matrix multiplied by matrix yields original matrix`() {
+        val m = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        val identityMultipliedByM = Mat4x4f.identity * m
+
+        assertTrue(
+            identityMultipliedByM.isCloseTo(m),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                $m
+                Actual:
+                $identityMultipliedByM
+            """.trimIndent()
+        )
+
+        val mMultipliedByIdentity = m * Mat4x4f.identity
+
+        assertTrue(
+            mMultipliedByIdentity.isCloseTo(m),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                $m
+                Actual:
+                $mMultipliedByIdentity
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `identity matrix multiplied by vector yields original vector`() {
         val originalVector = Vec4f(
             x = 23.4f,
             y = 5.6f,
