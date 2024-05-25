@@ -42,13 +42,12 @@ class UvTextureFragmentShader : FragmentShader {
             inputFragment.interpolatedNormal
         } else {
             val uv = inputFragment.uv
+            val uvOffset = inputFragment.material.uvOffset
             val uvScale = inputFragment.material.uvScale
-            val x = uvScale.x * uv.x * (normalMap.width - 1)
-            val y = uvScale.y * uv.y * (normalMap.height - 1)
-            val normalColor = normalMap.getPixel(
-                x = x.toInt().coerceIn(0, normalMap.width - 1),
-                y = y.toInt().coerceIn(0, normalMap.height - 1)
-            )
+
+            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+            val normalColor = textureSampler.sample(normalMap, uv)
+
             val projectionViewModelMatrix = inputFragment.renderContext.projectionViewModelMatrix
             return (projectionViewModelMatrix * Vec4f(normalColor.toNormal(), 1f)).toVec3f().normalized
         }
