@@ -315,4 +315,122 @@ internal class Mat4x4fTest {
                     "Actual:\n$actual"
         )
     }
+
+    @Test
+    fun `transpose of the transpose is the original matrix`() {
+        val m = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        val transposeOfTransposeOfM = m.transpose.transpose
+
+        assertTrue(
+            transposeOfTransposeOfM.isCloseTo(m),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                $m
+                Actual:
+                $transposeOfTransposeOfM
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `inverse of a matrix multiplied by the original matrix yields identity`() {
+        val m = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        val mInverseMultipliedByM = m * m.inverse()
+
+        assertTrue(
+            mInverseMultipliedByM.isCloseTo(Mat4x4f.identity),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                ${Mat4x4f.identity}
+                Actual:
+                $mInverseMultipliedByM
+            """.trimIndent()
+        )
+
+        val mMultipliedByMInverse = m.inverse() * m
+
+        assertTrue(
+            mMultipliedByMInverse.isCloseTo(Mat4x4f.identity),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                ${Mat4x4f.identity}
+                Actual:
+                $mMultipliedByMInverse
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `inverse of the inverse of a matrix yields original matrix`() {
+        val m = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        val inverseOfInverseOfM = m.inverse().inverse()
+
+        assertTrue(
+            inverseOfInverseOfM.isCloseTo(m),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                $m
+                Actual:
+                $inverseOfInverseOfM
+            """.trimIndent()
+        )
+    }
+
+    @Test
+    fun `inverse transpose of a matrix is equivalent to transpose of inverse and vice versa`() {
+        val m = Mat4x4f(
+            a11 = 3.2f, a12 = 4.1f, a13 = 11.7f, a14 = -11.89f,
+            a21 = 42.69f, a22 = 13.37f, a23 = 1f, a24 = 0.9f,
+            a31 = -2.789f, a32 = -6.456f, a33 = 8f, a34 = 4.5f,
+            a41 = 7.654f, a42 = 4.357f, a43 = 8.47f, a44 = 6.894f
+        )
+
+        val inverseTransposeOfM = m.inverseTranspose()
+        val transposeOfInverseOfM = m.inverse().transpose
+        val inverseOfTransposeOfM = m.transpose.inverse()
+
+        assertTrue(
+            transposeOfInverseOfM.isCloseTo(inverseTransposeOfM),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                $inverseTransposeOfM
+                Actual:
+                $transposeOfInverseOfM
+            """.trimIndent()
+        )
+
+        assertTrue(
+            inverseOfTransposeOfM.isCloseTo(inverseTransposeOfM),
+            """
+                Expected matrices to be equal (within margin for rounding error).
+                Expected:
+                $inverseTransposeOfM
+                Actual:
+                $inverseOfTransposeOfM
+            """.trimIndent()
+        )
+    }
 }
