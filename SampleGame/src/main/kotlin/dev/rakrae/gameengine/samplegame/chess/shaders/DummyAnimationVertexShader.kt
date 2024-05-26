@@ -1,11 +1,11 @@
 package dev.rakrae.gameengine.samplegame.chess.shaders
 
 import dev.rakrae.gameengine.core.GameTime
+import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
 import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.*
 
@@ -15,15 +15,15 @@ import kotlin.math.*
  */
 class DummyAnimationVertexShader : VertexShader {
 
-    override fun process(position: Vec3f, inputs: VertexShaderInputs): VertexShaderOutputs {
-        val rotatedPos = rotate(position, GameTime.frameTime)
+    override fun process(vertex: Vertex, inputs: VertexShaderInputs): VertexShaderOutputs {
+        val rotatedPos = rotate(vertex.position, GameTime.frameTime)
         return VertexShaderOutputs(
-            position = inputs.projection * inputs.modelView * Vec4f(rotatedPos, 1f),
+            position = inputs.projection * inputs.modelView * rotatedPos,
             tbnMatrix = Mat4x4f.identity
         )
     }
 
-    private fun rotate(vector: Vec3f, radians: Float): Vec3f {
+    private fun rotate(vector: Vec4f, radians: Float): Vec4f {
         /*
         https://en.wikipedia.org/wiki/Atan2
         https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
@@ -34,6 +34,6 @@ class DummyAnimationVertexShader : VertexShader {
         val x = distance * cos(newAngleRadians)
         val z = distance * sin(newAngleRadians)
 
-        return Vec3f(x, vector.y, z)
+        return Vec4f(x, vector.y, z, 1f)
     }
 }

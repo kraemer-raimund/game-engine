@@ -14,7 +14,7 @@ class VertexProcessing {
         with(triangleObjectSpace) {
             val vertexShaderInputs = VertexShaderInputs(projection, modelView)
             val positionsClipSpace = listOf(v0, v1, v2)
-                .map { vertexShader.process(it.position.toVec3f(), vertexShaderInputs) }
+                .map { vertexShader.process(it, vertexShaderInputs) }
                 .map { it.position }
             return Triangle(
                 v0.copy(position = positionsClipSpace[0]),
