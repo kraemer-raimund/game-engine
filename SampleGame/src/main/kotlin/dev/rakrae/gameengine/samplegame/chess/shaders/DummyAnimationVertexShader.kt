@@ -3,6 +3,8 @@ package dev.rakrae.gameengine.samplegame.chess.shaders
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
+import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.*
@@ -13,9 +15,12 @@ import kotlin.math.*
  */
 class DummyAnimationVertexShader : VertexShader {
 
-    override fun process(position: Vec3f, inputs: VertexShaderInputs): Vec4f {
+    override fun process(position: Vec3f, inputs: VertexShaderInputs): VertexShaderOutputs {
         val rotatedPos = rotate(position, GameTime.frameTime)
-        return inputs.projection * inputs.modelView * Vec4f(rotatedPos, 1f)
+        return VertexShaderOutputs(
+            position = inputs.projection * inputs.modelView * Vec4f(rotatedPos, 1f),
+            tbnMatrix = Mat4x4f.identity
+        )
     }
 
     private fun rotate(vector: Vec3f, radians: Float): Vec3f {
