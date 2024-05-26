@@ -5,7 +5,6 @@ import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.assets.AssetLoadingException
 import dev.rakrae.gameengine.assets.WavefrontObjParseException
 import dev.rakrae.gameengine.assets.WavefrontObjParser
-import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import org.assertj.core.api.Assertions.assertThat
@@ -55,54 +54,47 @@ internal class MeshAssetLoadingTest {
             val wavefrontObjParser = WavefrontObjParser()
             val mesh = wavefrontObjParser.parse(wavefrontObjString)
 
-            assertAll(
-                { assertThat(mesh.triangles).hasSize(4) },
-                {
-                    assertThat(mesh.triangles[0].v0).isEqualTo(
-                        Vertex(
-                            position = Vec4f(13.37f, -200f, 0f, 1f),
-                            textureCoordinates = Vec3f(1f, 0.6f, 0f),
-                            normal = Vec3f(0f, 0f, 1.74f)
-                        )
-                    )
-                },
-                {
-                    assertThat(mesh.triangles[0].v2).isEqualTo(
-                        Vertex(
-                            position = Vec4f(13.37f, -200f, 0f, 1f),
-                            textureCoordinates = Vec3f(0.7f, 0f, 0f),
-                            normal = Vec3f(-300f, 0.7f, 123.456f)
-                        )
-                    )
-                },
-                {
-                    assertThat(mesh.triangles[1].v0).isEqualTo(
-                        Vertex(
-                            position = Vec4f(13.37f, -200f, 0f, 1f),
-                            textureCoordinates = Vec3f(0f, 0f, 0f),
-                            normal = Vec3f(0f, 0f, 0f)
-                        )
-                    )
-                },
-                {
-                    assertThat(mesh.triangles[2].v0).isEqualTo(
-                        Vertex(
-                            position = Vec4f(0f, -0f, -42f, 1f),
-                            textureCoordinates = Vec3f(0f, 0f, 0f),
-                            normal = Vec3f(-300f, 0.7f, 123.456f)
-                        )
-                    )
-                },
-                {
-                    assertThat(mesh.triangles[3].v1).isEqualTo(
-                        Vertex(
-                            position = Vec4f(13.37f, -200f, 0f, 1f),
-                            textureCoordinates = Vec3f(1f, 0.6f, 0f),
-                            normal = Vec3f(0f, 0f, 0f)
-                        )
-                    )
-                }
-            )
+            assertThat(mesh.triangles).hasSize(4)
+
+            with(mesh.triangles[0].v0) {
+                assertAll(
+                    { assertThat(position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) },
+                    { assertThat(textureCoordinates).isEqualTo(Vec3f(1f, 0.6f, 0f)) },
+                    { assertThat(normal).isEqualTo(Vec3f(0f, 0f, 1.74f)) }
+                )
+            }
+
+            with(mesh.triangles[0].v2) {
+                assertAll(
+                    { assertThat(position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) },
+                    { assertThat(textureCoordinates).isEqualTo(Vec3f(0.7f, 0f, 0f)) },
+                    { assertThat(normal).isEqualTo(Vec3f(-300f, 0.7f, 123.456f)) },
+                )
+            }
+
+            with(mesh.triangles[1].v0) {
+                assertAll(
+                    { assertThat(position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) },
+                    { assertThat(textureCoordinates).isEqualTo(Vec3f(0f, 0f, 0f)) },
+                    { assertThat(normal).isEqualTo(Vec3f(0f, 0f, 0f)) },
+                )
+            }
+
+            with(mesh.triangles[2].v0) {
+                assertAll(
+                    { assertThat(position).isEqualTo(Vec4f(0f, -0f, -42f, 1f)) },
+                    { assertThat(textureCoordinates).isEqualTo(Vec3f(0f, 0f, 0f)) },
+                    { assertThat(normal).isEqualTo(Vec3f(-300f, 0.7f, 123.456f)) },
+                )
+            }
+
+            with(mesh.triangles[3].v1) {
+                assertAll(
+                    { assertThat(position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) },
+                    { assertThat(textureCoordinates).isEqualTo(Vec3f(1f, 0.6f, 0f)) },
+                    { assertThat(normal).isEqualTo(Vec3f(0f, 0f, 0f)) },
+                )
+            }
         }
 
         @Test
