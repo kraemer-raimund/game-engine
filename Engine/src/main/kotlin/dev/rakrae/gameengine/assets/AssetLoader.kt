@@ -9,10 +9,11 @@ class AssetLoader {
 
     fun loadMesh(assetPath: String): Mesh {
         val fileExtension = assetPath.substringAfterLast('.', "")
-        when (fileExtension) {
-            "obj" -> return parseWavefrontObj(assetPath)
+        val mesh = when (fileExtension) {
+            "obj" -> parseWavefrontObj(assetPath)
             else -> throw AssetLoadingException("Unable to load mesh from file: $assetPath")
         }
+        return MeshTangentSpaceBaking.bakeTangentSpace(mesh)
     }
 
     private fun parseWavefrontObj(assetPath: String): Mesh {

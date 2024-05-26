@@ -6,7 +6,7 @@ import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 
-class WavefrontObjParser {
+internal class WavefrontObjParser {
 
     /**
      * Parse a mesh from a string in Wavefront OBJ format. This file format is relatively
@@ -79,9 +79,13 @@ class WavefrontObjParser {
             )
             val vertices = face.vertices.map {
                 Vertex(
-                    vertexPositions[it.posIndex],
-                    uvs.getOrElse(it.uvIndex) { Vec3f.zero },
-                    normals.getOrElse(it.normalIndex) { Vec3f.zero }
+                    position = vertexPositions[it.posIndex],
+                    textureCoordinates = uvs.getOrElse(it.uvIndex) { Vec3f.zero },
+                    normal = normals.getOrElse(it.normalIndex) { Vec3f.zero },
+                    // Tangent and bitangent are not provided by the Wavefront OBJ file format, and
+                    // can be calculated in a separate step if required. We set them to 0 by default.
+                    tangent = Vec3f.zero,
+                    bitangent = Vec3f.zero
                 )
             }
             Triangle(vertices[0], vertices[1], vertices[2])

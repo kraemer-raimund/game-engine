@@ -159,8 +159,10 @@ internal class VertexPostProcessing {
         val weight = (w0 - nearClippingPlane) / (w0 - w1)
         val clippedVertex = Vertex(
             position = lerpPosition(line, weight, nearClippingPlane),
-            textureCoordinates = lerpUVs(line, weight),
-            normal = lerpNormal(line, weight)
+            textureCoordinates = Vec3f.lerp(vertexInFront.textureCoordinates, vertexBehind.textureCoordinates, weight),
+            normal = Vec3f.lerp(vertexInFront.normal, vertexBehind.normal, weight),
+            tangent = Vec3f.lerp(vertexInFront.tangent, vertexBehind.tangent, weight),
+            bitangent = Vec3f.lerp(vertexInFront.bitangent, vertexBehind.bitangent, weight)
         )
         return clippedVertex
     }
@@ -175,16 +177,6 @@ internal class VertexPostProcessing {
         val posBehind = vertexBehind.position
         val clippedPos = Vec3f.lerp(posInFront.toVec3f(), posBehind.toVec3f(), weight)
         return Vec4f(clippedPos, w = nearClippingPlane)
-    }
-
-    private fun lerpUVs(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
-        val (v0, v1) = line
-        return Vec3f.lerp(v0.textureCoordinates, v1.textureCoordinates, weight)
-    }
-
-    private fun lerpNormal(line: Pair<Vertex, Vertex>, weight: Float): Vec3f {
-        val (v0, v1) = line
-        return Vec3f.lerp(v0.normal, v1.normal, weight)
     }
 
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {

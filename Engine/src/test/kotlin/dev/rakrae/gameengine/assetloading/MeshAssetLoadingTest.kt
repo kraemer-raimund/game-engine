@@ -1,14 +1,13 @@
 package dev.rakrae.gameengine.assetloading
 
 import dev.rakrae.gameengine.TestTag
-import dev.rakrae.gameengine.assets.AssetLoader
-import dev.rakrae.gameengine.assets.AssetLoadingException
-import dev.rakrae.gameengine.assets.WavefrontObjParseException
-import dev.rakrae.gameengine.assets.WavefrontObjParser
+import dev.rakrae.gameengine.assets.*
+import dev.rakrae.gameengine.graphics.Mesh
+import dev.rakrae.gameengine.graphics.Triangle
+import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
-import org.assertj.core.api.Assertions.assertThat
-import org.assertj.core.api.Assertions.assertThatExceptionOfType
+import org.assertj.core.api.Assertions.*
 import org.junit.jupiter.api.*
 
 @DisplayName("Mesh asset loading")
@@ -60,7 +59,7 @@ internal class MeshAssetLoadingTest {
                 assertAll(
                     { assertThat(position).isEqualTo(Vec4f(13.37f, -200f, 0f, 1f)) },
                     { assertThat(textureCoordinates).isEqualTo(Vec3f(1f, 0.6f, 0f)) },
-                    { assertThat(normal).isEqualTo(Vec3f(0f, 0f, 1.74f)) }
+                    { assertThat(normal).isEqualTo(Vec3f(0f, 0f, 1.74f)) },
                 )
             }
 
@@ -138,6 +137,80 @@ internal class MeshAssetLoadingTest {
         fun `throws exception when file does not exist`() {
             assertThatExceptionOfType(AssetLoadingException::class.java)
                 .isThrownBy { AssetLoader().loadMesh("/does-not-exist.obj") }
+        }
+    }
+
+    @Nested
+    @DisplayName("Baking tangent and bitangent vectors")
+    inner class TangentSpaceBakingTest {
+
+        @Test
+        fun `tangent and bitangent are perpendicular to each other and to the normal`() {
+            val meshBeforeBakingTangentSpace = Mesh(
+                listOf(
+                    Triangle(
+                        v0 = Vertex(
+                            position = Vec4f(x = 123.45f, y = -200.0f, z = 0.0f, w = 1.0f),
+                            textureCoordinates = Vec3f(x = 0.1f, y = 0.6f, z = 0.0f),
+                            normal = Vec3f(x = 0.0f, y = 0.0f, z = 1.74f),
+                            tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
+                            bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
+                        ),
+                        v1 = Vertex(
+                            position = Vec4f(x = 0.0f, y = -0.0f, z = -42.0f, w = 1.0f),
+                            textureCoordinates = Vec3f(x = 0.8f, y = 0.9f, z = 0.0f),
+                            normal = Vec3f(x = 0.0f, y = 0.0f, z = 1.74f),
+                            tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
+                            bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
+                        ),
+                        v2 = Vertex(
+                            position = Vec4f(x = 69.42f, y = -200.0f, z = 0.0f, w = 1.0f),
+                            textureCoordinates = Vec3f(x = 0.5f, y = 0.72f, z = 0.0f),
+                            normal = Vec3f(x = -300.0f, y = 0.7f, z = 123.456f),
+                            tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
+                            bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
+                        )
+                    ), Triangle(
+                        v0 = Vertex(
+                            position = Vec4f(x = 13.37f, y = -12.0f, z = 0.0f, w = 1.0f),
+                            textureCoordinates = Vec3f(x = 0.0f, y = 1.0f, z = 0.0f),
+                            normal = Vec3f(x = 08.0f, y = 0.42f, z = 13.37f),
+                            tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
+                            bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
+                        ),
+                        v1 = Vertex(
+                            position = Vec4f(x = 0.0f, y = 7.0f, z = -42.0f, w = 1.0f),
+                            textureCoordinates = Vec3f(x = 0.5f, y = 0.0f, z = 0.0f),
+                            normal = Vec3f(x = 0.2f, y = 0.0f, z = 5.0f),
+                            tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
+                            bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
+                        ),
+                        v2 = Vertex(
+                            position = Vec4f(x = 1.23f, y = 45.67f, z = -89.1f, w = 1.0f),
+                            textureCoordinates = Vec3f(x = 1.0f, y = 1.0f, z = 0.0f),
+                            normal = Vec3f(x = 1.0f, y = 0.0f, z = 0.0f),
+                            tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
+                            bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
+                        )
+                    )
+                )
+            )
+
+            val meshWithTangentAndBitangent = MeshTangentSpaceBaking.bakeTangentSpace(meshBeforeBakingTangentSpace)
+
+            assertThat(meshWithTangentAndBitangent.triangles).allSatisfy { triangle ->
+                val vertices = listOf(triangle.v0, triangle.v1, triangle.v2)
+
+                assertThat(vertices).allSatisfy { vertex ->
+                    assertThat(vertex.normal.magnitude).isNotEqualTo(0f)
+                    assertThat(vertex.tangent.magnitude).isNotEqualTo(0f)
+                    assertThat(vertex.bitangent.magnitude).isNotEqualTo(0f)
+
+                    assertThat(vertex.normal dot vertex.tangent)
+                        .isEqualTo(0f, withPrecision(0.01f))
+                        .describedAs("Normal and tangent are perpendicular.")
+                }
+            }
         }
     }
 }
