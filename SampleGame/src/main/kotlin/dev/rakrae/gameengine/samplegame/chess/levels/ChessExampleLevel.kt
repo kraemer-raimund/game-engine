@@ -49,6 +49,7 @@ class ChessExampleLevel {
             }
             val vertexShader = when (i) {
                 1, 3 -> DummyAnimationVertexShader()
+                4 -> UvTextureVertexShader()
                 else -> DefaultVertexShader()
             }
             val fragmentShader = when (i) {
@@ -89,10 +90,11 @@ class ChessExampleLevel {
                         normal = BitmapTexture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_normal.png"
                         ),
-                        glossiness = 3f,
-                        uvScale = Vec2f(4f, 4f)
+                        glossiness = 8f,
+                        uvScale = Vec2f(8f, 8f)
                     ),
-                    fragmentShader = UvTextureFragmentShader()
+                    fragmentShader = UvTextureFragmentShader(),
+                    vertexShader = UvTextureVertexShader()
                 )
             ),
             dev.rakrae.gameengine.scene.Node(
@@ -110,7 +112,8 @@ class ChessExampleLevel {
                         glossiness = 1.5f,
                         uvScale = Vec2f(10f, 10f)
                     ),
-                    fragmentShader = UvTextureFragmentShader()
+                    fragmentShader = UvTextureFragmentShader(),
+                    vertexShader = UvTextureVertexShader()
                 )
             ),
             dev.rakrae.gameengine.scene.Node(
@@ -126,7 +129,8 @@ class ChessExampleLevel {
                         glossiness = 8f,
                         uvScale = Vec2f(4f, 4f)
                     ),
-                    fragmentShader = UvTextureFragmentShader()
+                    fragmentShader = UvTextureFragmentShader(),
+                    vertexShader = UvTextureVertexShader()
                 )
             ),
             dev.rakrae.gameengine.scene.Node(

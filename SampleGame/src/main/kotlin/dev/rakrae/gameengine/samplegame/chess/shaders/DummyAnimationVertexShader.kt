@@ -5,7 +5,6 @@ import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
-import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec4f
 import kotlin.math.*
 
@@ -17,10 +16,7 @@ class DummyAnimationVertexShader : VertexShader {
 
     override fun process(vertex: Vertex, inputs: VertexShaderInputs): VertexShaderOutputs {
         val rotatedPos = rotate(vertex.position, GameTime.frameTime)
-        return VertexShaderOutputs(
-            position = inputs.projection * inputs.modelView * rotatedPos,
-            tbnMatrix = Mat4x4f.identity
-        )
+        return VertexShaderOutputs(position = inputs.projection * inputs.modelView * rotatedPos)
     }
 
     private fun rotate(vector: Vec4f, radians: Float): Vec4f {

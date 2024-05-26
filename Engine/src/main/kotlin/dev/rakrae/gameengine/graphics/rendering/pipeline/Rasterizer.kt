@@ -10,6 +10,7 @@ internal class Rasterizer {
     fun rasterize(
         triangle: Triangle,
         normalWorldSpace: Vec3f,
+        vertexShaderOutputs: List<VertexShaderOutputs>,
         material: Material,
         renderTexture: Bitmap?,
         fragmentShader: FragmentShader,
@@ -39,7 +40,10 @@ internal class Rasterizer {
                                 depth = interpolatedDepth,
                                 material = material,
                                 renderTexture = renderTexture,
-                                uv = interpolateUVs(triangle, barycentricCoordinates, renderContext)
+                                uv = interpolateUVs(triangle, barycentricCoordinates, renderContext),
+                                lightDirTangentSpace = vertexShaderOutputs
+                                    .map { it.lightDirTangentSpace ?: Vec3f.zero }
+                                    .let { interpolateVector(it[0], it[1], it[2], barycentricCoordinates) }
                             )
                             val outputFragment = fragmentShader.process(inputFragment)
                             framebuffer.setPixel(x, y, outputFragment.fragmentColor)
@@ -81,6 +85,20 @@ internal class Rasterizer {
             n1.x * b.a1 + n2.x * b.a2 + n3.x * b.a3,
             n1.y * b.a1 + n2.y * b.a2 + n3.y * b.a3,
             n1.z * b.a1 + n2.z * b.a2 + n3.z * b.a3
+        )
+    }
+
+    private fun interpolateVector(
+        v1: Vec3f,
+        v2: Vec3f,
+        v3: Vec3f,
+        barycentricCoordinates: BarycentricCoordinates
+    ): Vec3f {
+        val b = barycentricCoordinates
+        return Vec3f(
+            v1.x * b.a1 + v2.x * b.a2 + v3.x * b.a3,
+            v1.y * b.a1 + v2.y * b.a2 + v3.y * b.a3,
+            v1.z * b.a1 + v2.z * b.a2 + v3.z * b.a3
         )
     }
 

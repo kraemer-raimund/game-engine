@@ -40,6 +40,16 @@ data class Mat4x4f(
         m[12], m[13], m[14], m[15]
     )
 
+    /**
+     * Construct a matrix from 4 vectors as columns.
+     */
+    constructor(v0: Vec4f, v1: Vec4f, v2: Vec4f, v3: Vec4f) : this(
+        v0.x, v1.x, v2.x, v3.x,
+        v0.y, v1.y, v2.y, v3.y,
+        v0.z, v1.z, v2.z, v3.z,
+        v0.w, v1.w, v2.w, v3.w
+    )
+
     operator fun plus(matrix: Mat4x4f): Mat4x4f {
         val otherAsList = matrix.asList
         val resultAsList = this.asList.mapIndexed { i, value -> value + otherAsList[i] }

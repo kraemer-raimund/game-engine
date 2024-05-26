@@ -8,22 +8,20 @@ import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.InputFragment
 import dev.rakrae.gameengine.graphics.rendering.pipeline.OutputFragment
 import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.math.Vec4f
-import kotlin.math.pow
 
 class UvTextureFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
         val normalMap = inputFragment.material.normal?.bitmap
         val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
+        val glossiness = inputFragment.material.glossiness
 
-        val normal =
-            (inputFragment.renderContext.projectionViewModelMatrix * Vec4f(
-                normalVector(normalMap, inputFragment),
-                1f
-            )).toVec3f().normalized
+        val normalTangentSpace = normalVector(normalMap, inputFragment)
+        val lightDirTangentSpace = inputFragment.lightDirTangentSpace
+        val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace, glossiness)
+
         val fragmentColor = if (albedoTexture != null) {
-            color(albedoTexture, inputFragment) * lightingBrightness(normal, inputFragment)
+            color(albedoTexture, inputFragment) * brightness
         } else {
             inputFragment.material.color
         }
@@ -47,19 +45,19 @@ class UvTextureFragmentShader : FragmentShader {
 
             val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
             val normalColor = textureSampler.sample(normalMap, uv)
-
-            val projectionViewModelMatrix = inputFragment.renderContext.projectionViewModelMatrix
-            return (projectionViewModelMatrix * Vec4f(normalColor.toNormal(), 1f)).toVec3f().normalized
+            return normalColor.toNormal()
         }
     }
 
-    private fun lightingBrightness(normal: Vec3f, inputFragment: InputFragment): Float {
-        val projectionViewModelMatrix = inputFragment.renderContext.projectionViewModelMatrix
-        val lightDirection = (projectionViewModelMatrix * Vec4f(-6f, 0f, 0.6f, 1f)).toVec3f().normalized
-        val lightIntensity = 2f
-        val illuminationAngleNormalized = (normal.normalized dot lightDirection.normalized)
+    private fun lightingBrightness(
+        normal: Vec3f,
+        lightDir: Vec3f,
+        glossiness: Float
+    ): Float {
+        val lightIntensity = 1f
+        val illuminationAngleNormalized = (normal.normalized dot lightDir.normalized)
             .coerceIn(0f..1f)
-        return 0.6f + 0.4f * illuminationAngleNormalized.pow(inputFragment.material.glossiness) * lightIntensity
+        return (0.1f + illuminationAngleNormalized * lightIntensity).coerceIn(0f, 1f)
     }
 
     private fun color(
@@ -79,11 +77,14 @@ class UvTextureFragmentShader : FragmentShader {
     }
 
     private fun Color.toNormal(): Vec3f {
-        return Vec3f(
+        val colorAsVector = Vec3f(
             r.toInt() / Byte.MAX_VALUE.toFloat(),
             g.toInt() / Byte.MAX_VALUE.toFloat(),
             b.toInt() / Byte.MAX_VALUE.toFloat()
         )
+        // Normal maps use values between -1 and 1.
+        val remapped = colorAsVector * 2f - Vec3f.one
+        return remapped.normalized
     }
 
     private operator fun Color.times(value: Float): Color {

@@ -14,5 +14,6 @@ data class InputFragment(
     val depth: Float,
     val material: Material,
     val renderTexture: Bitmap?,
-    val uv: Vec2f
+    val uv: Vec2f,
+    val lightDirTangentSpace: Vec3f
 )

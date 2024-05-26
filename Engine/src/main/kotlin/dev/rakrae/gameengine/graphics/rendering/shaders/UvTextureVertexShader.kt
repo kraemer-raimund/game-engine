@@ -5,13 +5,26 @@ import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
 import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.math.Vec4f
 
 class UvTextureVertexShader : VertexShader {
 
     override fun process(vertex: Vertex, inputs: VertexShaderInputs): VertexShaderOutputs {
+        val normalWorldSpace = inputs.model * vertex.normal.toVec4()
+        val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
+        val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
+        val tbnMatrix = Mat4x4f(
+            normalWorldSpace,
+            tangentWorldSpace,
+            bitangentWorldSpace,
+            Vec4f(0f, 0f, 0f, 1f)
+        )
+        // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
+        val tbnMatrixInv = tbnMatrix.transpose
+        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
         return VertexShaderOutputs(
             position = inputs.projection * inputs.modelView * vertex.position,
-            tbnMatrix = Mat4x4f.identity
+            lightDirTangentSpace = lightDirTangentSpace
         )
     }
 }

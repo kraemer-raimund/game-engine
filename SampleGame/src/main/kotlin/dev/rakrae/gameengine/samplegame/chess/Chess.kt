@@ -2,7 +2,6 @@ package dev.rakrae.gameengine.samplegame.chess
 
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
-import dev.rakrae.gameengine.core.Window
 import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
 import dev.rakrae.gameengine.input.Input
@@ -47,7 +46,7 @@ class Chess : Game() {
     override suspend fun onStart() {
         println("Game started")
 
-        window.requestWindowState(Window.State.FullScreen)
+        //window.requestWindowState(Window.State.FullScreen)
         startFpsCounterCoroutine()
 
         scene.cameras[0].translate(Vec3f(0f, 1.8f, 0f))

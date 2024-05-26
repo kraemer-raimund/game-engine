@@ -1,8 +1,10 @@
 package dev.rakrae.gameengine.graphics.rendering
 
+import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
+import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
@@ -10,6 +12,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
+import kotlin.math.cos
+import kotlin.math.sin
 
 internal class Renderer {
 
@@ -22,6 +26,13 @@ internal class Renderer {
     private val rasterizer = Rasterizer()
     private val imagePostProcessing = ImagePostProcessing()
     private val deferredRendering = DeferredRendering()
+
+    private val lightDirWorldSpace
+        get() = Vec3f(
+            x = sin(GameTime.elapsedTime * 0.2f),
+            y = -8f,
+            z = cos(GameTime.elapsedTime * 0.2f)
+        ).normalized
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
         coroutineScope {
@@ -68,6 +79,7 @@ internal class Renderer {
                         renderComponent,
                         framebuffer,
                         zBuffer,
+                        modelMatrix,
                         modelViewMatrix,
                         projectionMatrix,
                         viewportMatrix,
@@ -100,6 +112,7 @@ internal class Renderer {
                         renderComponent,
                         deferredFramebuffer,
                         deferredZBuffer,
+                        modelMatrix,
                         modelViewMatrix,
                         projectionMatrix,
                         viewportMatrix,
@@ -121,6 +134,7 @@ internal class Renderer {
         renderComponent: RenderComponent,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
+        modelMatrix: Mat4x4f,
         modelViewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
         viewportMatrix: Mat4x4f,
@@ -129,13 +143,18 @@ internal class Renderer {
         for (trianglesChunk in renderComponent.mesh.triangles.chunked(200)) {
             launch {
                 for (triangleObjectSpace in trianglesChunk) {
-                    val clipSpace = vertexProcessing.process(
+                    val vertexProcessingOutput = vertexProcessing.process(
                         triangleObjectSpace,
                         renderComponent.vertexShader,
                         projectionMatrix,
-                        modelViewMatrix
+                        modelViewMatrix,
+                        modelMatrix,
+                        lightDirWorldSpace
                     )
-                    val clippedTriangles = vertexPostProcessing.clip(clipSpace, clippingPlanes)
+                    val clippedTriangles = vertexPostProcessing.clip(
+                        vertexProcessingOutput.triangleClipSpace,
+                        clippingPlanes
+                    )
 
                     clippedTriangles.forEach { triangleClipSpace ->
                         val triangleViewportCoordinates = vertexPostProcessing.toViewport(
@@ -160,6 +179,7 @@ internal class Renderer {
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
                                 triangleObjectSpace.normal,
+                                vertexProcessingOutput.vertexShaderOutputs,
                                 renderComponent.material,
                                 renderTexture,
                                 renderComponent.fragmentShader,
