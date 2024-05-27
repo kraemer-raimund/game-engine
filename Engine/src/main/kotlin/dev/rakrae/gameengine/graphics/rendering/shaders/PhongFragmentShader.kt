@@ -6,10 +6,7 @@ import dev.rakrae.gameengine.graphics.rendering.pipeline.InputFragment
 import dev.rakrae.gameengine.graphics.rendering.pipeline.OutputFragment
 import kotlin.math.pow
 
-/**
- * https://en.wikipedia.org/wiki/Gouraud_shading
- */
-class GouraudFragmentShader : FragmentShader {
+class PhongFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
         val lightDir = inputFragment.lightDirTangentSpace

@@ -53,13 +53,13 @@ class ChessExampleLevel {
                 else -> UvTextureVertexShader()
             }
             val fragmentShader = when (i) {
-                0 -> GouraudFragmentShader()
-                1 -> GouraudFragmentShader()
-                2 -> GouraudFragmentShader()
-                3 -> GouraudFragmentShader()
+                0 -> PhongFragmentShader()
+                1 -> PhongFragmentShader()
+                2 -> PhongFragmentShader()
+                3 -> PhongFragmentShader()
                 4 -> UvTextureFragmentShader()
-                5 -> GouraudFragmentShader()
-                else -> GouraudFragmentShader()
+                5 -> PhongFragmentShader()
+                else -> PhongFragmentShader()
             }
             dev.rakrae.gameengine.scene.Node(
                 RenderComponent(
