@@ -31,11 +31,11 @@ class ChessExampleLevel {
             )
             val material = when (i) {
                 0 -> Material(color = Color(80u, 80u, 190u, 255u))
-                1 -> Material(color = Color(255u, 0u, 0u, 255u), glossiness = 12f)
-                2 -> Material()
+                1 -> Material(color = Color(255u, 0u, 0u, 255u), glossiness = 2f)
+                2 -> Material(color = Color(254u, 80u, 0u, 255u), glossiness = 2f)
                 3 -> Material(color = Color(50u, 120u, 180u, 255u), glossiness = 0.5f)
                 4 -> Material(
-                    color = Color(80u, 80u, 20u, 255u),
+                    color = Color(80u, 160u, 80u, 255u),
                     glossiness = 4f,
                     albedo = BitmapTexture("/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png")
                 )
@@ -50,16 +50,16 @@ class ChessExampleLevel {
             val vertexShader = when (i) {
                 1, 3 -> DummyAnimationVertexShader()
                 4 -> UvTextureVertexShader()
-                else -> DefaultVertexShader()
+                else -> UvTextureVertexShader()
             }
             val fragmentShader = when (i) {
-                0 -> DefaultFragmentShader()
+                0 -> GouraudFragmentShader()
                 1 -> GouraudFragmentShader()
-                2 -> DepthFragmentShader()
+                2 -> GouraudFragmentShader()
                 3 -> GouraudFragmentShader()
                 4 -> UvTextureFragmentShader()
-                5 -> DefaultFragmentShader()
-                else -> DefaultFragmentShader()
+                5 -> GouraudFragmentShader()
+                else -> GouraudFragmentShader()
             }
             dev.rakrae.gameengine.scene.Node(
                 RenderComponent(

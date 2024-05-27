@@ -14,11 +14,10 @@ class UvTextureFragmentShader : FragmentShader {
     override fun process(inputFragment: InputFragment): OutputFragment {
         val normalMap = inputFragment.material.normal?.bitmap
         val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
-        val glossiness = inputFragment.material.glossiness
 
         val normalTangentSpace = normalVector(normalMap, inputFragment)
         val lightDirTangentSpace = inputFragment.lightDirTangentSpace
-        val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace, glossiness)
+        val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace)
 
         val fragmentColor = if (albedoTexture != null) {
             color(albedoTexture, inputFragment) * brightness
@@ -51,13 +50,12 @@ class UvTextureFragmentShader : FragmentShader {
 
     private fun lightingBrightness(
         normal: Vec3f,
-        lightDir: Vec3f,
-        glossiness: Float
+        lightDir: Vec3f
     ): Float {
         val lightIntensity = 1f
         val illuminationAngleNormalized = (normal.normalized dot lightDir.normalized)
             .coerceIn(0f..1f)
-        return (0.1f + illuminationAngleNormalized * lightIntensity).coerceIn(0f, 1f)
+        return (0.4f + illuminationAngleNormalized * lightIntensity).coerceIn(0f, 1f)
     }
 
     private fun color(

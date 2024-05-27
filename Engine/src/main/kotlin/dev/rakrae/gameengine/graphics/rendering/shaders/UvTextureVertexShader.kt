@@ -22,6 +22,7 @@ class UvTextureVertexShader : VertexShader {
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
         val tbnMatrixInv = tbnMatrix.transpose
         val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
+
         return VertexShaderOutputs(
             position = inputs.projection * inputs.modelView * vertex.position,
             lightDirTangentSpace = lightDirTangentSpace

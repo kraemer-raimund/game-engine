@@ -29,9 +29,9 @@ internal class Renderer {
 
     private val lightDirWorldSpace
         get() = Vec3f(
-            x = sin(GameTime.elapsedTime * 0.2f),
-            y = -8f,
-            z = cos(GameTime.elapsedTime * 0.2f)
+            x = sin(GameTime.elapsedTime * 0.5f),
+            y = sin(GameTime.elapsedTime * 0.5f),
+            z = cos(GameTime.elapsedTime * 0.5f)
         ).normalized
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {

@@ -44,6 +44,7 @@ internal class Rasterizer {
                                 lightDirTangentSpace = vertexShaderOutputs
                                     .map { it.lightDirTangentSpace ?: Vec3f.zero }
                                     .let { interpolateVector(it[0], it[1], it[2], barycentricCoordinates) }
+                                    .also { it.normalized }
                             )
                             val outputFragment = fragmentShader.process(inputFragment)
                             framebuffer.setPixel(x, y, outputFragment.fragmentColor)
