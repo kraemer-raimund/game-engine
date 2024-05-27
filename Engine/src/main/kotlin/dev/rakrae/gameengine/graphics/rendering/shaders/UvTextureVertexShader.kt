@@ -14,9 +14,9 @@ class UvTextureVertexShader : VertexShader {
         val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
         val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
         val tbnMatrix = Mat4x4f(
-            normalWorldSpace,
             tangentWorldSpace,
             bitangentWorldSpace,
+            normalWorldSpace,
             Vec4f(0f, 0f, 0f, 1f)
         )
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
