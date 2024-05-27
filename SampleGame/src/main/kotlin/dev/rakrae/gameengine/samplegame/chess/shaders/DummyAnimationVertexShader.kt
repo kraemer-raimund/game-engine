@@ -8,7 +8,8 @@ import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
-import kotlin.math.*
+import kotlin.math.cos
+import kotlin.math.sin
 
 /**
  * Used during development to get some visual feedback. Will be deleted in the future, and shaders
@@ -37,22 +38,6 @@ class DummyAnimationVertexShader : VertexShader {
             position = inputs.projection * inputs.modelView * rotatedPos,
             lightDirTangentSpace = lightDirTangentSpace
         )
-    }
-
-    private fun rotate(vector: Vec4f, euler: Vec3f, radians: Float): Vec4f {
-        /*
-        https://en.wikipedia.org/wiki/Atan2
-        https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
-        `atan2(y, x)` yields the angle measure in radians between the x-axis and the ray from (0, 0) to (x, y).
-         */
-        val newAngleRadians = atan2(vector.z, vector.x) + radians
-        val distance = sqrt(vector.x.pow(2) + vector.z.pow(2))
-        val x = distance * cos(newAngleRadians)
-        val z = distance * sin(newAngleRadians)
-
-        val rotationMatrix = rotationMatrix(Vec3f(x, vector.y, z))
-
-        return Vec4f(x, vector.y, z, 1f)
     }
 
     private fun rotationMatrix(eulerAxes: Vec3f): Mat4x4f {
