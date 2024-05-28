@@ -4,6 +4,7 @@ import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.shaders.GammaCorrectionPostProcessingShader
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -24,11 +25,14 @@ class Chess : Game() {
 
     override val scene: Scene by lazy {
         val level = ChessExampleLevel()
+        val playerCamera = Camera(
+            viewportOffsetNormalized = Vec2f(0f, 0.05f),
+            viewportScaleNormalized = Vec2f(1f, 0.9f)
+        ).apply {
+            postProcessingShaders.add(GammaCorrectionPostProcessingShader())
+        }
         val cameras = listOf(
-            Camera(
-                viewportOffsetNormalized = Vec2f(0f, 0.05f),
-                viewportScaleNormalized = Vec2f(1f, 0.9f)
-            ),
+            playerCamera,
             Camera(
                 viewportOffsetNormalized = Vec2f(0.85f, 0.1f),
                 viewportScaleNormalized = Vec2f(0.1f, 0.2f)
