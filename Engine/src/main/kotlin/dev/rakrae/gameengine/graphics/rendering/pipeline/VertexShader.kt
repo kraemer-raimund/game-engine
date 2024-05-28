@@ -20,5 +20,6 @@ interface VertexShader {
 
 class VertexShaderOutputs(
     val position: Vec4f,
-    val lightDirTangentSpace: Vec3f? = null
+    val lightDirTangentSpace: Vec3f? = null,
+    val shaderVariables: ShaderVariables = ShaderVariables()
 )

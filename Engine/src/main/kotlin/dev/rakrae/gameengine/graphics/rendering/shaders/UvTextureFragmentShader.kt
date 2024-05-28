@@ -16,7 +16,7 @@ class UvTextureFragmentShader : FragmentShader {
         val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
 
         val normalTangentSpace = normalVector(normalMap, inputFragment)
-        val lightDirTangentSpace = inputFragment.lightDirTangentSpace
+        val lightDirTangentSpace = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
         val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace)
 
         val fragmentColor = if (albedoTexture != null) {

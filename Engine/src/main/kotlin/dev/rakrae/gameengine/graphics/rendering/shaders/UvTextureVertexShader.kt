@@ -1,6 +1,7 @@
 package dev.rakrae.gameengine.graphics.rendering.shaders
 
 import dev.rakrae.gameengine.graphics.Vertex
+import dev.rakrae.gameengine.graphics.rendering.pipeline.ShaderVariables
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
@@ -25,7 +26,15 @@ class UvTextureVertexShader : VertexShader {
 
         return VertexShaderOutputs(
             position = inputs.projection * inputs.modelView * vertex.position,
-            lightDirTangentSpace = lightDirTangentSpace
+            lightDirTangentSpace = lightDirTangentSpace,
+            shaderVariables = ShaderVariables().apply {
+                setVector(
+                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
+                        lightDirTangentSpace,
+                        ShaderVariables.Interpolation.LINEAR
+                    )
+                )
+            }
         )
     }
 }
