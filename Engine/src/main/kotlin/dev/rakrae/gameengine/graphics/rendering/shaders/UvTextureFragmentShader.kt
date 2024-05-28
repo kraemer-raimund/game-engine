@@ -7,6 +7,7 @@ import dev.rakrae.gameengine.graphics.TextureSampler
 import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.InputFragment
 import dev.rakrae.gameengine.graphics.rendering.pipeline.OutputFragment
+import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 
 class UvTextureFragmentShader : FragmentShader {
@@ -38,12 +39,12 @@ class UvTextureFragmentShader : FragmentShader {
         return if (normalMap == null) {
             inputFragment.interpolatedNormal
         } else {
-            val uv = inputFragment.uv
+            val uv = inputFragment.shaderVariables.getVector("uv").value
             val uvOffset = inputFragment.material.uvOffset
             val uvScale = inputFragment.material.uvScale
 
             val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
-            val normalColor = textureSampler.sample(normalMap, uv)
+            val normalColor = textureSampler.sample(normalMap, Vec2f(uv.x, uv.y))
             return normalColor.toNormal()
         }
     }
@@ -65,12 +66,12 @@ class UvTextureFragmentShader : FragmentShader {
         return if (texture == null) {
             inputFragment.material.color
         } else {
-            val uv = inputFragment.uv
+            val uv = inputFragment.shaderVariables.getVector("uv").value
             val uvOffset = inputFragment.material.uvOffset
             val uvScale = inputFragment.material.uvScale
 
             val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
-            textureSampler.sample(texture, uv)
+            textureSampler.sample(texture, Vec2f(uv.x, uv.y))
         }
     }
 

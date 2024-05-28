@@ -11,7 +11,6 @@ internal class Rasterizer {
         triangle: Triangle,
         shaderVariables: List<ShaderVariables>,
         normalWorldSpace: Vec3f,
-        vertexShaderOutputs: List<VertexShaderOutput>,
         material: Material,
         renderTexture: Bitmap?,
         fragmentShader: FragmentShader,
@@ -41,7 +40,6 @@ internal class Rasterizer {
                             depth = interpolatedDepth,
                             material = material,
                             renderTexture = renderTexture,
-                            uv = interpolateUVs(triangle, barycentricCoordinates, renderContext),
                             shaderVariables = interpolate(
                                 shaderVariables[0],
                                 shaderVariables[1],

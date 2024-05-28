@@ -180,7 +180,6 @@ internal class Renderer {
                                 triangleViewportCoordinates,
                                 vertexProcessingOutput.vertexShaderOutputs.map { it.shaderVariables },
                                 triangleObjectSpace.normal,
-                                vertexProcessingOutput.vertexShaderOutputs,
                                 renderComponent.material,
                                 renderTexture,
                                 renderComponent.fragmentShader,

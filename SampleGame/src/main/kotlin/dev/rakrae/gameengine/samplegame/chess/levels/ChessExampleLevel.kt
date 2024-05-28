@@ -151,6 +151,7 @@ class ChessExampleLevel {
                         uvScale = Vec2f(1f, 1f)
                     ),
                     fragmentShader = ShadelessUvTextureFragmentShader(),
+                    vertexShader = UvTextureVertexShader(),
                     deferredShader = OutlineDeferredShader(2, Color(80u, 80u, 80u, 255u))
                 )
             )

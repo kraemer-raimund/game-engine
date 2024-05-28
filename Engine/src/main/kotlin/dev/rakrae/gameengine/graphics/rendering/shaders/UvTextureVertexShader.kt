@@ -28,6 +28,12 @@ class UvTextureVertexShader : VertexShader {
             position = inputs.projection * inputs.modelView * vertex.position,
             shaderVariables = ShaderVariables().apply {
                 setVector(
+                    "uv", ShaderVariables.VectorVariable(
+                        vertex.textureCoordinates,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+                setVector(
                     "lightDirTangentSpace", ShaderVariables.VectorVariable(
                         lightDirTangentSpace,
                         ShaderVariables.Interpolation.PERSPECTIVE

@@ -30,7 +30,7 @@ class ShadelessUvTextureFragmentShader : FragmentShader {
         return if (texture == null) {
             inputFragment.material.color
         } else {
-            val uv = inputFragment.uv
+            val uv = inputFragment.shaderVariables.getVector("uv").value
             val uvScale = inputFragment.material.uvScale
             val x = uvScale.x * uv.x * (texture.width - 1)
             val y = uvScale.y * uv.y * (texture.height - 1)
