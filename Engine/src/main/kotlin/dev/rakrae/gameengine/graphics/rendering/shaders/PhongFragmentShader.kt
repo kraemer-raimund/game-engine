@@ -9,7 +9,7 @@ import kotlin.math.pow
 class PhongFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
-        val lightDir = inputFragment.lightDirTangentSpace
+        val lightDir = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
         val lightIntensity = 0.9f
         val illuminationAngleNormalized = (inputFragment.interpolatedNormal.normalized dot lightDir.normalized)
             .coerceIn(0f..1f)

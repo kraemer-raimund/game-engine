@@ -1,7 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Vertex
-import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 
 interface VertexShader {
@@ -20,6 +19,5 @@ interface VertexShader {
 
 class VertexShaderOutput(
     val position: Vec4f,
-    val lightDirTangentSpace: Vec3f? = null,
     val shaderVariables: ShaderVariables = ShaderVariables()
 )

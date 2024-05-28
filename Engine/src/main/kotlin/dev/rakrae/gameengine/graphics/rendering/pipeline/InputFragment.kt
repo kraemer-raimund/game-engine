@@ -15,6 +15,5 @@ data class InputFragment(
     val material: Material,
     val renderTexture: Bitmap?,
     val uv: Vec2f,
-    val lightDirTangentSpace: Vec3f,
     val shaderVariables: ShaderVariables
 )

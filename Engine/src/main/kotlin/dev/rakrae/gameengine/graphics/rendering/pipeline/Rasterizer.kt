@@ -42,10 +42,6 @@ internal class Rasterizer {
                             material = material,
                             renderTexture = renderTexture,
                             uv = interpolateUVs(triangle, barycentricCoordinates, renderContext),
-                            lightDirTangentSpace = vertexShaderOutputs
-                                .map { it.lightDirTangentSpace ?: Vec3f.zero }
-                                .let { interpolateVector(it[0], it[1], it[2], barycentricCoordinates) }
-                                .also { it.normalized },
                             shaderVariables = interpolate(
                                 shaderVariables[0],
                                 shaderVariables[1],

@@ -26,7 +26,6 @@ class UvTextureVertexShader : VertexShader {
 
         return VertexShaderOutput(
             position = inputs.projection * inputs.modelView * vertex.position,
-            lightDirTangentSpace = lightDirTangentSpace,
             shaderVariables = ShaderVariables().apply {
                 setVector(
                     "lightDirTangentSpace", ShaderVariables.VectorVariable(

@@ -2,6 +2,7 @@ package dev.rakrae.gameengine.samplegame.chess.shaders
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Vertex
+import dev.rakrae.gameengine.graphics.rendering.pipeline.ShaderVariables
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInput
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutput
@@ -36,7 +37,14 @@ class DummyAnimationVertexShader : VertexShader {
 
         return VertexShaderOutput(
             position = inputs.projection * inputs.modelView * rotatedPos,
-            lightDirTangentSpace = lightDirTangentSpace
+            shaderVariables = ShaderVariables().apply {
+                setVector(
+                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
+                        lightDirTangentSpace,
+                        ShaderVariables.Interpolation.LINEAR
+                    )
+                )
+            }
         )
     }
 

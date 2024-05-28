@@ -10,6 +10,8 @@ class DefaultVertexShader : VertexShader {
     override fun process(vertex: Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         // The default vertex shader does the minimum necessary operation, which is mapping from
         // object space to clip space.
-        return VertexShaderOutput(position = inputs.projection * inputs.modelView * vertex.position)
+        return VertexShaderOutput(
+            position = inputs.projection * inputs.modelView * vertex.position
+        )
     }
 }
