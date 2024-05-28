@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.RenderTexture
+import dev.rakrae.gameengine.graphics.rendering.shaders.DepthDarkeningPostProcessingShader
 import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
 import dev.rakrae.gameengine.graphics.rendering.shaders.GammaCorrectionPostProcessingShader
 import dev.rakrae.gameengine.input.Input
@@ -40,6 +41,7 @@ class Chess : Game() {
             Camera(horizontalFovRadians = 0.5f * PI.toFloat()).apply {
                 renderTexture = RenderTexture(0)
                 postProcessingShaders.add(DepthOfFieldPostProcessingShader(effectStrength = 4f))
+                postProcessingShaders.add(DepthDarkeningPostProcessingShader())
             }
         )
         Scene(cameras, level.nodes)

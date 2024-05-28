@@ -14,7 +14,7 @@ class DepthDarkeningPostProcessingShader : PostProcessingShader {
         val color = framebuffer.getPixel(x, y)
         // We want to darken objects that are far away from the camera, and brighten those
         // close to the camera.
-        val zBufferDarkening = 10f * (1f - zBuffer.get(x, y)).pow(8)
+        val zBufferDarkening = 4 * (1f - zBuffer.get(x, y)).pow(2)
         return color * zBufferDarkening.coerceIn(0f, 1f)
     }
 
