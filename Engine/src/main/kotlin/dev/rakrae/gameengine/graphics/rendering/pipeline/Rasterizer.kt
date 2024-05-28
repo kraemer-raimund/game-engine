@@ -11,7 +11,7 @@ internal class Rasterizer {
         triangle: Triangle,
         shaderVariables: List<ShaderVariables>,
         normalWorldSpace: Vec3f,
-        vertexShaderOutputs: List<VertexShaderOutputs>,
+        vertexShaderOutputs: List<VertexShaderOutput>,
         material: Material,
         renderTexture: Bitmap?,
         fragmentShader: FragmentShader,

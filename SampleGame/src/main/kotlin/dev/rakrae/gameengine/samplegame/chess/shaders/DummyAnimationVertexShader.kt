@@ -3,8 +3,8 @@ package dev.rakrae.gameengine.samplegame.chess.shaders
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInputs
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutputs
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInput
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutput
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
@@ -17,7 +17,7 @@ import kotlin.math.sin
  */
 class DummyAnimationVertexShader : VertexShader {
 
-    override fun process(vertex: Vertex, inputs: VertexShaderInputs): VertexShaderOutputs {
+    override fun process(vertex: Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         val rotationMatrix = rotationMatrix(Vec3f(0f, GameTime.frameTime, 0f))
         val rotatedPos = rotationMatrix * vertex.position
 
@@ -34,7 +34,7 @@ class DummyAnimationVertexShader : VertexShader {
         val tbnMatrixInv = tbnMatrix.transpose
         val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
 
-        return VertexShaderOutputs(
+        return VertexShaderOutput(
             position = inputs.projection * inputs.modelView * rotatedPos,
             lightDirTangentSpace = lightDirTangentSpace
         )

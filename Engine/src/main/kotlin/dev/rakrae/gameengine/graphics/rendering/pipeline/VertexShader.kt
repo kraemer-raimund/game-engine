@@ -15,10 +15,10 @@ interface VertexShader {
      * the necessary matrices for transforming into clip space, but optionally user-defined
      * inputs can be passed as well.
      */
-    fun process(vertex: Vertex, inputs: VertexShaderInputs): VertexShaderOutputs
+    fun process(vertex: Vertex, inputs: VertexShaderInput): VertexShaderOutput
 }
 
-class VertexShaderOutputs(
+class VertexShaderOutput(
     val position: Vec4f,
     val lightDirTangentSpace: Vec3f? = null,
     val shaderVariables: ShaderVariables = ShaderVariables()

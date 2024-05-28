@@ -15,9 +15,9 @@ class VertexProcessing {
         lightDirWorldSpace: Vec3f
     ): VertexProcessingOutput {
         with(triangleObjectSpace) {
-            val vertexShaderInputs = VertexShaderInputs(projection, modelView, model, lightDirWorldSpace)
+            val vertexShaderInput = VertexShaderInput(projection, modelView, model, lightDirWorldSpace)
             val vertexShaderOutputs = listOf(v0, v1, v2)
-                .map { vertexShader.process(it, vertexShaderInputs) }
+                .map { vertexShader.process(it, vertexShaderInput) }
             return VertexProcessingOutput(
                 Triangle(
                     v0.copy(position = vertexShaderOutputs[0].position),
@@ -36,5 +36,5 @@ class VertexProcessing {
 
 class VertexProcessingOutput(
     val triangleClipSpace: Triangle,
-    val vertexShaderOutputs: List<VertexShaderOutputs>
+    val vertexShaderOutputs: List<VertexShaderOutput>
 )
