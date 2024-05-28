@@ -169,35 +169,6 @@ internal class Rasterizer {
         )
     }
 
-    private fun interpolateVector(
-        v1: Vec3f,
-        v2: Vec3f,
-        v3: Vec3f,
-        barycentricCoordinates: BarycentricCoordinates
-    ): Vec3f {
-        val b = barycentricCoordinates
-        return Vec3f(
-            v1.x * b.a1 + v2.x * b.a2 + v3.x * b.a3,
-            v1.y * b.a1 + v2.y * b.a2 + v3.y * b.a3,
-            v1.z * b.a1 + v2.z * b.a2 + v3.z * b.a3
-        )
-    }
-
-    private fun interpolateUVs(
-        triangle: Triangle,
-        barycentricCoordinates: BarycentricCoordinates,
-        renderContext: RenderContext
-    ): Vec2f {
-        val uv1 = triangle.v0.textureCoordinates
-        val uv2 = triangle.v1.textureCoordinates
-        val uv3 = triangle.v2.textureCoordinates
-        val b = barycentricCoordinates.toPerspectiveCorrectBarycentric(renderContext.wComponents)
-        return Vec2f(
-            uv1.x * b.a1 + uv2.x * b.a2 + uv3.x * b.a3,
-            uv1.y * b.a1 + uv2.y * b.a2 + uv3.y * b.a3
-        )
-    }
-
     private fun BarycentricCoordinates.toPerspectiveCorrectBarycentric(wComponents: RenderContext.WComponents): BarycentricCoordinates {
         // https://stackoverflow.com/a/24460895/3726133
         // https://stackoverflow.com/a/74630682/3726133
