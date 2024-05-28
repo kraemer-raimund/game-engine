@@ -30,7 +30,7 @@ class UvTextureVertexShader : VertexShader {
                 setVector(
                     "lightDirTangentSpace", ShaderVariables.VectorVariable(
                         lightDirTangentSpace,
-                        ShaderVariables.Interpolation.LINEAR
+                        ShaderVariables.Interpolation.PERSPECTIVE
                     )
                 )
             }
