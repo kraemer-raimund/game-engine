@@ -26,7 +26,7 @@ class PhongFragmentShader : FragmentShader {
 
         return OutputFragment(
             fragmentColor = color,
-            depth = inputFragment.depth
+            depth = inputFragment.fragPos.z
         )
     }
 }

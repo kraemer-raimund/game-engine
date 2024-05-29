@@ -32,12 +32,23 @@ internal class Rasterizer {
                     val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
                     if (interpolatedDepth < zBuffer.get(x, y)) {
                         zBuffer.set(x, y, interpolatedDepth)
+                        val interpolatedW = renderContext.wComponents.let {
+                            val f0 = it.triangle1W
+                            val f1 = it.triangle2W
+                            val f2 = it.triangle3W
+                            val b = barycentricCoordinates
+                            f0 * b.a1 + f1 * b.a2 + f2 * b.a3
+                        }
                         val inputFragment = InputFragment(
-                            windowSpacePosition = Vec2i(x, y),
+                            fragPos = Vec4f(
+                                x.toFloat(),
+                                y.toFloat(),
+                                interpolatedDepth,
+                                1f / interpolatedW
+                            ),
                             renderContext = renderContext,
                             interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
                             faceNormalWorldSpace = normalWorldSpace,
-                            depth = interpolatedDepth,
                             material = material,
                             renderTexture = renderTexture,
                             shaderVariables = interpolate(
@@ -139,12 +150,12 @@ internal class Rasterizer {
         triangle: Triangle,
         barycentricCoordinates: BarycentricCoordinates
     ): Float {
-        val z1 = triangle.v0.position.toVec3f().z.ndcToDepth()
-        val z2 = triangle.v1.position.toVec3f().z.ndcToDepth()
-        val z3 = triangle.v2.position.toVec3f().z.ndcToDepth()
+        val z1 = triangle.v0.position.toVec3f().z
+        val z2 = triangle.v1.position.toVec3f().z
+        val z3 = triangle.v2.position.toVec3f().z
         val b = barycentricCoordinates
         val interpolatedZ = z1 * b.a1 + z2 * b.a2 + z3 * b.a3
-        return interpolatedZ
+        return interpolatedZ.ndcToDepth()
     }
 
     /**

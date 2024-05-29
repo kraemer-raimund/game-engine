@@ -22,7 +22,7 @@ class DummyExampleFragmentShader : FragmentShader {
         )
         return OutputFragment(
             fragmentColor = glow,
-            depth = inputFragment.depth
+            depth = inputFragment.fragPos.z
         )
     }
 

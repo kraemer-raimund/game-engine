@@ -52,13 +52,12 @@ class ChessExampleLevel {
             }
             val vertexShader = when (i) {
                 1, 3 -> DummyAnimationVertexShader()
-                4 -> UvTextureVertexShader()
                 else -> UvTextureVertexShader()
             }
             val fragmentShader = when (i) {
                 0 -> PhongFragmentShader()
                 1 -> PhongFragmentShader()
-                2 -> PhongFragmentShader()
+                2 -> DepthFragmentShader()
                 3 -> PhongFragmentShader()
                 4 -> UvTextureFragmentShader()
                 5 -> PhongFragmentShader()

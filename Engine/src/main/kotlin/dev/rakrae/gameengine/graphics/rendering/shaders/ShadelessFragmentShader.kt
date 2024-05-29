@@ -9,7 +9,7 @@ class ShadelessFragmentShader : FragmentShader {
     override fun process(inputFragment: InputFragment): OutputFragment {
         return OutputFragment(
             inputFragment.material.color,
-            inputFragment.depth
+            inputFragment.fragPos.z
         )
     }
 }

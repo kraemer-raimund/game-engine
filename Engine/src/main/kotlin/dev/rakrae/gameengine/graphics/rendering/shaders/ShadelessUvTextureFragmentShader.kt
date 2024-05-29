@@ -19,7 +19,7 @@ class ShadelessUvTextureFragmentShader : FragmentShader {
 
         return OutputFragment(
             fragmentColor = fragmentColor,
-            depth = inputFragment.depth
+            depth = inputFragment.fragPos.z
         )
     }
 
