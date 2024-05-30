@@ -61,24 +61,12 @@ internal class TextureSampler(
 
         val weightX = x - xLow
         val weightY = y - yLow
-        val biLerpedColor = lerp(
-            lerp(colorBottomLeft, colorBottomRight, weightX),
-            lerp(colorTopLeft, colorTopRight, weightX),
+        val biLerpedColor = Color.lerp(
+            Color.lerp(colorBottomLeft, colorBottomRight, weightX),
+            Color.lerp(colorTopLeft, colorTopRight, weightX),
             weightY
         )
         return biLerpedColor
-    }
-
-    private fun lerp(color1: Color, color2: Color, t: Float): Color {
-        val r = (1 - t) * color1.r.toInt() + t * color2.r.toInt()
-        val g = (1 - t) * color1.g.toInt() + t * color2.g.toInt()
-        val b = (1 - t) * color1.b.toInt() + t * color2.b.toInt()
-        return Color(
-            (r.toInt().coerceIn(0, 255)).toUByte(),
-            (g.toInt().coerceIn(0, 255)).toUByte(),
-            (b.toInt().coerceIn(0, 255)).toUByte(),
-            255u
-        )
     }
 
     enum class Filter {
