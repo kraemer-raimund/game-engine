@@ -2,8 +2,7 @@ package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.rendering.DefaultVertexShader
-import dev.rakrae.gameengine.graphics.rendering.UnlitFragmentShader
+import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.graphics.rendering.pipeline.DeferredShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
@@ -20,8 +19,8 @@ class RenderComponent(
     rotationEulerRad: Vec3f = Vec3f.zero,
     scale: Vec3f = Vec3f.one,
     val material: Material = Material.default,
-    val vertexShader: VertexShader = DefaultVertexShader(),
-    val fragmentShader: FragmentShader = UnlitFragmentShader(),
+    val vertexShader: VertexShader = BuiltinShaders.Material.standardPBR.vertexShader,
+    val fragmentShader: FragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
     val deferredShader: DeferredShader? = null
 ) : Component() {
 

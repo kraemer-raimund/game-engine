@@ -6,7 +6,6 @@ import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
-import dev.rakrae.gameengine.graphics.rendering.OutlineDeferredShader
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
@@ -69,7 +68,7 @@ class ChessExampleLevel {
                     vertexShader = vertexShader,
                     fragmentShader = fragmentShader,
                     deferredShader = when (i) {
-                        5 -> OutlineDeferredShader(2, Color(255u, 255u, 0u, 255u))
+                        5 -> BuiltinShaders.Deferred.outline(2, Color(255u, 255u, 0u, 255u))
                         else -> null
                     }
                 )
@@ -148,7 +147,7 @@ class ChessExampleLevel {
                     ),
                     fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader,
-                    deferredShader = OutlineDeferredShader(2, Color(80u, 80u, 80u, 255u))
+                    deferredShader = BuiltinShaders.Deferred.outline(2, Color(80u, 80u, 80u, 255u))
                 )
             )
         )

@@ -3,9 +3,7 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.RenderTexture
-import dev.rakrae.gameengine.graphics.rendering.DepthDarkeningPostProcessingShader
-import dev.rakrae.gameengine.graphics.rendering.DepthOfFieldPostProcessingShader
-import dev.rakrae.gameengine.graphics.rendering.GammaCorrectionPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -30,7 +28,7 @@ class Chess : Game() {
             viewportOffsetNormalized = Vec2f(0f, 0.05f),
             viewportScaleNormalized = Vec2f(1f, 0.9f)
         ).apply {
-            postProcessingShaders.add(GammaCorrectionPostProcessingShader())
+            postProcessingShaders.add(BuiltinShaders.PostProcessing.gammaCorrection())
         }
         val cameras = listOf(
             playerCamera,
@@ -40,8 +38,8 @@ class Chess : Game() {
             ),
             Camera(horizontalFovRadians = 0.5f * PI.toFloat()).apply {
                 renderTexture = RenderTexture(0)
-                postProcessingShaders.add(DepthOfFieldPostProcessingShader(effectStrength = 4f))
-                postProcessingShaders.add(DepthDarkeningPostProcessingShader())
+                postProcessingShaders.add(BuiltinShaders.PostProcessing.depthOfField(effectStrength = 4f))
+                postProcessingShaders.add(BuiltinShaders.PostProcessing.depthDarkening)
             }
         )
         Scene(cameras, level.nodes)
@@ -52,7 +50,6 @@ class Chess : Game() {
     override suspend fun onStart() {
         println("Game started")
 
-        //window.requestWindowState(Window.State.FullScreen)
         startFpsCounterCoroutine()
 
         scene.cameras[0].translate(Vec3f(0f, 1.8f, 0f))

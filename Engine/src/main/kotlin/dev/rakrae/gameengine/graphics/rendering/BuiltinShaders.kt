@@ -9,20 +9,32 @@ import kotlin.math.sqrt
 
 object BuiltinShaders {
     object Material {
-        val unlit = Shader(DefaultVertexShader(), UnlitFragmentShader())
-        val standardPBR = Shader(PBRVertexShader(), PBRFragmentShader())
+        val unlit: Shader = Shader(DefaultVertexShader(), UnlitFragmentShader())
+        val standardPBR: Shader = Shader(PBRVertexShader(), PBRFragmentShader())
     }
 
     object PostProcessing {
-        val gammaCorrection = GammaCorrectionPostProcessingShader()
-        val depthOfField = DepthOfFieldPostProcessingShader()
-        val depthDarkening = DepthDarkeningPostProcessingShader()
+        fun gammaCorrection(gamma: Float = 2.2f): PostProcessingShader {
+            return GammaCorrectionPostProcessingShader(gamma)
+        }
+
+        fun depthOfField(effectStrength: Float = 1f): PostProcessingShader {
+            return DepthOfFieldPostProcessingShader(effectStrength)
+        }
+
+        val depthDarkening: PostProcessingShader = DepthDarkeningPostProcessingShader()
+    }
+
+    object Deferred {
+        fun outline(thickness: Int, outlineColor: Color): DeferredShader {
+            return OutlineDeferredShader(thickness, outlineColor)
+        }
     }
 }
 
 class Shader(val vertexShader: VertexShader, val fragmentShader: FragmentShader)
 
-class DefaultVertexShader : VertexShader {
+private class DefaultVertexShader : VertexShader {
 
     override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         return VertexShaderOutput(
@@ -33,7 +45,7 @@ class DefaultVertexShader : VertexShader {
 }
 
 
-class UnlitFragmentShader : FragmentShader {
+private class UnlitFragmentShader : FragmentShader {
     override fun process(inputFragment: InputFragment): OutputFragment {
         return OutputFragment(
             fragmentColor = inputFragment.material.color,
@@ -42,7 +54,7 @@ class UnlitFragmentShader : FragmentShader {
     }
 }
 
-class GammaCorrectionPostProcessingShader(private val gamma: Float = 2.2f) : PostProcessingShader {
+private class GammaCorrectionPostProcessingShader(private val gamma: Float = 2.2f) : PostProcessingShader {
 
     override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
         val (x, y) = position
@@ -60,7 +72,7 @@ class GammaCorrectionPostProcessingShader(private val gamma: Float = 2.2f) : Pos
     }
 }
 
-class DepthOfFieldPostProcessingShader(
+private class DepthOfFieldPostProcessingShader(
     private val effectStrength: Float = 1f,
 ) : PostProcessingShader {
 
@@ -114,7 +126,7 @@ class DepthOfFieldPostProcessingShader(
 
 }
 
-class DepthDarkeningPostProcessingShader : PostProcessingShader {
+private class DepthDarkeningPostProcessingShader : PostProcessingShader {
 
     override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
         val (x, y) = position
@@ -135,7 +147,7 @@ class DepthDarkeningPostProcessingShader : PostProcessingShader {
     }
 }
 
-class OutlinePostProcessingShader(
+private class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
     private val outlineColor: Color
@@ -157,7 +169,7 @@ class OutlinePostProcessingShader(
     }
 }
 
-class OutlineDeferredShader(
+private class OutlineDeferredShader(
     private val thickness: Int,
     private val outlineColor: Color
 ) : DeferredShader {
@@ -191,7 +203,7 @@ class OutlineDeferredShader(
     }
 }
 
-class PBRVertexShader : VertexShader {
+private class PBRVertexShader : VertexShader {
 
     override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         val normalWorldSpace = inputs.model * vertex.normal.toVec4()
@@ -228,7 +240,7 @@ class PBRVertexShader : VertexShader {
 
 }
 
-class PBRFragmentShader : FragmentShader {
+private class PBRFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
         val normalMap = inputFragment.material.normal?.bitmap
