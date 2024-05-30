@@ -11,9 +11,8 @@ class VertexProcessing {
         shaderUniforms: ShaderUniforms
     ): VertexProcessingOutput {
         with(triangleObjectSpace) {
-            val vertexShaderInput = VertexShaderInput(shaderUniforms)
             val vertexShaderOutputs = listOf(v0, v1, v2)
-                .map { vertexShader.process(it, vertexShaderInput) }
+                .map { vertexShader.process(it, shaderUniforms) }
             return VertexProcessingOutput(
                 Triangle(
                     vertexShaderOutputs[0].position,

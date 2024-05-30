@@ -40,9 +40,9 @@ class Shader(val vertexShader: VertexShader, val fragmentShader: FragmentShader)
 
 private class PBRVertexShader : VertexShader {
 
-    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
-        val modelMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
-        val mvpMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
+    override fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput {
+        val modelMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
+        val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
 
         val normalWorldSpace = modelMatrix * vertex.normal.toVec4()
         val tangentWorldSpace = modelMatrix * vertex.tangent.toVec4()
@@ -56,7 +56,7 @@ private class PBRVertexShader : VertexShader {
         )
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
         val tbnMatrixInv = tbnMatrix.transpose
-        val sunLightDirWorldSpace = inputs.shaderUniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
+        val sunLightDirWorldSpace = uniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
         val lightDirTangentSpace = (tbnMatrixInv * sunLightDirWorldSpace).toVec3f()
 
         return VertexShaderOutput(
@@ -170,8 +170,8 @@ private class PBRFragmentShader : FragmentShader {
 
 private class UnlitVertexShader : VertexShader {
 
-    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
-        val mvpMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
+    override fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput {
+        val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
         return VertexShaderOutput(
             position = mvpMatrix * vertex.position,
             shaderVariables = ShaderVariables()

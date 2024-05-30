@@ -2,7 +2,10 @@ package dev.rakrae.gameengine.samplegame.chess.shaders
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.rendering.pipeline.*
+import dev.rakrae.gameengine.graphics.rendering.pipeline.ShaderUniforms
+import dev.rakrae.gameengine.graphics.rendering.pipeline.ShaderVariables
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
+import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutput
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
@@ -15,11 +18,11 @@ import kotlin.math.sin
  */
 class DummyAnimationVertexShader : VertexShader {
 
-    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
+    override fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput {
         val rotationMatrix = rotationMatrix(Vec3f(0f, GameTime.frameTime, 0f))
         val rotatedPos = rotationMatrix * vertex.position
-        val modelMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
-        val mvpMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
+        val modelMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
+        val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
 
         val normalWorldSpace = modelMatrix * rotationMatrix * vertex.normal.toVec4()
         val tangentWorldSpace = modelMatrix * rotationMatrix * vertex.tangent.toVec4()
@@ -33,7 +36,7 @@ class DummyAnimationVertexShader : VertexShader {
         )
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
         val tbnMatrixInv = tbnMatrix.transpose
-        val sunLightDirWorldSpace = inputs.shaderUniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
+        val sunLightDirWorldSpace = uniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
         val lightDirTangentSpace = (tbnMatrixInv * sunLightDirWorldSpace).toVec3f()
 
         return VertexShaderOutput(

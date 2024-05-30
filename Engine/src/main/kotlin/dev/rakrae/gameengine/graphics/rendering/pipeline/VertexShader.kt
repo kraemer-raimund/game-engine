@@ -14,7 +14,7 @@ interface VertexShader {
      * the necessary matrices for transforming into clip space, but optionally user-defined
      * inputs can be passed as well.
      */
-    fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput
+    fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput
 }
 
 class VertexShaderOutput(
