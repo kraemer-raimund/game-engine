@@ -9,7 +9,7 @@ internal class Rasterizer {
 
     fun rasterize(
         triangle: Triangle,
-        shaderVariables: List<ShaderVariables>,
+        triangleShaderVariables: TriangleShaderVariables,
         normalWorldSpace: Vec3f,
         material: Material,
         renderTexture: Bitmap?,
@@ -52,9 +52,7 @@ internal class Rasterizer {
                             material = material,
                             renderTexture = renderTexture,
                             shaderVariables = interpolate(
-                                shaderVariables[0],
-                                shaderVariables[1],
-                                shaderVariables[2],
+                                triangleShaderVariables,
                                 renderContext.wComponents,
                                 barycentricCoordinates
                             )
@@ -68,17 +66,15 @@ internal class Rasterizer {
     }
 
     private fun interpolate(
-        shaderVariables0: ShaderVariables,
-        shaderVariables1: ShaderVariables,
-        shaderVariables2: ShaderVariables,
+        triangleShaderVariables: TriangleShaderVariables,
         wComponents: RenderContext.WComponents,
         barycentricCoordinates: BarycentricCoordinates
     ): ShaderVariables {
         val interpolatedShaderVariables = ShaderVariables()
-        for (key in shaderVariables0.floatKeys) {
-            val variable0 = shaderVariables0.getFloat(key)
-            val variable1 = shaderVariables1.getFloat(key)
-            val variable2 = shaderVariables2.getFloat(key)
+        for (key in triangleShaderVariables.v0.floatKeys) {
+            val variable0 = triangleShaderVariables.v0.getFloat(key)
+            val variable1 = triangleShaderVariables.v1.getFloat(key)
+            val variable2 = triangleShaderVariables.v2.getFloat(key)
             val interpolatedValue = interpolate(
                 variable0.value,
                 variable1.value,
@@ -89,10 +85,10 @@ internal class Rasterizer {
             )
             interpolatedShaderVariables.setFloat(key, interpolatedValue)
         }
-        for (key in shaderVariables0.vectorKeys) {
-            val variable0 = shaderVariables0.getVector(key)
-            val variable1 = shaderVariables1.getVector(key)
-            val variable2 = shaderVariables2.getVector(key)
+        for (key in triangleShaderVariables.v0.vectorKeys) {
+            val variable0 = triangleShaderVariables.v0.getVector(key)
+            val variable1 = triangleShaderVariables.v1.getVector(key)
+            val variable2 = triangleShaderVariables.v2.getVector(key)
             val interpolatedValue = interpolate(
                 variable0.value,
                 variable1.value,

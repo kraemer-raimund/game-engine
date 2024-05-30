@@ -24,10 +24,10 @@ class VertexProcessing {
                     v1.copy(position = vertexShaderOutputs[1].position),
                     v2.copy(position = vertexShaderOutputs[2].position)
                 ),
-                listOf(
-                    vertexShaderOutputs[0],
-                    vertexShaderOutputs[1],
-                    vertexShaderOutputs[2]
+                TriangleShaderVariables(
+                    vertexShaderOutputs[0].shaderVariables,
+                    vertexShaderOutputs[1].shaderVariables,
+                    vertexShaderOutputs[2].shaderVariables
                 )
             )
         }
@@ -36,5 +36,5 @@ class VertexProcessing {
 
 class VertexProcessingOutput(
     val triangleClipSpace: Triangle,
-    val vertexShaderOutputs: List<VertexShaderOutput>
+    val triangleShaderVariables: TriangleShaderVariables
 )

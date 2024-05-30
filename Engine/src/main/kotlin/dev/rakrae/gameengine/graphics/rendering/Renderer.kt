@@ -178,7 +178,7 @@ internal class Renderer {
                                 ?.frontBuffer
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
-                                vertexProcessingOutput.vertexShaderOutputs.map { it.shaderVariables },
+                                vertexProcessingOutput.triangleShaderVariables,
                                 triangleObjectSpace.normal,
                                 renderComponent.material,
                                 renderTexture,
