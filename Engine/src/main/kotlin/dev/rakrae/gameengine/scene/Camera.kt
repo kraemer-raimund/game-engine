@@ -19,6 +19,8 @@ class Camera(
 
     var renderTexture: RenderTexture? = null
 
+    val worldPos: Vec3f get() = loc
+
     val postProcessingShaders: MutableList<PostProcessingShader> = mutableListOf()
 
     val nearPlane: Float = 1f

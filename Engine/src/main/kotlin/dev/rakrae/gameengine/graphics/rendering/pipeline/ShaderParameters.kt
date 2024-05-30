@@ -47,6 +47,7 @@ class ShaderUniforms(
     builtinMatrixMV: Mat4x4f,
     builtinMatrixV: Mat4x4f,
     builtinMatrixM: Mat4x4f,
+    cameraPosWorld: Vec4f,
     sunLightDirection: Vec4f,
     ambientColor: Color,
     ambientIntensityMultiplier: Float
@@ -57,6 +58,8 @@ class ShaderUniforms(
         const val MATRIX_MV = "_builtin_matrix_MV"
         const val MATRIX_V = "_builtin_matrix_V"
         const val MATRIX_M = "_builtin_matrix_M"
+
+        const val CAMERA_POS_WORLD = "_builtin_camera_pos_world"
 
         const val SUN_LIGHT_DIRECTION = "_builtin_sun_light_direction"
 
@@ -74,6 +77,7 @@ class ShaderUniforms(
         setMatrix(BuiltinKeys.MATRIX_MV, builtinMatrixMV)
         setMatrix(BuiltinKeys.MATRIX_V, builtinMatrixV)
         setMatrix(BuiltinKeys.MATRIX_M, builtinMatrixM)
+        setVector(BuiltinKeys.CAMERA_POS_WORLD, cameraPosWorld)
         setVector(BuiltinKeys.SUN_LIGHT_DIRECTION, sunLightDirection)
         setColor(BuiltinKeys.AMBIENT_COLOR, ambientColor)
         setFloat(BuiltinKeys.AMBIENT_INTENSITY_MULTIPLIER, ambientIntensityMultiplier)
