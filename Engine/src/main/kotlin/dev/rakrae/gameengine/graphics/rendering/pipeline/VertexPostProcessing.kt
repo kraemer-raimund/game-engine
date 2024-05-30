@@ -235,6 +235,8 @@ internal class VertexPostProcessing {
         shaderVariablesVertexBehind: ShaderVariables,
         weight: Float
     ): ShaderVariables {
+        // Note: In clip space, we interpolate linearly regardless of the interpolation
+        // used by the rasterizer in viewport space.
         val interpolatedShaderVariables = ShaderVariables()
         shaderVariablesVertexInFront.floatKeys.forEach { key ->
             val v0 = shaderVariablesVertexInFront.getFloat(key).value
