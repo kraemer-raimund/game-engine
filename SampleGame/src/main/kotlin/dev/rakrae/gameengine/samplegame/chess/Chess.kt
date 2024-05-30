@@ -3,8 +3,6 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
-import dev.rakrae.gameengine.graphics.RenderTexture
-import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -17,7 +15,6 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
-import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
@@ -28,36 +25,22 @@ class Chess : Game() {
 
     override val scene: Scene by lazy {
         val level = ChessExampleLevel()
-        val playerCamera = Camera(
-            viewportOffsetNormalized = Vec2f(0f, 0.05f),
-            viewportScaleNormalized = Vec2f(1f, 0.9f)
-        ).apply {
-            postProcessingShaders.add(BuiltinShaders.PostProcessing.gammaCorrection())
-        }
         val cameras = listOf(
-            playerCamera,
             Camera(
-                viewportOffsetNormalized = Vec2f(0.85f, 0.1f),
-                viewportScaleNormalized = Vec2f(0.1f, 0.2f)
-            ),
-            Camera(horizontalFovRadians = 0.5f * PI.toFloat()).apply {
-                renderTexture = RenderTexture(0)
-                postProcessingShaders.add(BuiltinShaders.PostProcessing.depthOfField(effectStrength = 4f))
-                postProcessingShaders.add(BuiltinShaders.PostProcessing.depthDarkening)
+                viewportOffsetNormalized = Vec2f(0f, 0.0f),
+                viewportScaleNormalized = Vec2f(1f, 1f)
+            ).apply {
+                //postProcessingShaders.add(BuiltinShaders.PostProcessing.gammaCorrection())
             }
         )
         Scene(
             EnvironmentAttributes(
-                ambientColor = Color.yellow * 0.1f,
-                ambientIntensityMultiplier = 1.1f
+                ambientColor = Color.black,
+                ambientIntensityMultiplier = 1.0f
             ),
             cameras,
             level.nodes,
-            sunLightDirection = Vec3f(
-                x = sin(GameTime.elapsedTime * 0.5f),
-                y = sin(GameTime.elapsedTime * 0.5f),
-                z = cos(GameTime.elapsedTime * 0.5f)
-            ).normalized
+            sunLightDirection = Vec3f.one
         )
     }
 
@@ -69,12 +52,6 @@ class Chess : Game() {
         startFpsCounterCoroutine()
 
         scene.cameras[0].translate(Vec3f(0f, 1.8f, 0f))
-
-        scene.cameras[1].translate(Vec3f(0f, 4f, -2f))
-        scene.cameras[1].rotate(Vec3f(-0.35f * PI.toFloat(), 0f, 0f))
-
-        scene.cameras[2].translate(Vec3f(1f, 2f, 1f))
-        scene.cameras[2].rotate(Vec3f(-0.15f * PI.toFloat(), 0.05f * PI.toFloat(), 0f))
     }
 
     override suspend fun onTick() {
@@ -90,9 +67,9 @@ class Chess : Game() {
         mainCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
 
         scene.sunLightDirection = Vec3f(
-            x = sin(GameTime.elapsedTime * 0.5f),
-            y = sin(GameTime.elapsedTime * 0.5f),
-            z = cos(GameTime.elapsedTime * 0.5f)
+            x = sin(GameTime.tickTime * 0.5f),
+            y = 2f,
+            z = cos(GameTime.tickTime * 0.5f)
         ).normalized
     }
 

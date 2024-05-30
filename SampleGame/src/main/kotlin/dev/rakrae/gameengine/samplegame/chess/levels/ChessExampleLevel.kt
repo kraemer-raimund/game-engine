@@ -4,13 +4,11 @@ import dev.rakrae.gameengine.assets.AssetLoader
 import dev.rakrae.gameengine.graphics.BitmapTexture
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
-import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
 import dev.rakrae.gameengine.scene.RenderComponent
-import kotlin.math.PI
 
 class ChessExampleLevel {
 
@@ -130,22 +128,6 @@ class ChessExampleLevel {
                     ),
                     fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
-                )
-            ),
-            dev.rakrae.gameengine.scene.Node(
-                renderComponent = RenderComponent(
-                    mesh = AssetLoader().loadMesh("/assets/plane.obj"),
-                    position = Vec3f(2f, 1f, 3f),
-                    rotationEulerRad = Vec3f(-0.5f * PI.toFloat(), -0.25f * PI.toFloat(), PI.toFloat()),
-                    scale = Vec3f(1f, 1f, 1f),
-                    material = Material(
-                        albedo = RenderTexture(0),
-                        glossiness = 1f,
-                        uvScale = Vec2f(1f, 1f)
-                    ),
-                    fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
-                    vertexShader = BuiltinShaders.Material.standardPBR.vertexShader,
-                    deferredShader = BuiltinShaders.Deferred.outline(2, Color(80u, 80u, 80u, 255u))
                 )
             )
         )
