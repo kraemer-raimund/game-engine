@@ -70,7 +70,7 @@ internal class Renderer {
                         builtinMatrixV = viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
-                        sunLightDirection = scene.sunLightDirection.toVec4(),
+                        sunLightDirection = scene.sunLightDirection.toVec4(0f),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )
@@ -111,7 +111,7 @@ internal class Renderer {
                         builtinMatrixV = viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
-                        sunLightDirection = scene.sunLightDirection.toVec4(),
+                        sunLightDirection = scene.sunLightDirection.toVec4(0f),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )

@@ -68,7 +68,7 @@ class Chess : Game() {
 
         scene.sunLightDirection = Vec3f(
             x = sin(GameTime.tickTime * 0.5f),
-            y = 2f,
+            y = -2f,
             z = cos(GameTime.tickTime * 0.5f)
         ).normalized
     }

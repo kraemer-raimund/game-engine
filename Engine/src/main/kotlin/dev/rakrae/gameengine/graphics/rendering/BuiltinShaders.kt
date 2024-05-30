@@ -134,7 +134,10 @@ private class PBRFragmentShader : FragmentShader {
         ambientColor: Color,
         ambientMultiplier: Float
     ): Color {
-        val lambertian = (normal.normalized dot lightDir.normalized)
+        // Note: We negate the light direction because the lambertian reflection model expects the
+        // vector go *from* the surface *to* the light source (in this case, since it is a
+        // directional light, simply from the surface in the direction of the light).
+        val lambertian = (normal.normalized dot (lightDir * -1).normalized)
             .coerceIn(0f..1f)
         val litFragColor = (ambientColor + unlitFragColor * lambertian) * ambientMultiplier
         return litFragColor.copy(a = unlitFragColor.a)
