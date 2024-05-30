@@ -1,6 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
-import dev.rakrae.gameengine.graphics.Vertex
+import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.math.Vec4f
 
 interface VertexShader {
@@ -14,7 +14,7 @@ interface VertexShader {
      * the necessary matrices for transforming into clip space, but optionally user-defined
      * inputs can be passed as well.
      */
-    fun process(vertex: Vertex, inputs: VertexShaderInput): VertexShaderOutput
+    fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput
 }
 
 class VertexShaderOutput(

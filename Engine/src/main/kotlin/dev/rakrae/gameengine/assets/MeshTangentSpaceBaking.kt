@@ -1,7 +1,6 @@
 package dev.rakrae.gameengine.assets
 
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Vec3f
 
 internal object MeshTangentSpaceBaking {
@@ -23,7 +22,7 @@ internal object MeshTangentSpaceBaking {
      * - [https://web.archive.org/web/20110708081637/http://www.terathon.com/code/tangent.html](https://web.archive.org/web/20110708081637/http://www.terathon.com/code/tangent.html)
      * - [https://gamedev.stackexchange.com/a/68617/71768](https://gamedev.stackexchange.com/a/68617/71768)
      */
-    private fun bakeTangentSpace(triangle: Triangle): Triangle {
+    private fun bakeTangentSpace(triangle: Mesh.Triangle): Mesh.Triangle {
         val (v0, v1, v2) = triangle
 
         val p0 = v0.position.toVec3f()
@@ -65,7 +64,7 @@ internal object MeshTangentSpaceBaking {
         val b1 = (v1.normal cross t1).normalized
         val b2 = (v2.normal cross t2).normalized
 
-        return Triangle(
+        return Mesh.Triangle(
             v0.copy(
                 normal = v0.normal.normalized,
                 tangent = t0,

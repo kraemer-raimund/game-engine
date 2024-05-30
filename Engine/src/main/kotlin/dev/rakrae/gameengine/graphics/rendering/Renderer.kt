@@ -166,9 +166,9 @@ internal class Renderer {
                                 framebuffer,
                                 zBuffer,
                                 wComponents = RenderContext.WComponents(
-                                    triangleClipSpace.v0.position.w,
-                                    triangleClipSpace.v1.position.w,
-                                    triangleClipSpace.v2.position.w
+                                    triangleClipSpace.vertexPos0.w,
+                                    triangleClipSpace.vertexPos1.w,
+                                    triangleClipSpace.vertexPos2.w
                                 ),
                                 projectionViewModelMatrix = projectionMatrix * modelViewMatrix
                             )
@@ -179,7 +179,6 @@ internal class Renderer {
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
                                 vertexProcessingOutput.triangleShaderVariables,
-                                triangleObjectSpace.normal,
                                 renderComponent.material,
                                 renderTexture,
                                 renderComponent.fragmentShader,

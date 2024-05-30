@@ -10,16 +10,17 @@ internal class Rasterizer {
     fun rasterize(
         triangle: Triangle,
         triangleShaderVariables: TriangleShaderVariables,
-        normalWorldSpace: Vec3f,
         material: Material,
         renderTexture: Bitmap?,
         fragmentShader: FragmentShader,
         renderContext: RenderContext
     ) {
         with(renderContext) {
-            val triangle2i = arrayOf(triangle.v0, triangle.v1, triangle.v2)
-                .map { Vec2i(it.position.x.toInt(), it.position.y.toInt()) }
-                .let { Triangle2i(it[0], it[1], it[2]) }
+            val triangle2i = Triangle2i(
+                with(triangle.vertexPos0) { Vec2i(x.toInt(), y.toInt()) },
+                with(triangle.vertexPos1) { Vec2i(x.toInt(), y.toInt()) },
+                with(triangle.vertexPos2) { Vec2i(x.toInt(), y.toInt()) }
+            )
             val boundingBox = AABB2i
                 .calculateBoundingBox(triangle2i)
                 .clampWithin(framebuffer.imageBounds())
@@ -47,8 +48,6 @@ internal class Rasterizer {
                                 1f / interpolatedW
                             ),
                             renderContext = renderContext,
-                            interpolatedNormal = interpolateNormal(triangle, barycentricCoordinates),
-                            faceNormalWorldSpace = normalWorldSpace,
                             material = material,
                             renderTexture = renderTexture,
                             shaderVariables = interpolate(
@@ -146,9 +145,9 @@ internal class Rasterizer {
         triangle: Triangle,
         barycentricCoordinates: BarycentricCoordinates
     ): Float {
-        val z1 = triangle.v0.position.toVec3f().z
-        val z2 = triangle.v1.position.toVec3f().z
-        val z3 = triangle.v2.position.toVec3f().z
+        val z1 = triangle.vertexPos0.z
+        val z2 = triangle.vertexPos1.z
+        val z3 = triangle.vertexPos2.z
         val b = barycentricCoordinates
         val interpolatedZ = z1 * b.a1 + z2 * b.a2 + z3 * b.a3
         return interpolatedZ.ndcToDepth()
@@ -159,21 +158,6 @@ internal class Rasterizer {
      */
     private fun Float.ndcToDepth(): Float {
         return (this + 1f) * 0.5f
-    }
-
-    private fun interpolateNormal(
-        triangle: Triangle,
-        barycentricCoordinates: BarycentricCoordinates
-    ): Vec3f {
-        val n1 = triangle.v0.normal
-        val n2 = triangle.v1.normal
-        val n3 = triangle.v2.normal
-        val b = barycentricCoordinates
-        return Vec3f(
-            n1.x * b.a1 + n2.x * b.a2 + n3.x * b.a3,
-            n1.y * b.a1 + n2.y * b.a2 + n3.y * b.a3,
-            n1.z * b.a1 + n2.z * b.a2 + n3.z * b.a3
-        )
     }
 
     private fun BarycentricCoordinates.toPerspectiveCorrectBarycentric(wComponents: RenderContext.WComponents): BarycentricCoordinates {

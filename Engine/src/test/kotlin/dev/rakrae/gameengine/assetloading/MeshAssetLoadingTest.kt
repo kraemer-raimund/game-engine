@@ -3,8 +3,6 @@ package dev.rakrae.gameengine.assetloading
 import dev.rakrae.gameengine.TestTag
 import dev.rakrae.gameengine.assets.*
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 import org.assertj.core.api.Assertions.*
@@ -148,44 +146,44 @@ internal class MeshAssetLoadingTest {
         fun `tangent and bitangent are perpendicular to each other and to the normal`() {
             val meshBeforeBakingTangentSpace = Mesh(
                 listOf(
-                    Triangle(
-                        v0 = Vertex(
+                    Mesh.Triangle(
+                        v0 = Mesh.Vertex(
                             position = Vec4f(x = 123.45f, y = -200.0f, z = 0.0f, w = 1.0f),
                             textureCoordinates = Vec3f(x = 0.1f, y = 0.6f, z = 0.0f),
                             normal = Vec3f(x = 0.0f, y = 0.0f, z = 1.74f),
                             tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
                             bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
                         ),
-                        v1 = Vertex(
+                        v1 = Mesh.Vertex(
                             position = Vec4f(x = 0.0f, y = -0.0f, z = -42.0f, w = 1.0f),
                             textureCoordinates = Vec3f(x = 0.8f, y = 0.9f, z = 0.0f),
                             normal = Vec3f(x = 0.0f, y = 0.0f, z = 1.74f),
                             tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
                             bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
                         ),
-                        v2 = Vertex(
+                        v2 = Mesh.Vertex(
                             position = Vec4f(x = 69.42f, y = -200.0f, z = 0.0f, w = 1.0f),
                             textureCoordinates = Vec3f(x = 0.5f, y = 0.72f, z = 0.0f),
                             normal = Vec3f(x = -300.0f, y = 0.7f, z = 123.456f),
                             tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
                             bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
                         )
-                    ), Triangle(
-                        v0 = Vertex(
+                    ), Mesh.Triangle(
+                        v0 = Mesh.Vertex(
                             position = Vec4f(x = 13.37f, y = -12.0f, z = 0.0f, w = 1.0f),
                             textureCoordinates = Vec3f(x = 0.0f, y = 1.0f, z = 0.0f),
                             normal = Vec3f(x = 08.0f, y = 0.42f, z = 13.37f),
                             tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
                             bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
                         ),
-                        v1 = Vertex(
+                        v1 = Mesh.Vertex(
                             position = Vec4f(x = 0.0f, y = 7.0f, z = -42.0f, w = 1.0f),
                             textureCoordinates = Vec3f(x = 0.5f, y = 0.0f, z = 0.0f),
                             normal = Vec3f(x = 0.2f, y = 0.0f, z = 5.0f),
                             tangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f),
                             bitangent = Vec3f(x = 0.0f, y = 0.0f, z = 0.0f)
                         ),
-                        v2 = Vertex(
+                        v2 = Mesh.Vertex(
                             position = Vec4f(x = 1.23f, y = 45.67f, z = -89.1f, w = 1.0f),
                             textureCoordinates = Vec3f(x = 1.0f, y = 1.0f, z = 0.0f),
                             normal = Vec3f(x = 1.0f, y = 0.0f, z = 0.0f),

@@ -1,7 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -52,8 +51,7 @@ internal class VertexPostProcessing {
     }
 
     private fun shouldCull(triangleClipSpace: Triangle): Boolean {
-        val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
-        val vertexPositions = vertices.map { it.position }
+        val vertexPositions = with(triangleClipSpace) { listOf(vertexPos0, vertexPos1, vertexPos2) }
 
         // Note: If all vertices are outside the view frustum, its edges may still intersect the
         // view frustum (e.g., one vertex's x coordinate is outside the range, but another
@@ -68,8 +66,7 @@ internal class VertexPostProcessing {
     }
 
     private fun isCompletelyInsideViewFrustum(triangleClipSpace: Triangle, nearClippingPlane: Float): Boolean {
-        val vertices = with(triangleClipSpace) { listOf(v0, v1, v2) }
-        val vertexPositions = vertices.map { it.position }
+        val vertexPositions = with(triangleClipSpace) { listOf(vertexPos0, vertexPos1, vertexPos2) }
         return vertexPositions.all { pos ->
             listOf(pos.x, pos.y, pos.z)
                 .all { it > -pos.w && it < pos.w } && pos.w >= nearClippingPlane
@@ -83,11 +80,11 @@ internal class VertexPostProcessing {
      * plane into visible coordinates during perspective divide.
      */
     private fun clipNear(triangleClipSpace: Triangle, nearClippingPlane: Float): List<Triangle> {
-        val (v0, v1, v2) = with(triangleClipSpace) { listOf(v0, v1, v2) }
+        val (v0, v1, v2) = with(triangleClipSpace) { listOf(vertexPos0, vertexPos1, vertexPos2) }
 
-        val isV0InFront = v0.position.w >= nearClippingPlane
-        val isV1InFront = v1.position.w >= nearClippingPlane
-        val isV2InFront = v2.position.w >= nearClippingPlane
+        val isV0InFront = v0.w >= nearClippingPlane
+        val isV1InFront = v1.w >= nearClippingPlane
+        val isV2InFront = v2.w >= nearClippingPlane
 
         /*
         Imagine we go along the triangle's edges in counter-clockwise order, and when we cross
@@ -149,41 +146,32 @@ internal class VertexPostProcessing {
     }
 
     private fun clipLine(
-        vertexInFront: Vertex,
-        vertexBehind: Vertex,
+        vertexInFront: Vec4f,
+        vertexBehind: Vec4f,
         nearClippingPlane: Float
-    ): Vertex {
-        val line = Pair(vertexInFront, vertexBehind)
-        val w0 = vertexInFront.position.w
-        val w1 = vertexBehind.position.w
+    ): Vec4f {
+        val w0 = vertexInFront.w
+        val w1 = vertexBehind.w
         val weight = (w0 - nearClippingPlane) / (w0 - w1)
-        val clippedVertex = Vertex(
-            position = lerpPosition(line, weight, nearClippingPlane),
-            textureCoordinates = Vec3f.lerp(vertexInFront.textureCoordinates, vertexBehind.textureCoordinates, weight),
-            normal = Vec3f.lerp(vertexInFront.normal, vertexBehind.normal, weight),
-            tangent = Vec3f.lerp(vertexInFront.tangent, vertexBehind.tangent, weight),
-            bitangent = Vec3f.lerp(vertexInFront.bitangent, vertexBehind.bitangent, weight)
-        )
+        val clippedVertex = lerpPosition(vertexInFront, vertexBehind, weight, nearClippingPlane)
         return clippedVertex
     }
 
     private fun lerpPosition(
-        line: Pair<Vertex, Vertex>,
+        vertexInFront: Vec4f,
+        vertexBehind: Vec4f,
         weight: Float,
         nearClippingPlane: Float
     ): Vec4f {
-        val (vertexInFront, vertexBehind) = line
-        val posInFront = vertexInFront.position
-        val posBehind = vertexBehind.position
-        val clippedPos = Vec3f.lerp(posInFront.toVec3f(), posBehind.toVec3f(), weight)
+        val clippedPos = Vec3f.lerp(vertexInFront.toVec3f(), vertexBehind.toVec3f(), weight)
         return Vec4f(clippedPos, w = nearClippingPlane)
     }
 
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
         return Triangle(
-            triangle.v0.copy(position = applyPerspectiveDivide(triangle.v0.position)),
-            triangle.v1.copy(position = applyPerspectiveDivide(triangle.v1.position)),
-            triangle.v2.copy(position = applyPerspectiveDivide(triangle.v2.position))
+            applyPerspectiveDivide(triangle.vertexPos0),
+            applyPerspectiveDivide(triangle.vertexPos1),
+            applyPerspectiveDivide(triangle.vertexPos2)
         )
     }
 
@@ -211,9 +199,9 @@ internal class VertexPostProcessing {
      * [https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf](https://registry.khronos.org/OpenGL/specs/gl/glspec46.core.pdf)
      */
     private fun determineWindingOrder(triangleNormalizedDeviceCoordinates: Triangle): WindingOrder {
-        val v0 = with(triangleNormalizedDeviceCoordinates.v0.position) { Vec2f(x, y) }
-        val v1 = with(triangleNormalizedDeviceCoordinates.v1.position) { Vec2f(x, y) }
-        val v2 = with(triangleNormalizedDeviceCoordinates.v2.position) { Vec2f(x, y) }
+        val v0 = with(triangleNormalizedDeviceCoordinates.vertexPos0) { Vec2f(x, y) }
+        val v1 = with(triangleNormalizedDeviceCoordinates.vertexPos1) { Vec2f(x, y) }
+        val v2 = with(triangleNormalizedDeviceCoordinates.vertexPos2) { Vec2f(x, y) }
 
         val (x0, y0) = v0
         val (x1, y1) = v1
@@ -243,9 +231,9 @@ internal class VertexPostProcessing {
     ): Triangle {
         with(triangle) {
             return Triangle(
-                v0.copy(position = viewportMatrix * v0.position),
-                v1.copy(position = viewportMatrix * v1.position),
-                v2.copy(position = viewportMatrix * v2.position)
+                viewportMatrix * vertexPos0,
+                viewportMatrix * vertexPos1,
+                viewportMatrix * vertexPos2
             )
         }
     }

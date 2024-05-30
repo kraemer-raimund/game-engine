@@ -2,7 +2,6 @@ package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Material
-import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 
 data class InputFragment(
@@ -11,8 +10,6 @@ data class InputFragment(
      */
     val fragPos: Vec4f,
     val renderContext: RenderContext,
-    val interpolatedNormal: Vec3f,
-    val faceNormalWorldSpace: Vec3f,
     val material: Material,
     val renderTexture: Bitmap?,
     val shaderVariables: ShaderVariables

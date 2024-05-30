@@ -1,8 +1,6 @@
 package dev.rakrae.gameengine.assets
 
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.graphics.Vertex
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
 
@@ -57,7 +55,7 @@ internal class WavefrontObjParser {
             }
         }
 
-        val triangles: List<Triangle> = assembleTriangles(faces, vertexPositions, uvs, normals)
+        val triangles: List<Mesh.Triangle> = assembleTriangles(faces, vertexPositions, uvs, normals)
 
         return Mesh(triangles)
     }
@@ -71,14 +69,14 @@ internal class WavefrontObjParser {
         vertexPositions: List<VertexPosition>,
         uvs: List<TextureCoordinates>,
         normals: List<VertexNormal>
-    ): List<Triangle> {
+    ): List<Mesh.Triangle> {
         return faces.map { face ->
             if (face.vertices.size != 3) throw WavefrontObjParseException(
                 "Non-triangulated polygon encountered while parsing Wavefront OBJ. While non-triangle polygons " +
                         "are allowed by the file format, the current parser implementation assumes triangles only."
             )
             val vertices = face.vertices.map {
-                Vertex(
+                Mesh.Vertex(
                     position = vertexPositions[it.posIndex],
                     textureCoordinates = uvs.getOrElse(it.uvIndex) { Vec3f.zero },
                     normal = normals.getOrElse(it.normalIndex) { Vec3f.zero },
@@ -88,7 +86,7 @@ internal class WavefrontObjParser {
                     bitangent = Vec3f.zero
                 )
             }
-            Triangle(vertices[0], vertices[1], vertices[2])
+            Mesh.Triangle(vertices[0], vertices[1], vertices[2])
         }
     }
 

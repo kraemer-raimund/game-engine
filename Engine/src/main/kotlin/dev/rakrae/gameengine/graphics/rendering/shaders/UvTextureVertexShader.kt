@@ -1,6 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering.shaders
 
-import dev.rakrae.gameengine.graphics.Vertex
+import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.rendering.pipeline.ShaderVariables
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInput
@@ -10,7 +10,7 @@ import dev.rakrae.gameengine.math.Vec4f
 
 class UvTextureVertexShader : VertexShader {
 
-    override fun process(vertex: Vertex, inputs: VertexShaderInput): VertexShaderOutput {
+    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         val normalWorldSpace = inputs.model * vertex.normal.toVec4()
         val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
         val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()

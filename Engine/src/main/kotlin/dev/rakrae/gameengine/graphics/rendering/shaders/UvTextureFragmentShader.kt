@@ -37,7 +37,7 @@ class UvTextureFragmentShader : FragmentShader {
         inputFragment: InputFragment
     ): Vec3f {
         return if (normalMap == null) {
-            inputFragment.interpolatedNormal
+            Vec3f(0f, 0f, 1f)
         } else {
             val uv = inputFragment.shaderVariables.getVector("uv").value
             val uvOffset = inputFragment.material.uvOffset

@@ -1,5 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
+import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
@@ -7,7 +8,7 @@ import dev.rakrae.gameengine.math.Vec3f
 class VertexProcessing {
 
     fun process(
-        triangleObjectSpace: Triangle,
+        triangleObjectSpace: Mesh.Triangle,
         vertexShader: VertexShader,
         projection: Mat4x4f,
         modelView: Mat4x4f,
@@ -20,9 +21,9 @@ class VertexProcessing {
                 .map { vertexShader.process(it, vertexShaderInput) }
             return VertexProcessingOutput(
                 Triangle(
-                    v0.copy(position = vertexShaderOutputs[0].position),
-                    v1.copy(position = vertexShaderOutputs[1].position),
-                    v2.copy(position = vertexShaderOutputs[2].position)
+                    vertexShaderOutputs[0].position,
+                    vertexShaderOutputs[1].position,
+                    vertexShaderOutputs[2].position
                 ),
                 TriangleShaderVariables(
                     vertexShaderOutputs[0].shaderVariables,
