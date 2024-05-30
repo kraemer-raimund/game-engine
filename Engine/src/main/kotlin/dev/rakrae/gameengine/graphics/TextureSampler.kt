@@ -29,7 +29,7 @@ internal class TextureSampler(
     ): Color {
         val xInterpolated = x.roundToInt().mod(texture.width - 1)
         val yInterpolated = y.roundToInt().mod(texture.height - 1)
-        return texture.getPixel(xInterpolated, yInterpolated)
+        return texture.getPixel(xInterpolated, yInterpolated).copy(a = 255u)
     }
 
     private fun filterBilinear(
