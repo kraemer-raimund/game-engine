@@ -12,5 +12,6 @@ data class InputFragment(
     val renderContext: RenderContext,
     val material: Material,
     val renderTexture: Bitmap?,
-    val shaderVariables: ShaderVariables
+    val shaderVariables: ShaderVariables,
+    val shaderUniforms: ShaderUniforms
 )

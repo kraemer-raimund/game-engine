@@ -2,6 +2,7 @@ package dev.rakrae.gameengine.samplegame.chess
 
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
+import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.RenderTexture
 import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.input.Input
@@ -9,6 +10,7 @@ import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.levels.ChessExampleLevel
 import dev.rakrae.gameengine.scene.Camera
+import dev.rakrae.gameengine.scene.EnvironmentAttributes
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Job
@@ -42,7 +44,14 @@ class Chess : Game() {
                 postProcessingShaders.add(BuiltinShaders.PostProcessing.depthDarkening)
             }
         )
-        Scene(cameras, level.nodes)
+        Scene(
+            EnvironmentAttributes(
+                ambientColor = Color.yellow * 0.1f,
+                ambientIntensityMultiplier = 1.1f
+            ),
+            cameras,
+            level.nodes
+        )
     }
 
     private var fpsCounterCoroutine: Job? = null

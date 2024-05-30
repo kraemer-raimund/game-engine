@@ -83,13 +83,21 @@ private class PBRFragmentShader : FragmentShader {
 
         val normalTangentSpace = normalVector(normalMap, inputFragment)
         val lightDirTangentSpace = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
-        val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace)
+        val ambientColor = inputFragment.shaderUniforms.getColor(ShaderUniforms.BuiltinKeys.ambientColor)
+        val ambientLightNormalized =
+            inputFragment.shaderUniforms.getFloat(ShaderUniforms.BuiltinKeys.ambientIntensityMultiplier)
 
         val unlitFragmentColor = albedoTexture
             ?.let { color(it, inputFragment) }
             ?: inputFragment.material.color
 
-        val litFragmentColor = unlitFragmentColor * brightness
+        val litFragmentColor = light(
+            unlitFragmentColor,
+            normalTangentSpace,
+            lightDirTangentSpace,
+            ambientColor,
+            ambientLightNormalized
+        )
 
         return OutputFragment(
             fragmentColor = litFragmentColor,
@@ -114,14 +122,17 @@ private class PBRFragmentShader : FragmentShader {
         }
     }
 
-    private fun lightingBrightness(
+    private fun light(
+        unlitFragColor: Color,
         normal: Vec3f,
-        lightDir: Vec3f
-    ): Float {
-        val lightIntensity = 1f
-        val illuminationAngleNormalized = (normal.normalized dot lightDir.normalized)
+        lightDir: Vec3f,
+        ambientColor: Color,
+        ambientMultiplier: Float
+    ): Color {
+        val lambertian = (normal.normalized dot lightDir.normalized)
             .coerceIn(0f..1f)
-        return (0.4f + illuminationAngleNormalized * lightIntensity).coerceIn(0f, 1f)
+        val litFragColor = (ambientColor + unlitFragColor * lambertian) * ambientMultiplier
+        return litFragColor.copy(a = unlitFragColor.a)
     }
 
     private fun color(
@@ -149,15 +160,6 @@ private class PBRFragmentShader : FragmentShader {
         // Normal maps use values between -1 and 1.
         val remapped = colorAsVector * 2f - Vec3f.one
         return remapped.normalized
-    }
-
-    private operator fun Color.times(value: Float): Color {
-        return Color(
-            (value * r.toInt()).toInt().toUByte(),
-            (value * g.toInt()).toInt().toUByte(),
-            (value * b.toInt()).toInt().toUByte(),
-            255u
-        )
     }
 }
 

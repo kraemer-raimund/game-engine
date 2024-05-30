@@ -75,6 +75,12 @@ internal class Renderer {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
                     val modelViewMatrix = viewMatrix * modelMatrix
+                    val shaderUniforms = ShaderUniforms().apply {
+                        val ambientColor = scene.environmentAttributes.ambientColor
+                        val ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
+                        setColor(ShaderUniforms.BuiltinKeys.ambientColor, ambientColor)
+                        setFloat(ShaderUniforms.BuiltinKeys.ambientIntensityMultiplier, ambientIntensityMultiplier)
+                    }
                     render(
                         renderComponent,
                         framebuffer,
@@ -83,7 +89,8 @@ internal class Renderer {
                         modelViewMatrix,
                         projectionMatrix,
                         viewportMatrix,
-                        clippingPlanes
+                        clippingPlanes,
+                        shaderUniforms
                     )
                 }
             }
@@ -108,6 +115,12 @@ internal class Renderer {
                         framebuffer.height,
                         initValue = Float.POSITIVE_INFINITY
                     )
+                    val shaderUniforms = ShaderUniforms().apply {
+                        val ambientColor = scene.environmentAttributes.ambientColor
+                        val ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
+                        setColor(ShaderUniforms.BuiltinKeys.ambientColor, ambientColor)
+                        setFloat(ShaderUniforms.BuiltinKeys.ambientIntensityMultiplier, ambientIntensityMultiplier)
+                    }
                     render(
                         renderComponent,
                         deferredFramebuffer,
@@ -116,7 +129,8 @@ internal class Renderer {
                         modelViewMatrix,
                         projectionMatrix,
                         viewportMatrix,
-                        clippingPlanes
+                        clippingPlanes,
+                        shaderUniforms
                     )
                     deferredRendering.postProcess(
                         renderComponent.deferredShader!!,
@@ -138,7 +152,8 @@ internal class Renderer {
         modelViewMatrix: Mat4x4f,
         projectionMatrix: Mat4x4f,
         viewportMatrix: Mat4x4f,
-        clippingPlanes: ClippingPlanes
+        clippingPlanes: ClippingPlanes,
+        shaderUniforms: ShaderUniforms
     ) = coroutineScope {
         for (trianglesChunk in renderComponent.mesh.triangles.chunked(200)) {
             launch {
@@ -179,6 +194,7 @@ internal class Renderer {
                             rasterizer.rasterize(
                                 triangleViewportCoordinates,
                                 vertexProcessingOutput.triangleShaderVariables,
+                                shaderUniforms,
                                 renderComponent.material,
                                 renderTexture,
                                 renderComponent.fragmentShader,

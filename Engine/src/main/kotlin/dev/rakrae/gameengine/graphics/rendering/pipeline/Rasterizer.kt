@@ -10,6 +10,7 @@ internal class Rasterizer {
     fun rasterize(
         triangle: Triangle,
         triangleShaderVariables: TriangleShaderVariables,
+        shaderUniforms: ShaderUniforms,
         material: Material,
         renderTexture: Bitmap?,
         fragmentShader: FragmentShader,
@@ -54,7 +55,8 @@ internal class Rasterizer {
                                 triangleShaderVariables,
                                 renderContext.wComponents,
                                 barycentricCoordinates
-                            )
+                            ),
+                            shaderUniforms = shaderUniforms
                         )
                         val outputFragment = fragmentShader.process(inputFragment)
                         framebuffer.setPixel(x, y, outputFragment.fragmentColor)
