@@ -3,7 +3,6 @@ package dev.rakrae.gameengine.core
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.yield
 
 internal class GameLoop(
     val onStart: suspend () -> Unit,
@@ -25,19 +24,17 @@ internal class GameLoop(
             launch {
                 onStart()
                 while (isRunning) {
+                    onRender()
                     if (isPaused) {
                         onPause()
-                        while (isPaused) yield()
+                        while (isPaused) {
+                            onRender()
+                        }
                         onResume()
                     }
                     onTick()
                 }
                 onStop()
-            }
-            launch {
-                while (isRunning) {
-                    onRender()
-                }
             }
         }
     }
