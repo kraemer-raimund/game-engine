@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 internal class Renderer {
 
-    private var renderTextures = List(16) {
+    private var renderTextures = List(4) {
         DoubleBufferedBitmap(512, 512, Color.black)
     }
     private val spriteRenderer = SpriteRenderer()

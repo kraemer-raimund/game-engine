@@ -49,7 +49,7 @@ class BitmapTexture(filePath: String, convertToLinearSpace: Boolean = false) : T
 data class RenderTexture(val index: Int) : Texture() {
 
     init {
-        if (index !in 0..15) {
+        if (index !in allowedIndices) {
             throw IndexOutOfBoundsException(
                 "Render texture index mus be in the range ${allowedIndices.first} " +
                         "to ${allowedIndices.last} (exclusive)."
@@ -58,6 +58,6 @@ data class RenderTexture(val index: Int) : Texture() {
     }
 
     companion object {
-        val allowedIndices = 0..15
+        val allowedIndices = 0..3
     }
 }
