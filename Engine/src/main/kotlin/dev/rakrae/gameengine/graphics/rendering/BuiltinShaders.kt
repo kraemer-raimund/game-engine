@@ -121,7 +121,7 @@ private class PBRFragmentShader : FragmentShader {
             val uvOffset = inputFragment.material.uvOffset
             val uvScale = inputFragment.material.uvScale
 
-            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+            val textureSampler = TextureSampler(TextureSampler.Filter.NEAREST, uvOffset, uvScale)
             val normalColor = textureSampler.sample(normalMap, Vec2f(uv.x, uv.y))
             return normalColor.toNormal()
         }
@@ -151,7 +151,7 @@ private class PBRFragmentShader : FragmentShader {
             val uvOffset = inputFragment.material.uvOffset
             val uvScale = inputFragment.material.uvScale
 
-            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+            val textureSampler = TextureSampler(TextureSampler.Filter.NEAREST, uvOffset, uvScale)
             textureSampler.sample(texture, Vec2f(uv.x, uv.y))
         }
     }
