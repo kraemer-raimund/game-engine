@@ -9,8 +9,8 @@ import kotlin.math.sqrt
 
 object BuiltinShaders {
     object Material {
-        val unlit: Shader = Shader(DefaultVertexShader(), UnlitFragmentShader())
         val standardPBR: Shader = Shader(PBRVertexShader(), PBRFragmentShader())
+        val unlit: Shader = Shader(UnlitVertexShader(), UnlitFragmentShader())
     }
 
     object PostProcessing {
@@ -23,6 +23,10 @@ object BuiltinShaders {
         }
 
         val depthDarkening: PostProcessingShader = DepthDarkeningPostProcessingShader()
+
+        fun outline(thickness: Int, threshold: Float, outlineColor: Color): PostProcessingShader {
+            return OutlinePostProcessingShader(thickness, threshold, outlineColor)
+        }
     }
 
     object Deferred {
@@ -34,7 +38,130 @@ object BuiltinShaders {
 
 class Shader(val vertexShader: VertexShader, val fragmentShader: FragmentShader)
 
-private class DefaultVertexShader : VertexShader {
+private class PBRVertexShader : VertexShader {
+
+    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
+        val normalWorldSpace = inputs.model * vertex.normal.toVec4()
+        val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
+        val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
+        val tbnMatrix = Mat4x4f(
+            tangentWorldSpace,
+            bitangentWorldSpace,
+            normalWorldSpace,
+            Vec4f(0f, 0f, 0f, 1f)
+        )
+        // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
+        val tbnMatrixInv = tbnMatrix.transpose
+        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
+
+        return VertexShaderOutput(
+            position = inputs.projection * inputs.modelView * vertex.position,
+            shaderVariables = ShaderVariables().apply {
+                setVector(
+                    "uv", ShaderVariables.VectorVariable(
+                        vertex.textureCoordinates,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+                setVector(
+                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
+                        lightDirTangentSpace,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+            }
+        )
+    }
+
+}
+
+private class PBRFragmentShader : FragmentShader {
+
+    override fun process(inputFragment: InputFragment): OutputFragment {
+        val normalMap = inputFragment.material.normal?.bitmap
+        val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
+
+        val normalTangentSpace = normalVector(normalMap, inputFragment)
+        val lightDirTangentSpace = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
+        val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace)
+
+        val unlitFragmentColor = albedoTexture
+            ?.let { color(it, inputFragment) }
+            ?: inputFragment.material.color
+
+        val litFragmentColor = unlitFragmentColor * brightness
+
+        return OutputFragment(
+            fragmentColor = litFragmentColor,
+            depth = inputFragment.fragPos.z
+        )
+    }
+
+    private fun normalVector(
+        normalMap: Bitmap?,
+        inputFragment: InputFragment
+    ): Vec3f {
+        return if (normalMap == null) {
+            Vec3f(0f, 0f, 1f)
+        } else {
+            val uv = inputFragment.shaderVariables.getVector("uv").value
+            val uvOffset = inputFragment.material.uvOffset
+            val uvScale = inputFragment.material.uvScale
+
+            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+            val normalColor = textureSampler.sample(normalMap, Vec2f(uv.x, uv.y))
+            return normalColor.toNormal()
+        }
+    }
+
+    private fun lightingBrightness(
+        normal: Vec3f,
+        lightDir: Vec3f
+    ): Float {
+        val lightIntensity = 1f
+        val illuminationAngleNormalized = (normal.normalized dot lightDir.normalized)
+            .coerceIn(0f..1f)
+        return (0.4f + illuminationAngleNormalized * lightIntensity).coerceIn(0f, 1f)
+    }
+
+    private fun color(
+        texture: Bitmap?,
+        inputFragment: InputFragment
+    ): Color {
+        return if (texture == null) {
+            inputFragment.material.color
+        } else {
+            val uv = inputFragment.shaderVariables.getVector("uv").value
+            val uvOffset = inputFragment.material.uvOffset
+            val uvScale = inputFragment.material.uvScale
+
+            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+            textureSampler.sample(texture, Vec2f(uv.x, uv.y))
+        }
+    }
+
+    private fun Color.toNormal(): Vec3f {
+        val colorAsVector = Vec3f(
+            r.toInt() / Byte.MAX_VALUE.toFloat(),
+            g.toInt() / Byte.MAX_VALUE.toFloat(),
+            b.toInt() / Byte.MAX_VALUE.toFloat()
+        )
+        // Normal maps use values between -1 and 1.
+        val remapped = colorAsVector * 2f - Vec3f.one
+        return remapped.normalized
+    }
+
+    private operator fun Color.times(value: Float): Color {
+        return Color(
+            (value * r.toInt()).toInt().toUByte(),
+            (value * g.toInt()).toInt().toUByte(),
+            (value * b.toInt()).toInt().toUByte(),
+            255u
+        )
+    }
+}
+
+private class UnlitVertexShader : VertexShader {
 
     override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         return VertexShaderOutput(
@@ -46,6 +173,7 @@ private class DefaultVertexShader : VertexShader {
 
 
 private class UnlitFragmentShader : FragmentShader {
+
     override fun process(inputFragment: InputFragment): OutputFragment {
         return OutputFragment(
             fragmentColor = inputFragment.material.color,
@@ -200,128 +328,5 @@ private class OutlineDeferredShader(
             }
         }
         return null
-    }
-}
-
-private class PBRVertexShader : VertexShader {
-
-    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
-        val normalWorldSpace = inputs.model * vertex.normal.toVec4()
-        val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
-        val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
-        val tbnMatrix = Mat4x4f(
-            tangentWorldSpace,
-            bitangentWorldSpace,
-            normalWorldSpace,
-            Vec4f(0f, 0f, 0f, 1f)
-        )
-        // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
-        val tbnMatrixInv = tbnMatrix.transpose
-        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
-
-        return VertexShaderOutput(
-            position = inputs.projection * inputs.modelView * vertex.position,
-            shaderVariables = ShaderVariables().apply {
-                setVector(
-                    "uv", ShaderVariables.VectorVariable(
-                        vertex.textureCoordinates,
-                        ShaderVariables.Interpolation.PERSPECTIVE
-                    )
-                )
-                setVector(
-                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
-                        lightDirTangentSpace,
-                        ShaderVariables.Interpolation.PERSPECTIVE
-                    )
-                )
-            }
-        )
-    }
-
-}
-
-private class PBRFragmentShader : FragmentShader {
-
-    override fun process(inputFragment: InputFragment): OutputFragment {
-        val normalMap = inputFragment.material.normal?.bitmap
-        val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
-
-        val normalTangentSpace = normalVector(normalMap, inputFragment)
-        val lightDirTangentSpace = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
-        val brightness = lightingBrightness(normalTangentSpace, lightDirTangentSpace)
-
-        val unlitFragmentColor = albedoTexture
-            ?.let { color(it, inputFragment) }
-            ?: inputFragment.material.color
-
-        val litFragmentColor = unlitFragmentColor * brightness
-
-        return OutputFragment(
-            fragmentColor = litFragmentColor,
-            depth = inputFragment.fragPos.z
-        )
-    }
-
-    private fun normalVector(
-        normalMap: Bitmap?,
-        inputFragment: InputFragment
-    ): Vec3f {
-        return if (normalMap == null) {
-            Vec3f(0f, 0f, 1f)
-        } else {
-            val uv = inputFragment.shaderVariables.getVector("uv").value
-            val uvOffset = inputFragment.material.uvOffset
-            val uvScale = inputFragment.material.uvScale
-
-            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
-            val normalColor = textureSampler.sample(normalMap, Vec2f(uv.x, uv.y))
-            return normalColor.toNormal()
-        }
-    }
-
-    private fun lightingBrightness(
-        normal: Vec3f,
-        lightDir: Vec3f
-    ): Float {
-        val lightIntensity = 1f
-        val illuminationAngleNormalized = (normal.normalized dot lightDir.normalized)
-            .coerceIn(0f..1f)
-        return (0.4f + illuminationAngleNormalized * lightIntensity).coerceIn(0f, 1f)
-    }
-
-    private fun color(
-        texture: Bitmap?,
-        inputFragment: InputFragment
-    ): Color {
-        return if (texture == null) {
-            inputFragment.material.color
-        } else {
-            val uv = inputFragment.shaderVariables.getVector("uv").value
-            val uvOffset = inputFragment.material.uvOffset
-            val uvScale = inputFragment.material.uvScale
-
-            val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
-            textureSampler.sample(texture, Vec2f(uv.x, uv.y))
-        }
-    }
-
-    private fun Color.toNormal(): Vec3f {
-        val colorAsVector = Vec3f(
-            r.toInt() / Byte.MAX_VALUE.toFloat(),
-            g.toInt() / Byte.MAX_VALUE.toFloat(),
-            b.toInt() / Byte.MAX_VALUE.toFloat()
-        )
-        // Normal maps use values between -1 and 1.
-        val remapped = colorAsVector * 2f - Vec3f.one
-        return remapped.normalized
-    }
-
-    private operator fun Color.times(value: Float): Color {
-        return Color(
-            (value * r.toInt()).toInt().toUByte(),
-            (value * g.toInt()).toInt().toUByte(),
-            (value * b.toInt()).toInt().toUByte(),
-            255u
-        )
     }
 }
