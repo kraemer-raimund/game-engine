@@ -20,22 +20,20 @@ internal class GameLoop(
     fun start() {
         isRunning = true
 
-        GlobalScope.run {
-            launch {
-                onStart()
-                while (isRunning) {
-                    onRender()
-                    if (isPaused) {
-                        onPause()
-                        while (isPaused) {
-                            onRender()
-                        }
-                        onResume()
+        GlobalScope.launch {
+            onStart()
+            while (isRunning) {
+                onRender()
+                if (isPaused) {
+                    onPause()
+                    while (isPaused) {
+                        onRender()
                     }
-                    onTick()
+                    onResume()
                 }
-                onStop()
+                onTick()
             }
+            onStop()
         }
     }
 
