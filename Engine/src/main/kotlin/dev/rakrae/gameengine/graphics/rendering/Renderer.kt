@@ -166,12 +166,13 @@ internal class Renderer {
                         modelMatrix,
                         lightDirWorldSpace
                     )
-                    val clippedTriangles = vertexPostProcessing.clip(
+                    val clippingResults = vertexPostProcessing.clip(
                         vertexProcessingOutput.triangleClipSpace,
+                        vertexProcessingOutput.triangleShaderVariables,
                         clippingPlanes
                     )
 
-                    clippedTriangles.forEach { triangleClipSpace ->
+                    clippingResults.forEach { (triangleClipSpace, triangleShaderVariables) ->
                         val triangleViewportCoordinates = vertexPostProcessing.toViewport(
                             triangleClipSpace,
                             viewportMatrix
@@ -192,13 +193,13 @@ internal class Renderer {
                                 ?.let { renderTextures[it.index] }
                                 ?.frontBuffer
                             rasterizer.rasterize(
-                                triangleViewportCoordinates,
-                                vertexProcessingOutput.triangleShaderVariables,
-                                shaderUniforms,
-                                renderComponent.material,
-                                renderTexture,
-                                renderComponent.fragmentShader,
-                                renderContext
+                                triangle = triangleViewportCoordinates,
+                                triangleShaderVariables = triangleShaderVariables,
+                                shaderUniforms = shaderUniforms,
+                                material = renderComponent.material,
+                                renderTexture = renderTexture,
+                                fragmentShader = renderComponent.fragmentShader,
+                                renderContext = renderContext
                             )
                         }
                     }

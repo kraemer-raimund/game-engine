@@ -1,10 +1,7 @@
 package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec2f
-import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.math.Vec4f
+import dev.rakrae.gameengine.math.*
 
 internal class VertexPostProcessing {
 
@@ -42,11 +39,18 @@ internal class VertexPostProcessing {
      * - [https://stackoverflow.com/a/31687061/3726133](https://stackoverflow.com/a/31687061/3726133)
      * - [https://gamedev.stackexchange.com/a/65798/71768](https://gamedev.stackexchange.com/a/65798/71768)
      */
-    fun clip(triangleClipSpace: Triangle, clippingPlanes: ClippingPlanes): List<Triangle> {
+    fun clip(
+        triangleClipSpace: Triangle,
+        triangleShaderVariables: TriangleShaderVariables,
+        clippingPlanes: ClippingPlanes
+    ): List<Pair<Triangle, TriangleShaderVariables>> {
+        val triangle = triangleClipSpace
+        val variables = triangleShaderVariables
+        val nearPlane = clippingPlanes.near
         return when {
-            isCompletelyInsideViewFrustum(triangleClipSpace, clippingPlanes.near) -> listOf(triangleClipSpace)
-            shouldCull(triangleClipSpace) -> emptyList()
-            else -> clipNear(triangleClipSpace, clippingPlanes.near)
+            isCompletelyInsideViewFrustum(triangle, nearPlane) -> listOf(Pair(triangle, variables))
+            shouldCull(triangle) -> emptyList()
+            else -> clipNear(triangle, variables, nearPlane)
         }
     }
 
@@ -79,8 +83,13 @@ internal class VertexPostProcessing {
      * near clipping plane it is necessary in order to prevent spilling vertices from behind the
      * plane into visible coordinates during perspective divide.
      */
-    private fun clipNear(triangleClipSpace: Triangle, nearClippingPlane: Float): List<Triangle> {
+    private fun clipNear(
+        triangleClipSpace: Triangle,
+        triangleShaderVariables: TriangleShaderVariables,
+        nearClippingPlane: Float
+    ): List<Pair<Triangle, TriangleShaderVariables>> {
         val (v0, v1, v2) = with(triangleClipSpace) { listOf(vertexPos0, vertexPos1, vertexPos2) }
+        val (sv0, sv1, sv2) = triangleShaderVariables
 
         val isV0InFront = v0.w >= nearClippingPlane
         val isV1InFront = v1.w >= nearClippingPlane
@@ -99,43 +108,90 @@ internal class VertexPostProcessing {
         */
         return when {
             isV0InFront && !isV1InFront && !isV2InFront -> {
-                val newV1 = clipLine(v0, v1, nearClippingPlane)
-                val newV2 = clipLine(v0, v2, nearClippingPlane)
-                listOf(Triangle(v0, newV1, newV2))
+                val (newV1, newSV1) = clipLine(v0, v1, sv0, sv1, nearClippingPlane)
+                val (newV2, newSV2) = clipLine(v0, v2, sv0, sv2, nearClippingPlane)
+                listOf(
+                    Pair(
+                        Triangle(v0, newV1, newV2),
+                        TriangleShaderVariables(sv0, newSV1, newSV2)
+                    )
+                )
             }
 
             !isV0InFront && isV1InFront && !isV2InFront -> {
-                val newV0 = clipLine(v1, v0, nearClippingPlane)
-                val newV2 = clipLine(v1, v2, nearClippingPlane)
-                listOf(Triangle(newV0, v1, newV2))
+                val (newV0, newSV0) = clipLine(v1, v0, sv1, sv0, nearClippingPlane)
+                val (newV2, newSV2) = clipLine(v1, v2, sv1, sv2, nearClippingPlane)
+                listOf(
+                    Pair(
+                        Triangle(newV0, v1, newV2),
+                        TriangleShaderVariables(newSV0, sv1, newSV2)
+                    )
+                )
             }
 
             !isV0InFront && !isV1InFront && isV2InFront -> {
-                val newV0 = clipLine(v2, v0, nearClippingPlane)
-                val newV1 = clipLine(v2, v1, nearClippingPlane)
-                listOf(Triangle(newV0, newV1, v2))
+                val (newV0, newSV0) = clipLine(v2, v0, sv2, sv0, nearClippingPlane)
+                val (newV1, newSV1) = clipLine(v2, v1, sv2, sv1, nearClippingPlane)
+                listOf(
+                    Pair(
+                        Triangle(newV0, newV1, v2),
+                        TriangleShaderVariables(newSV0, newSV1, sv2)
+                    )
+                )
             }
 
             isV0InFront && isV1InFront && !isV2InFront -> {
-                val newV2 = clipLine(v1, v2, nearClippingPlane)
-                val newV3 = clipLine(v0, v2, nearClippingPlane)
-                listOf(Triangle(v0, v1, newV2), Triangle(newV2, newV3, v0))
+                val (newV2, newSV2) = clipLine(v1, v2, sv1, sv2, nearClippingPlane)
+                val (newV3, newSV3) = clipLine(v0, v2, sv0, sv2, nearClippingPlane)
+                listOf(
+                    Pair(
+                        Triangle(v0, v1, newV2),
+                        TriangleShaderVariables(sv0, sv1, newSV2)
+                    ),
+                    Pair(
+                        Triangle(newV2, newV3, v0),
+                        TriangleShaderVariables(newSV2, newSV3, sv0)
+                    )
+                )
             }
 
             isV0InFront && !isV1InFront && isV2InFront -> {
-                val newV1 = clipLine(v0, v1, nearClippingPlane)
-                val newV3 = clipLine(v2, v1, nearClippingPlane)
-                listOf(Triangle(v0, newV1, v2), Triangle(v2, newV1, newV3))
+                val (newV1, newSV1) = clipLine(v0, v1, sv0, sv1, nearClippingPlane)
+                val (newV3, newSV3) = clipLine(v2, v1, sv2, sv1, nearClippingPlane)
+                listOf(
+                    Pair(
+                        Triangle(v0, newV1, v2),
+                        TriangleShaderVariables(sv0, newSV1, sv2)
+                    ),
+                    Pair(
+                        Triangle(v2, newV1, newV3),
+                        TriangleShaderVariables(sv2, newSV1, newSV3)
+                    )
+                )
             }
 
             !isV0InFront && isV1InFront && isV2InFront -> {
-                val newV0 = clipLine(v1, v0, nearClippingPlane)
-                val newV3 = clipLine(v2, v0, nearClippingPlane)
-                listOf(Triangle(newV0, v1, v2), Triangle(v2, newV3, newV0))
+                val (newV0, newSV0) = clipLine(v1, v0, sv1, sv0, nearClippingPlane)
+                val (newV3, newSV3) = clipLine(v2, v0, sv2, sv0, nearClippingPlane)
+                listOf(
+                    Pair(
+                        Triangle(newV0, v1, v2),
+                        TriangleShaderVariables(newSV0, sv1, sv2)
+                    ),
+                    Pair(
+                        Triangle(v2, newV3, newV0),
+                        TriangleShaderVariables(sv2, newSV3, newSV0)
+                    )
+                )
             }
 
             isV0InFront && isV1InFront && isV2InFront -> {
-                listOf(Triangle(v0, v1, v2))
+                listOf(
+                    Pair(
+                        Triangle(v0, v1, v2),
+                        TriangleShaderVariables(sv0, sv1, sv2)
+                    )
+                )
             }
 
             else -> {
@@ -148,13 +204,20 @@ internal class VertexPostProcessing {
     private fun clipLine(
         vertexInFront: Vec4f,
         vertexBehind: Vec4f,
+        shaderVariablesVertexInFront: ShaderVariables,
+        shaderVariablesVertexBehind: ShaderVariables,
         nearClippingPlane: Float
-    ): Vec4f {
+    ): Pair<Vec4f, ShaderVariables> {
         val w0 = vertexInFront.w
         val w1 = vertexBehind.w
         val weight = (w0 - nearClippingPlane) / (w0 - w1)
         val clippedVertex = lerpPosition(vertexInFront, vertexBehind, weight, nearClippingPlane)
-        return clippedVertex
+        val interpolatedShaderVariables = interpolateShaderVariables(
+            shaderVariablesVertexInFront,
+            shaderVariablesVertexBehind,
+            weight
+        )
+        return Pair(clippedVertex, interpolatedShaderVariables)
     }
 
     private fun lerpPosition(
@@ -165,6 +228,33 @@ internal class VertexPostProcessing {
     ): Vec4f {
         val clippedPos = Vec3f.lerp(vertexInFront.toVec3f(), vertexBehind.toVec3f(), weight)
         return Vec4f(clippedPos, w = nearClippingPlane)
+    }
+
+    private fun interpolateShaderVariables(
+        shaderVariablesVertexInFront: ShaderVariables,
+        shaderVariablesVertexBehind: ShaderVariables,
+        weight: Float
+    ): ShaderVariables {
+        val interpolatedShaderVariables = ShaderVariables()
+        shaderVariablesVertexInFront.floatKeys.forEach { key ->
+            val v0 = shaderVariablesVertexInFront.getFloat(key).value
+            val v1 = shaderVariablesVertexBehind.getFloat(key).value
+            val vLerped = Math.lerp(v0, v1, weight)
+            interpolatedShaderVariables.setFloat(
+                key,
+                ShaderVariables.FloatVariable(vLerped, shaderVariablesVertexInFront.getFloat(key).interpolation)
+            )
+        }
+        shaderVariablesVertexInFront.vectorKeys.forEach { key ->
+            val v0 = shaderVariablesVertexInFront.getVector(key).value
+            val v1 = shaderVariablesVertexBehind.getVector(key).value
+            val vLerped = Vec3f.lerp(v0, v1, weight)
+            interpolatedShaderVariables.setVector(
+                key,
+                ShaderVariables.VectorVariable(vLerped, shaderVariablesVertexInFront.getVector(key).interpolation)
+            )
+        }
+        return interpolatedShaderVariables
     }
 
     private fun applyPerspectiveDivide(triangle: Triangle): Triangle {
