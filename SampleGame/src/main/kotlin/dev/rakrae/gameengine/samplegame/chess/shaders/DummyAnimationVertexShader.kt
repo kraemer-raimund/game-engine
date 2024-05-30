@@ -24,6 +24,7 @@ class DummyAnimationVertexShader : VertexShader {
         val normalWorldSpace = modelMatrix * rotationMatrix * vertex.normal.toVec4()
         val tangentWorldSpace = modelMatrix * rotationMatrix * vertex.tangent.toVec4()
         val bitangentWorldSpace = modelMatrix * rotationMatrix * vertex.bitangent.toVec4()
+
         val tbnMatrix = Mat4x4f(
             tangentWorldSpace,
             bitangentWorldSpace,
@@ -32,7 +33,8 @@ class DummyAnimationVertexShader : VertexShader {
         )
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
         val tbnMatrixInv = tbnMatrix.transpose
-        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
+        val sunLightDirWorldSpace = inputs.shaderUniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
+        val lightDirTangentSpace = (tbnMatrixInv * sunLightDirWorldSpace).toVec3f()
 
         return VertexShaderOutput(
             position = mvpMatrix * rotatedPos,

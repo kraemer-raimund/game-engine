@@ -2,18 +2,16 @@ package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Mesh
 import dev.rakrae.gameengine.graphics.Triangle
-import dev.rakrae.gameengine.math.Vec3f
 
 class VertexProcessing {
 
     fun process(
         triangleObjectSpace: Mesh.Triangle,
         vertexShader: VertexShader,
-        shaderUniforms: ShaderUniforms,
-        lightDirWorldSpace: Vec3f
+        shaderUniforms: ShaderUniforms
     ): VertexProcessingOutput {
         with(triangleObjectSpace) {
-            val vertexShaderInput = VertexShaderInput(shaderUniforms, lightDirWorldSpace)
+            val vertexShaderInput = VertexShaderInput(shaderUniforms)
             val vertexShaderOutputs = listOf(v0, v1, v2)
                 .map { vertexShader.process(it, vertexShaderInput) }
             return VertexProcessingOutput(

@@ -27,12 +27,12 @@ internal class Renderer {
     private val imagePostProcessing = ImagePostProcessing()
     private val deferredRendering = DeferredRendering()
 
-    private val lightDirWorldSpace
+    private val sunLightDirWorldSpace
         get() = Vec3f(
             x = sin(GameTime.elapsedTime * 0.5f),
             y = sin(GameTime.elapsedTime * 0.5f),
             z = cos(GameTime.elapsedTime * 0.5f)
-        ).normalized
+        ).normalized.toVec4()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
         coroutineScope {
@@ -80,6 +80,7 @@ internal class Renderer {
                         builtinMatrixMV = modelViewMatrix,
                         builtinMatrixV = viewMatrix,
                         builtinMatrixM = modelMatrix,
+                        sunLightDirection = sunLightDirWorldSpace,
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )
@@ -119,6 +120,7 @@ internal class Renderer {
                         builtinMatrixMV = modelViewMatrix,
                         builtinMatrixV = viewMatrix,
                         builtinMatrixM = modelMatrix,
+                        sunLightDirection = sunLightDirWorldSpace,
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )
@@ -156,8 +158,7 @@ internal class Renderer {
                     val vertexProcessingOutput = vertexProcessing.process(
                         triangleObjectSpace,
                         renderComponent.vertexShader,
-                        shaderUniforms,
-                        lightDirWorldSpace
+                        shaderUniforms
                     )
                     val clippingResults = vertexPostProcessing.clip(
                         vertexProcessingOutput.triangleClipSpace,

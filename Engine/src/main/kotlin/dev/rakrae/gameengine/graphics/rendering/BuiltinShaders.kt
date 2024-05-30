@@ -56,7 +56,8 @@ private class PBRVertexShader : VertexShader {
         )
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
         val tbnMatrixInv = tbnMatrix.transpose
-        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
+        val sunLightDirWorldSpace = inputs.shaderUniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
+        val lightDirTangentSpace = (tbnMatrixInv * sunLightDirWorldSpace).toVec3f()
 
         return VertexShaderOutput(
             position = mvpMatrix * vertex.position,
