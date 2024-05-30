@@ -5,7 +5,8 @@ import dev.rakrae.gameengine.graphics.BitmapTexture
 import dev.rakrae.gameengine.graphics.Color
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.RenderTexture
-import dev.rakrae.gameengine.graphics.rendering.shaders.*
+import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
+import dev.rakrae.gameengine.graphics.rendering.OutlineDeferredShader
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
@@ -51,17 +52,13 @@ class ChessExampleLevel {
                 else -> Material.default
             }
             val vertexShader = when (i) {
+                0 -> BuiltinShaders.Material.unlit.vertexShader
                 1, 3 -> DummyAnimationVertexShader()
-                else -> UvTextureVertexShader()
+                else -> BuiltinShaders.Material.standardPBR.vertexShader
             }
             val fragmentShader = when (i) {
-                0 -> PhongFragmentShader()
-                1 -> PhongFragmentShader()
-                2 -> DepthFragmentShader()
-                3 -> PhongFragmentShader()
-                4 -> UvTextureFragmentShader()
-                5 -> PhongFragmentShader()
-                else -> PhongFragmentShader()
+                0 -> BuiltinShaders.Material.unlit.fragmentShader
+                else -> BuiltinShaders.Material.standardPBR.fragmentShader
             }
             dev.rakrae.gameengine.scene.Node(
                 RenderComponent(
@@ -96,8 +93,8 @@ class ChessExampleLevel {
                         glossiness = 8f,
                         uvScale = Vec2f(8f, 8f)
                     ),
-                    fragmentShader = UvTextureFragmentShader(),
-                    vertexShader = UvTextureVertexShader()
+                    fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
+                    vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
             ),
             dev.rakrae.gameengine.scene.Node(
@@ -116,8 +113,8 @@ class ChessExampleLevel {
                         glossiness = 1.5f,
                         uvScale = Vec2f(10f, 10f)
                     ),
-                    fragmentShader = UvTextureFragmentShader(),
-                    vertexShader = UvTextureVertexShader()
+                    fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
+                    vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
             ),
             dev.rakrae.gameengine.scene.Node(
@@ -134,8 +131,8 @@ class ChessExampleLevel {
                         glossiness = 8f,
                         uvScale = Vec2f(4f, 4f)
                     ),
-                    fragmentShader = UvTextureFragmentShader(),
-                    vertexShader = UvTextureVertexShader()
+                    fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
+                    vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
             ),
             dev.rakrae.gameengine.scene.Node(
@@ -146,11 +143,11 @@ class ChessExampleLevel {
                     scale = Vec3f(1f, 1f, 1f),
                     material = Material(
                         albedo = RenderTexture(0),
-                        glossiness = 3f,
+                        glossiness = 1f,
                         uvScale = Vec2f(1f, 1f)
                     ),
-                    fragmentShader = ShadelessUvTextureFragmentShader(),
-                    vertexShader = UvTextureVertexShader(),
+                    fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
+                    vertexShader = BuiltinShaders.Material.standardPBR.vertexShader,
                     deferredShader = OutlineDeferredShader(2, Color(80u, 80u, 80u, 255u))
                 )
             )

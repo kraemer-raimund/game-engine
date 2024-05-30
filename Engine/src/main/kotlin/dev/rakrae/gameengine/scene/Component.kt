@@ -2,11 +2,11 @@ package dev.rakrae.gameengine.scene
 
 import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.Mesh
+import dev.rakrae.gameengine.graphics.rendering.DefaultVertexShader
+import dev.rakrae.gameengine.graphics.rendering.UnlitFragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.DeferredShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.FragmentShader
 import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
-import dev.rakrae.gameengine.graphics.rendering.shaders.DefaultFragmentShader
-import dev.rakrae.gameengine.graphics.rendering.shaders.DefaultVertexShader
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import kotlin.math.cos
@@ -21,7 +21,7 @@ class RenderComponent(
     scale: Vec3f = Vec3f.one,
     val material: Material = Material.default,
     val vertexShader: VertexShader = DefaultVertexShader(),
-    val fragmentShader: FragmentShader = DefaultFragmentShader(),
+    val fragmentShader: FragmentShader = UnlitFragmentShader(),
     val deferredShader: DeferredShader? = null
 ) : Component() {
 

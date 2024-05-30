@@ -3,9 +3,9 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.RenderTexture
-import dev.rakrae.gameengine.graphics.rendering.shaders.DepthDarkeningPostProcessingShader
-import dev.rakrae.gameengine.graphics.rendering.shaders.DepthOfFieldPostProcessingShader
-import dev.rakrae.gameengine.graphics.rendering.shaders.GammaCorrectionPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.DepthDarkeningPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.DepthOfFieldPostProcessingShader
+import dev.rakrae.gameengine.graphics.rendering.GammaCorrectionPostProcessingShader
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
