@@ -41,9 +41,13 @@ class Shader(val vertexShader: VertexShader, val fragmentShader: FragmentShader)
 private class PBRVertexShader : VertexShader {
 
     override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
-        val normalWorldSpace = inputs.model * vertex.normal.toVec4()
-        val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
-        val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
+        val modelMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
+        val mvpMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
+
+        val normalWorldSpace = modelMatrix * vertex.normal.toVec4()
+        val tangentWorldSpace = modelMatrix * vertex.tangent.toVec4()
+        val bitangentWorldSpace = modelMatrix * vertex.bitangent.toVec4()
+
         val tbnMatrix = Mat4x4f(
             tangentWorldSpace,
             bitangentWorldSpace,
@@ -55,7 +59,7 @@ private class PBRVertexShader : VertexShader {
         val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
 
         return VertexShaderOutput(
-            position = inputs.projection * inputs.modelView * vertex.position,
+            position = mvpMatrix * vertex.position,
             shaderVariables = ShaderVariables().apply {
                 setVector(
                     "uv", ShaderVariables.VectorVariable(
@@ -83,9 +87,9 @@ private class PBRFragmentShader : FragmentShader {
 
         val normalTangentSpace = normalVector(normalMap, inputFragment)
         val lightDirTangentSpace = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
-        val ambientColor = inputFragment.shaderUniforms.getColor(ShaderUniforms.BuiltinKeys.ambientColor)
+        val ambientColor = inputFragment.shaderUniforms.getColor(ShaderUniforms.BuiltinKeys.AMBIENT_COLOR)
         val ambientLightNormalized =
-            inputFragment.shaderUniforms.getFloat(ShaderUniforms.BuiltinKeys.ambientIntensityMultiplier)
+            inputFragment.shaderUniforms.getFloat(ShaderUniforms.BuiltinKeys.AMBIENT_INTENSITY_MULTIPLIER)
 
         val unlitFragmentColor = albedoTexture
             ?.let { color(it, inputFragment) }
@@ -166,8 +170,9 @@ private class PBRFragmentShader : FragmentShader {
 private class UnlitVertexShader : VertexShader {
 
     override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
+        val mvpMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
         return VertexShaderOutput(
-            position = inputs.projection * inputs.modelView * vertex.position,
+            position = mvpMatrix * vertex.position,
             shaderVariables = ShaderVariables()
         )
     }
@@ -265,15 +270,6 @@ private class DepthDarkeningPostProcessingShader : PostProcessingShader {
         // close to the camera.
         val zBufferDarkening = 4 * (1f - zBuffer.get(x, y)).pow(2)
         return color * zBufferDarkening.coerceIn(0f, 1f)
-    }
-
-    private operator fun Color.times(value: Float): Color {
-        return Color(
-            (value * r.toInt()).toInt().toUByte(),
-            (value * g.toInt()).toInt().toUByte(),
-            (value * b.toInt()).toInt().toUByte(),
-            255u
-        )
     }
 }
 

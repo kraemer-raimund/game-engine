@@ -2,7 +2,6 @@ package dev.rakrae.gameengine.graphics.rendering.pipeline
 
 import dev.rakrae.gameengine.graphics.Bitmap
 import dev.rakrae.gameengine.graphics.Buffer2f
-import dev.rakrae.gameengine.math.Mat4x4f
 
 /**
  * Passed through the render pipeline to provide the pipeline stages with relevant information
@@ -23,8 +22,7 @@ import dev.rakrae.gameengine.math.Mat4x4f
 data class RenderContext(
     val framebuffer: Bitmap,
     val zBuffer: Buffer2f,
-    val wComponents: WComponents,
-    val projectionViewModelMatrix: Mat4x4f
+    val wComponents: WComponents
 ) {
 
     /**

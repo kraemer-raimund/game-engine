@@ -2,10 +2,7 @@ package dev.rakrae.gameengine.samplegame.chess.shaders
 
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Mesh
-import dev.rakrae.gameengine.graphics.rendering.pipeline.ShaderVariables
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShader
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderInput
-import dev.rakrae.gameengine.graphics.rendering.pipeline.VertexShaderOutput
+import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.math.Vec4f
@@ -21,10 +18,12 @@ class DummyAnimationVertexShader : VertexShader {
     override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
         val rotationMatrix = rotationMatrix(Vec3f(0f, GameTime.frameTime, 0f))
         val rotatedPos = rotationMatrix * vertex.position
+        val modelMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
+        val mvpMatrix = inputs.shaderUniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
 
-        val normalWorldSpace = inputs.model * rotationMatrix * vertex.normal.toVec4()
-        val tangentWorldSpace = inputs.model * rotationMatrix * vertex.tangent.toVec4()
-        val bitangentWorldSpace = inputs.model * rotationMatrix * vertex.bitangent.toVec4()
+        val normalWorldSpace = modelMatrix * rotationMatrix * vertex.normal.toVec4()
+        val tangentWorldSpace = modelMatrix * rotationMatrix * vertex.tangent.toVec4()
+        val bitangentWorldSpace = modelMatrix * rotationMatrix * vertex.bitangent.toVec4()
         val tbnMatrix = Mat4x4f(
             tangentWorldSpace,
             bitangentWorldSpace,
@@ -36,7 +35,7 @@ class DummyAnimationVertexShader : VertexShader {
         val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
 
         return VertexShaderOutput(
-            position = inputs.projection * inputs.modelView * rotatedPos,
+            position = mvpMatrix * rotatedPos,
             shaderVariables = ShaderVariables().apply {
                 setVector(
                     "lightDirTangentSpace", ShaderVariables.VectorVariable(

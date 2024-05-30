@@ -75,19 +75,18 @@ internal class Renderer {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
                     val modelViewMatrix = viewMatrix * modelMatrix
-                    val shaderUniforms = ShaderUniforms().apply {
-                        val ambientColor = scene.environmentAttributes.ambientColor
-                        val ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
-                        setColor(ShaderUniforms.BuiltinKeys.ambientColor, ambientColor)
-                        setFloat(ShaderUniforms.BuiltinKeys.ambientIntensityMultiplier, ambientIntensityMultiplier)
-                    }
+                    val shaderUniforms = ShaderUniforms(
+                        builtinMatrixMVP = projectionMatrix * modelViewMatrix,
+                        builtinMatrixMV = modelViewMatrix,
+                        builtinMatrixV = viewMatrix,
+                        builtinMatrixM = modelMatrix,
+                        ambientColor = scene.environmentAttributes.ambientColor,
+                        ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
+                    )
                     render(
                         renderComponent,
                         framebuffer,
                         zBuffer,
-                        modelMatrix,
-                        modelViewMatrix,
-                        projectionMatrix,
                         viewportMatrix,
                         clippingPlanes,
                         shaderUniforms
@@ -115,19 +114,18 @@ internal class Renderer {
                         framebuffer.height,
                         initValue = Float.POSITIVE_INFINITY
                     )
-                    val shaderUniforms = ShaderUniforms().apply {
-                        val ambientColor = scene.environmentAttributes.ambientColor
-                        val ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
-                        setColor(ShaderUniforms.BuiltinKeys.ambientColor, ambientColor)
-                        setFloat(ShaderUniforms.BuiltinKeys.ambientIntensityMultiplier, ambientIntensityMultiplier)
-                    }
+                    val shaderUniforms = ShaderUniforms(
+                        builtinMatrixMVP = projectionMatrix * modelViewMatrix,
+                        builtinMatrixMV = modelViewMatrix,
+                        builtinMatrixV = viewMatrix,
+                        builtinMatrixM = modelMatrix,
+                        ambientColor = scene.environmentAttributes.ambientColor,
+                        ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
+                    )
                     render(
                         renderComponent,
                         deferredFramebuffer,
                         deferredZBuffer,
-                        modelMatrix,
-                        modelViewMatrix,
-                        projectionMatrix,
                         viewportMatrix,
                         clippingPlanes,
                         shaderUniforms
@@ -148,9 +146,6 @@ internal class Renderer {
         renderComponent: RenderComponent,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
-        modelMatrix: Mat4x4f,
-        modelViewMatrix: Mat4x4f,
-        projectionMatrix: Mat4x4f,
         viewportMatrix: Mat4x4f,
         clippingPlanes: ClippingPlanes,
         shaderUniforms: ShaderUniforms
@@ -161,9 +156,7 @@ internal class Renderer {
                     val vertexProcessingOutput = vertexProcessing.process(
                         triangleObjectSpace,
                         renderComponent.vertexShader,
-                        projectionMatrix,
-                        modelViewMatrix,
-                        modelMatrix,
+                        shaderUniforms,
                         lightDirWorldSpace
                     )
                     val clippingResults = vertexPostProcessing.clip(
@@ -185,8 +178,7 @@ internal class Renderer {
                                     triangleClipSpace.vertexPos0.w,
                                     triangleClipSpace.vertexPos1.w,
                                     triangleClipSpace.vertexPos2.w
-                                ),
-                                projectionViewModelMatrix = projectionMatrix * modelViewMatrix
+                                )
                             )
 
                             val renderTexture = (renderComponent.material.albedo as? RenderTexture)
