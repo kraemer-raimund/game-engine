@@ -10,7 +10,7 @@ import kotlin.math.sqrt
 object BuiltinShaders {
     object Material {
         val unlit = Shader(DefaultVertexShader(), UnlitFragmentShader())
-        val standardPBR = Shader(UvTextureVertexShader(), UvTextureFragmentShader())
+        val standardPBR = Shader(PBRVertexShader(), PBRFragmentShader())
     }
 
     object PostProcessing {
@@ -191,7 +191,44 @@ class OutlineDeferredShader(
     }
 }
 
-class UvTextureFragmentShader : FragmentShader {
+class PBRVertexShader : VertexShader {
+
+    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
+        val normalWorldSpace = inputs.model * vertex.normal.toVec4()
+        val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
+        val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
+        val tbnMatrix = Mat4x4f(
+            tangentWorldSpace,
+            bitangentWorldSpace,
+            normalWorldSpace,
+            Vec4f(0f, 0f, 0f, 1f)
+        )
+        // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
+        val tbnMatrixInv = tbnMatrix.transpose
+        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
+
+        return VertexShaderOutput(
+            position = inputs.projection * inputs.modelView * vertex.position,
+            shaderVariables = ShaderVariables().apply {
+                setVector(
+                    "uv", ShaderVariables.VectorVariable(
+                        vertex.textureCoordinates,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+                setVector(
+                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
+                        lightDirTangentSpace,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+            }
+        )
+    }
+
+}
+
+class PBRFragmentShader : FragmentShader {
 
     override fun process(inputFragment: InputFragment): OutputFragment {
         val normalMap = inputFragment.material.normal?.bitmap
@@ -273,42 +310,6 @@ class UvTextureFragmentShader : FragmentShader {
             (value * g.toInt()).toInt().toUByte(),
             (value * b.toInt()).toInt().toUByte(),
             255u
-        )
-    }
-}
-
-class UvTextureVertexShader : VertexShader {
-
-    override fun process(vertex: Mesh.Vertex, inputs: VertexShaderInput): VertexShaderOutput {
-        val normalWorldSpace = inputs.model * vertex.normal.toVec4()
-        val tangentWorldSpace = inputs.model * vertex.tangent.toVec4()
-        val bitangentWorldSpace = inputs.model * vertex.bitangent.toVec4()
-        val tbnMatrix = Mat4x4f(
-            tangentWorldSpace,
-            bitangentWorldSpace,
-            normalWorldSpace,
-            Vec4f(0f, 0f, 0f, 1f)
-        )
-        // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
-        val tbnMatrixInv = tbnMatrix.transpose
-        val lightDirTangentSpace = (tbnMatrixInv * inputs.lightDirWorldSpace.toVec4()).toVec3f()
-
-        return VertexShaderOutput(
-            position = inputs.projection * inputs.modelView * vertex.position,
-            shaderVariables = ShaderVariables().apply {
-                setVector(
-                    "uv", ShaderVariables.VectorVariable(
-                        vertex.textureCoordinates,
-                        ShaderVariables.Interpolation.PERSPECTIVE
-                    )
-                )
-                setVector(
-                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
-                        lightDirTangentSpace,
-                        ShaderVariables.Interpolation.PERSPECTIVE
-                    )
-                )
-            }
         )
     }
 }
