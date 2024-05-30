@@ -49,7 +49,7 @@ internal class Renderer {
         renderTextures.forEach(DoubleBufferedBitmap::swap)
     }
 
-    private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) = coroutineScope {
+    private suspend fun render(camera: Camera, scene: Scene, framebuffer: Bitmap) {
         val viewMatrix = camera.viewMatrix
         val projectionMatrix = camera.projectionMatrix
         val viewportMatrix = camera.viewportMatrix
@@ -135,59 +135,53 @@ internal class Renderer {
         }
     }
 
-    private suspend fun render(
+    private fun render(
         renderComponent: RenderComponent,
         framebuffer: Bitmap,
         zBuffer: Buffer2f,
         viewportMatrix: Mat4x4f,
         clippingPlanes: ClippingPlanes,
         shaderUniforms: ShaderUniforms
-    ) = coroutineScope {
-        for (trianglesChunk in renderComponent.mesh.triangles.chunked(200)) {
-            launch {
-                for (triangleObjectSpace in trianglesChunk) {
-                    val vertexProcessingOutput = vertexProcessing.process(
-                        triangleObjectSpace,
-                        renderComponent.vertexShader,
-                        shaderUniforms
-                    )
-                    val clippingResults = vertexPostProcessing.clip(
-                        vertexProcessingOutput.triangleClipSpace,
-                        vertexProcessingOutput.triangleShaderVariables,
-                        clippingPlanes
-                    )
+    ) {
+        for (triangleObjectSpace in renderComponent.mesh.triangles) {
+            val vertexProcessingOutput = vertexProcessing.process(
+                triangleObjectSpace,
+                renderComponent.vertexShader,
+                shaderUniforms
+            )
+            val clippingResults = vertexPostProcessing.clip(
+                vertexProcessingOutput.triangleClipSpace,
+                vertexProcessingOutput.triangleShaderVariables,
+                clippingPlanes
+            )
 
-                    clippingResults.forEach { (triangleClipSpace, triangleShaderVariables) ->
-                        val triangleViewportCoordinates = vertexPostProcessing.toViewport(
-                            triangleClipSpace,
-                            viewportMatrix
-                        ) ?: return@forEach
-                        launch {
-                            val renderContext = RenderContext(
-                                framebuffer,
-                                zBuffer,
-                                wComponents = RenderContext.WComponents(
-                                    triangleClipSpace.vertexPos0.w,
-                                    triangleClipSpace.vertexPos1.w,
-                                    triangleClipSpace.vertexPos2.w
-                                )
-                            )
+            clippingResults.forEach { (triangleClipSpace, triangleShaderVariables) ->
+                val triangleViewportCoordinates = vertexPostProcessing.toViewport(
+                    triangleClipSpace,
+                    viewportMatrix
+                ) ?: return@forEach
+                val renderContext = RenderContext(
+                    framebuffer,
+                    zBuffer,
+                    wComponents = RenderContext.WComponents(
+                        triangleClipSpace.vertexPos0.w,
+                        triangleClipSpace.vertexPos1.w,
+                        triangleClipSpace.vertexPos2.w
+                    )
+                )
 
-                            val renderTexture = (renderComponent.material.albedo as? RenderTexture)
-                                ?.let { renderTextures[it.index] }
-                                ?.frontBuffer
-                            rasterizer.rasterize(
-                                triangle = triangleViewportCoordinates,
-                                triangleShaderVariables = triangleShaderVariables,
-                                shaderUniforms = shaderUniforms,
-                                material = renderComponent.material,
-                                renderTexture = renderTexture,
-                                fragmentShader = renderComponent.fragmentShader,
-                                renderContext = renderContext
-                            )
-                        }
-                    }
-                }
+                val renderTexture = (renderComponent.material.albedo as? RenderTexture)
+                    ?.let { renderTextures[it.index] }
+                    ?.frontBuffer
+                rasterizer.rasterize(
+                    triangle = triangleViewportCoordinates,
+                    triangleShaderVariables = triangleShaderVariables,
+                    shaderUniforms = shaderUniforms,
+                    material = renderComponent.material,
+                    renderTexture = renderTexture,
+                    fragmentShader = renderComponent.fragmentShader,
+                    renderContext = renderContext
+                )
             }
         }
     }
