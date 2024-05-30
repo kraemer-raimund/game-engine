@@ -1,10 +1,8 @@
 package dev.rakrae.gameengine.graphics.rendering
 
-import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.scene.Camera
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
@@ -12,8 +10,6 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
-import kotlin.math.cos
-import kotlin.math.sin
 
 internal class Renderer {
 
@@ -26,13 +22,6 @@ internal class Renderer {
     private val rasterizer = Rasterizer()
     private val imagePostProcessing = ImagePostProcessing()
     private val deferredRendering = DeferredRendering()
-
-    private val sunLightDirWorldSpace
-        get() = Vec3f(
-            x = sin(GameTime.elapsedTime * 0.5f),
-            y = sin(GameTime.elapsedTime * 0.5f),
-            z = cos(GameTime.elapsedTime * 0.5f)
-        ).normalized.toVec4()
 
     suspend fun render(scene: Scene, framebuffer: Bitmap) {
         coroutineScope {
@@ -81,7 +70,7 @@ internal class Renderer {
                         builtinMatrixV = viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
-                        sunLightDirection = sunLightDirWorldSpace,
+                        sunLightDirection = scene.sunLightDirection.toVec4(),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )
@@ -122,7 +111,7 @@ internal class Renderer {
                         builtinMatrixV = viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
-                        sunLightDirection = sunLightDirWorldSpace,
+                        sunLightDirection = scene.sunLightDirection.toVec4(),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )

@@ -18,6 +18,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
 import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 import kotlin.time.Duration.Companion.seconds
 
 class Chess : Game() {
@@ -50,7 +52,12 @@ class Chess : Game() {
                 ambientIntensityMultiplier = 1.1f
             ),
             cameras,
-            level.nodes
+            level.nodes,
+            sunLightDirection = Vec3f(
+                x = sin(GameTime.elapsedTime * 0.5f),
+                y = sin(GameTime.elapsedTime * 0.5f),
+                z = cos(GameTime.elapsedTime * 0.5f)
+            ).normalized
         )
     }
 
@@ -81,6 +88,12 @@ class Chess : Game() {
         val mouseSensitivity = 0.12f
         mainCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
         mainCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
+
+        scene.sunLightDirection = Vec3f(
+            x = sin(GameTime.elapsedTime * 0.5f),
+            y = sin(GameTime.elapsedTime * 0.5f),
+            z = cos(GameTime.elapsedTime * 0.5f)
+        ).normalized
     }
 
     override suspend fun onPause() {
