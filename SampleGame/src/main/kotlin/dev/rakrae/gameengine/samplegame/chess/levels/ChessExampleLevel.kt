@@ -7,7 +7,6 @@ import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
-import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
 import dev.rakrae.gameengine.scene.RenderComponent
 import kotlin.math.PI
 
@@ -50,7 +49,6 @@ class ChessExampleLevel {
                 else -> Material.default
             }
             val vertexShader = when (i) {
-                1, 3 -> DummyAnimationVertexShader()
                 else -> BuiltinShaders.Material.standardPBR.vertexShader
             }
             val fragmentShader = when (i) {
