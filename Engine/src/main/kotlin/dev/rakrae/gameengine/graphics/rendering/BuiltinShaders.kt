@@ -18,6 +18,8 @@ object BuiltinShaders {
             return GammaCorrectionPostProcessingShader(gamma)
         }
 
+        val denoise: PostProcessingShader = DenoisePostProcessingShader()
+
         fun depthOfField(effectStrength: Float = 1f): PostProcessingShader {
             return DepthOfFieldPostProcessingShader(effectStrength)
         }
@@ -233,6 +235,60 @@ private class GammaCorrectionPostProcessingShader(private val gamma: Float = 2.2
 
     private fun gammaCorrect(colorComponent: UByte): UByte {
         return ((colorComponent.toInt() / 255f).pow(gamma) * 255).toUInt().toUByte()
+    }
+}
+
+private class DenoisePostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
+        // In case we rasterize only every second pixel, we can interpolate here on the pixel level
+        // to fill the gaps.
+        val (x, y) = position
+
+        return when {
+            x.mod(2) == 0 && y.mod(2) == 1 -> {
+                Color.lerp(
+                    framebuffer.getPixelClamped(x - 1, y),
+                    framebuffer.getPixelClamped(x + 1, y),
+                    0.5f
+                )
+            }
+
+            x.mod(2) == 1 && y.mod(2) == 0 -> {
+                Color.lerp(
+                    framebuffer.getPixelClamped(x, y - 1),
+                    framebuffer.getPixelClamped(x, y + 1),
+                    0.5f
+                )
+            }
+
+            x.mod(2) == 0 && y.mod(2) == 0 -> {
+                Color.lerp(
+                    Color.lerp(
+                        framebuffer.getPixelClamped(x - 1, y - 1),
+                        framebuffer.getPixelClamped(x - 1, y + 1),
+                        0.5f
+                    ),
+                    Color.lerp(
+                        framebuffer.getPixelClamped(x + 1, y - 1),
+                        framebuffer.getPixelClamped(x + 1, y + 1),
+                        0.5f
+                    ),
+                    0.5f
+                )
+            }
+
+            else -> {
+                framebuffer.getPixel(x, y)
+            }
+        }
+    }
+
+    private fun Bitmap.getPixelClamped(x: Int, y: Int): Color {
+        return getPixel(
+            x.coerceIn(0..<width),
+            y.coerceIn(0..<height)
+        )
     }
 }
 

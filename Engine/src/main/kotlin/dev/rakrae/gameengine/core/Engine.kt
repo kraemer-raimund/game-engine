@@ -47,7 +47,7 @@ class Engine(private val game: Game) {
     private suspend fun onRender() {
         gameTime.onRender()
         val displayBuffer = with(renderResolution) { Bitmap(width, height) }
-            .apply { clear(Color(0u, 0u, 0u, 255u)) }
+            .apply { clear(Color.white) }
         renderer.render(game.scene, displayBuffer)
         window.displayPixels(displayBuffer)
     }

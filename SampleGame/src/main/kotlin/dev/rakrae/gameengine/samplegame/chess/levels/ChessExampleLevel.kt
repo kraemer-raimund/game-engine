@@ -38,8 +38,7 @@ class ChessExampleLevel {
                     color = Color(80u, 160u, 80u, 255u),
                     glossiness = 4f,
                     albedo = BitmapTexture(
-                        "/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png",
-                        convertToLinearSpace = true
+                        "/assets/textures/wood-oak-veneer/TCom_Wood_OakVeneer2_512_albedo.png"
                     )
                 )
 
@@ -80,8 +79,7 @@ class ChessExampleLevel {
                     scale = Vec3f(8f, 8f, 8f),
                     material = Material(
                         albedo = BitmapTexture(
-                            "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_albedo.png",
-                            convertToLinearSpace = true
+                            "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_albedo.png"
                         ),
                         normal = BitmapTexture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_normal.png"
@@ -101,8 +99,7 @@ class ChessExampleLevel {
                     scale = Vec3f(2f, 2f, 2f),
                     material = Material(
                         albedo = BitmapTexture(
-                            "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_albedo.png",
-                            convertToLinearSpace = true
+                            "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_albedo.png"
                         ),
                         normal = BitmapTexture(
                             "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_normal.png"
@@ -121,8 +118,7 @@ class ChessExampleLevel {
                     scale = Vec3f(1f, 1f, 1f),
                     material = Material(
                         albedo = BitmapTexture(
-                            "/assets/textures/scifi-panel/TCom_Scifi_Panel_512_albedo.png",
-                            convertToLinearSpace = true
+                            "/assets/textures/scifi-panel/TCom_Scifi_Panel_512_albedo.png"
                         ),
                         normal = BitmapTexture("/assets/textures/scifi-panel/TCom_Scifi_Panel_512_normal.png"),
                         glossiness = 8f,
