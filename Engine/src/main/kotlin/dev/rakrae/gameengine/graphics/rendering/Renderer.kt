@@ -3,10 +3,7 @@ package dev.rakrae.gameengine.graphics.rendering
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
-import dev.rakrae.gameengine.scene.Camera
-import dev.rakrae.gameengine.scene.MeshNode
-import dev.rakrae.gameengine.scene.RenderComponent
-import dev.rakrae.gameengine.scene.Scene
+import dev.rakrae.gameengine.scene.*
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.coroutineScope
@@ -63,6 +60,8 @@ internal class Renderer {
             val renderComponents = scene.nodes
                 .filterIsInstance<MeshNode>()
                 .map { it.renderComponent }
+            val lights = scene.nodes.filterIsInstance<Light>()
+
             for (renderComponent in renderComponents) {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
@@ -71,12 +70,21 @@ internal class Renderer {
                         builtinMatrixMVP = projectionMatrix * modelViewMatrix,
                         builtinMatrixMV = modelViewMatrix,
                         builtinMatrixV = viewMatrix,
+                        builtinMatrixP = projectionMatrix,
+                        builtinMatrixVP = projectionMatrix * viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
                         sunLightDirection = scene.sunLightDirection.toVec4(0f),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )
+                    lights.forEach { light ->
+                        shaderUniforms.setVector(
+                            ShaderUniforms.BuiltinKeys.POINT_LIGHT_0_POSITION,
+                            light.transform.position.toVec4()
+                        )
+                    }
+
                     render(
                         renderComponent,
                         framebuffer,
@@ -98,6 +106,8 @@ internal class Renderer {
                 .filterIsInstance<MeshNode>()
                 .map { it.renderComponent }
                 .filter { it.deferredShader != null }
+            val lights = scene.nodes.filterIsInstance<Light>()
+
             for (renderComponent in deferredRenderingComponents) {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
@@ -113,12 +123,21 @@ internal class Renderer {
                         builtinMatrixMVP = projectionMatrix * modelViewMatrix,
                         builtinMatrixMV = modelViewMatrix,
                         builtinMatrixV = viewMatrix,
+                        builtinMatrixP = projectionMatrix,
+                        builtinMatrixVP = projectionMatrix * viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
                         sunLightDirection = scene.sunLightDirection.toVec4(0f),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
                     )
+                    lights.forEach { light ->
+                        shaderUniforms.setVector(
+                            ShaderUniforms.BuiltinKeys.POINT_LIGHT_0_POSITION,
+                            light.transform.position.toVec4()
+                        )
+                    }
+
                     render(
                         renderComponent,
                         deferredFramebuffer,

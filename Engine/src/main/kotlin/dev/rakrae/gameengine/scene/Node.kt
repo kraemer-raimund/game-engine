@@ -14,3 +14,6 @@ class MeshNode(val renderComponent: RenderComponent) : TransformNode(
         scale = renderComponent.scale
     )
 )
+
+sealed class Light(transform: Transform) : TransformNode(transform)
+class PointLight(transform: Transform) : Light(transform)

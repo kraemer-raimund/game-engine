@@ -27,9 +27,9 @@ class ShaderVariables {
         vectorVariables[key] = vectorVariable
     }
 
-    class FloatVariable(val value: Float, val interpolation: Interpolation)
-    class VectorVariable(val value: Vec3f, val interpolation: Interpolation)
-    class ColorVariable(val value: Color, val interpolation: Interpolation)
+    data class FloatVariable(val value: Float, val interpolation: Interpolation)
+    data class VectorVariable(val value: Vec3f, val interpolation: Interpolation)
+    data class ColorVariable(val value: Color, val interpolation: Interpolation)
 
     enum class Interpolation {
         FLAT,
@@ -46,6 +46,8 @@ class ShaderUniforms(
     builtinMatrixMVP: Mat4x4f,
     builtinMatrixMV: Mat4x4f,
     builtinMatrixV: Mat4x4f,
+    builtinMatrixP: Mat4x4f,
+    builtinMatrixVP: Mat4x4f,
     builtinMatrixM: Mat4x4f,
     cameraPosWorld: Vec4f,
     sunLightDirection: Vec4f,
@@ -57,11 +59,14 @@ class ShaderUniforms(
         const val MATRIX_MVP = "_builtin_matrix_MVP"
         const val MATRIX_MV = "_builtin_matrix_MV"
         const val MATRIX_V = "_builtin_matrix_V"
+        const val MATRIX_P = "_builtin_matrix_P"
+        const val MATRIX_VP = "_builtin_matrix_VP"
         const val MATRIX_M = "_builtin_matrix_M"
 
         const val CAMERA_POS_WORLD = "_builtin_camera_pos_world"
 
         const val SUN_LIGHT_DIRECTION = "_builtin_sun_light_direction"
+        const val POINT_LIGHT_0_POSITION = "_builtin_point_light_0_position"
 
         const val AMBIENT_COLOR = "_builtin_ambient_color"
         const val AMBIENT_INTENSITY_MULTIPLIER = "_builtin_ambient_intensity_multiplier"
@@ -76,6 +81,8 @@ class ShaderUniforms(
         setMatrix(BuiltinKeys.MATRIX_MVP, builtinMatrixMVP)
         setMatrix(BuiltinKeys.MATRIX_MV, builtinMatrixMV)
         setMatrix(BuiltinKeys.MATRIX_V, builtinMatrixV)
+        setMatrix(BuiltinKeys.MATRIX_P, builtinMatrixP)
+        setMatrix(BuiltinKeys.MATRIX_VP, builtinMatrixP)
         setMatrix(BuiltinKeys.MATRIX_M, builtinMatrixM)
         setVector(BuiltinKeys.CAMERA_POS_WORLD, cameraPosWorld)
         setVector(BuiltinKeys.SUN_LIGHT_DIRECTION, sunLightDirection)

@@ -7,7 +7,9 @@ import dev.rakrae.gameengine.graphics.Material
 import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
+import dev.rakrae.gameengine.scene.PointLight
 import dev.rakrae.gameengine.scene.RenderComponent
+import dev.rakrae.gameengine.scene.Transform
 import kotlin.math.PI
 
 class ChessExampleLevel {
@@ -132,6 +134,6 @@ class ChessExampleLevel {
             )
         )
 
-        return@lazy chessNodes + exampleObjects
+        return@lazy chessNodes + exampleObjects + listOf(PointLight(Transform()))
     }
 }

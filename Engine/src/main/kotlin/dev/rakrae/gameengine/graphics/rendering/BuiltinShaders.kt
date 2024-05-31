@@ -41,9 +41,9 @@ class Shader(val vertexShader: VertexShader, val fragmentShader: FragmentShader)
 private class PBRVertexShader : VertexShader {
 
     override fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput {
-        val modelMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
         val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
 
+        val modelMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
         val normalWorldSpace = modelMatrix * vertex.normal.normalized.toVec4(0f)
         val tangentWorldSpace = modelMatrix * vertex.tangent.normalized.toVec4(0f)
         val bitangentWorldSpace = modelMatrix * vertex.bitangent.normalized.toVec4(0f)
@@ -57,7 +57,18 @@ private class PBRVertexShader : VertexShader {
         // For an orthogonal matrix the transpose is equivalent to the inverse, but much faster.
         val tbnMatrixInv = tbnMatrix.transpose
         val sunLightDirWorldSpace = uniforms.getVector(ShaderUniforms.BuiltinKeys.SUN_LIGHT_DIRECTION)
-        val lightDirTangentSpace = (tbnMatrixInv * sunLightDirWorldSpace).toVec3f()
+        val sunLightDirTangentSpace = (tbnMatrixInv * sunLightDirWorldSpace).toVec3f()
+
+        val pointLightPosWorldSpace = uniforms.getVector(ShaderUniforms.BuiltinKeys.POINT_LIGHT_0_POSITION)
+        val vertexPositionWorldSpace = modelMatrix * vertex.position
+        val pointLightDistance = (pointLightPosWorldSpace.toVec3f() - vertexPositionWorldSpace.toVec3f()).magnitude
+        // Strong attenuation for relatively low light range.
+        // Later we want to parameterize these values.
+        val constant = 1f
+        val linear = 0.22f
+        val quadratic = 0.20f
+        val dist = pointLightDistance
+        val pointLightBrightness = (1f / (constant + linear * dist + quadratic * dist * dist)).coerceIn(0f, 1f)
 
         return VertexShaderOutput(
             position = mvpMatrix * vertex.position,
@@ -69,15 +80,20 @@ private class PBRVertexShader : VertexShader {
                     )
                 )
                 setVector(
-                    "lightDirTangentSpace", ShaderVariables.VectorVariable(
-                        lightDirTangentSpace,
+                    "sunLightDirTangentSpace", ShaderVariables.VectorVariable(
+                        sunLightDirTangentSpace,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+                setFloat(
+                    "pointLightBrightness", ShaderVariables.FloatVariable(
+                        pointLightBrightness,
                         ShaderVariables.Interpolation.PERSPECTIVE
                     )
                 )
             }
         )
     }
-
 }
 
 private class PBRFragmentShader : FragmentShader {
@@ -87,7 +103,8 @@ private class PBRFragmentShader : FragmentShader {
         val albedoTexture = (inputFragment.material.albedo as? BitmapTexture)?.bitmap ?: inputFragment.renderTexture
 
         val normalTangentSpace = normalVector(normalMap, inputFragment)
-        val lightDirTangentSpace = inputFragment.shaderVariables.getVector("lightDirTangentSpace").value
+        val sunLightDirTangentSpace = inputFragment.shaderVariables.getVector("sunLightDirTangentSpace").value
+        val pointLightBrightness = inputFragment.shaderVariables.getFloat("pointLightBrightness").value
         val ambientColor = inputFragment.shaderUniforms.getColor(ShaderUniforms.BuiltinKeys.AMBIENT_COLOR)
         val ambientLightNormalized =
             inputFragment.shaderUniforms.getFloat(ShaderUniforms.BuiltinKeys.AMBIENT_INTENSITY_MULTIPLIER)
@@ -99,7 +116,8 @@ private class PBRFragmentShader : FragmentShader {
         val litFragmentColor = light(
             unlitFragmentColor,
             normalTangentSpace,
-            lightDirTangentSpace,
+            sunLightDirTangentSpace,
+            pointLightBrightness,
             ambientColor,
             ambientLightNormalized
         )
@@ -131,15 +149,22 @@ private class PBRFragmentShader : FragmentShader {
         unlitFragColor: Color,
         normal: Vec3f,
         lightDir: Vec3f,
+        pointLightBrightness: Float,
         ambientColor: Color,
         ambientMultiplier: Float
     ): Color {
         // Note: We negate the light direction because the lambertian reflection model expects the
         // vector go *from* the surface *to* the light source (in this case, since it is a
         // directional light, simply from the surface in the direction of the light).
-        val lambertian = (normal.normalized dot (lightDir * -1).normalized)
+        val sunIntensity = 0.8f
+        val sunLambertian = (normal.normalized dot (lightDir * -1).normalized)
             .coerceIn(0f..1f)
-        val litFragColor = (ambientColor + unlitFragColor * lambertian) * ambientMultiplier
+
+        val ambient = ambientColor * pointLightBrightness
+        val sun = unlitFragColor * sunLambertian * sunIntensity
+        val pointLight = Color.lerp(unlitFragColor, Color.blue, 0.4f) * pointLightBrightness
+
+        val litFragColor = (ambient + sun + pointLight) * ambientMultiplier
         return litFragColor.copy(a = unlitFragColor.a)
     }
 
