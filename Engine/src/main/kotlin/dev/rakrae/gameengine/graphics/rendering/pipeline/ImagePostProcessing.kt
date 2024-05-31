@@ -21,10 +21,6 @@ internal class ImagePostProcessing {
             }
         }
 
-        for (x in 0..<framebuffer.width) {
-            for (y in 0..<framebuffer.height) {
-                framebuffer.setPixel(x, y, postProcessingBuffer.getPixel(x, y))
-            }
-        }
+        postProcessingBuffer.pixels.copyInto(framebuffer.pixels)
     }
 }
