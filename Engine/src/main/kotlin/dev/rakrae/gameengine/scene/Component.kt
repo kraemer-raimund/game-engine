@@ -15,9 +15,9 @@ sealed class Component
 
 class RenderComponent(
     val mesh: Mesh,
-    position: Vec3f,
-    rotationEulerRad: Vec3f = Vec3f.zero,
-    scale: Vec3f = Vec3f.one,
+    val position: Vec3f,
+    val rotationEulerRad: Vec3f = Vec3f.zero,
+    val scale: Vec3f = Vec3f.one,
     val material: Material = Material.default,
     val vertexShader: VertexShader = BuiltinShaders.Material.standardPBR.vertexShader,
     val fragmentShader: FragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,

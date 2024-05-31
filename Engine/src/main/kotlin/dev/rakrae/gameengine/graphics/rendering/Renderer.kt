@@ -4,6 +4,7 @@ import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.Mat4x4f
 import dev.rakrae.gameengine.scene.Camera
+import dev.rakrae.gameengine.scene.MeshNode
 import dev.rakrae.gameengine.scene.RenderComponent
 import dev.rakrae.gameengine.scene.Scene
 import kotlinx.coroutines.async
@@ -59,7 +60,9 @@ internal class Renderer {
         val zBuffer = Buffer2f(framebuffer.width, framebuffer.height, initValue = 1.0f)
 
         coroutineScope {
-            val renderComponents = scene.nodes.mapNotNull { it.renderComponent }
+            val renderComponents = scene.nodes
+                .filterIsInstance<MeshNode>()
+                .map { it.renderComponent }
             for (renderComponent in renderComponents) {
                 launch {
                     val modelMatrix = renderComponent.transformMatrix
@@ -92,7 +95,8 @@ internal class Renderer {
 
         coroutineScope {
             val deferredRenderingComponents = scene.nodes
-                .mapNotNull { it.renderComponent }
+                .filterIsInstance<MeshNode>()
+                .map { it.renderComponent }
                 .filter { it.deferredShader != null }
             for (renderComponent in deferredRenderingComponents) {
                 launch {
