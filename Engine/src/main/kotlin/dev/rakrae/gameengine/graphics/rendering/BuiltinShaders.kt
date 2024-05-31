@@ -280,47 +280,17 @@ private class GammaCorrectionPostProcessingShader(private val gamma: Float = 2.2
 
 private class DenoisePostProcessingShader : PostProcessingShader {
 
-    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
+    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color? {
         // In case we rasterize only every second pixel, we can interpolate here on the pixel level
         // to fill the gaps.
         val (x, y) = position
-
+        val xEven = x.mod(2) == 0
+        val yEven = y.mod(2) == 0
         return when {
-            x.mod(2) == 0 && y.mod(2) == 1 -> {
-                Color.lerp(
-                    framebuffer.getPixelClamped(x - 1, y),
-                    framebuffer.getPixelClamped(x + 1, y),
-                    0.5f
-                )
-            }
-
-            x.mod(2) == 1 && y.mod(2) == 0 -> {
-                Color.lerp(
-                    framebuffer.getPixelClamped(x, y - 1),
-                    framebuffer.getPixelClamped(x, y + 1),
-                    0.5f
-                )
-            }
-
-            x.mod(2) == 0 && y.mod(2) == 0 -> {
-                Color.lerp(
-                    Color.lerp(
-                        framebuffer.getPixelClamped(x - 1, y - 1),
-                        framebuffer.getPixelClamped(x - 1, y + 1),
-                        0.5f
-                    ),
-                    Color.lerp(
-                        framebuffer.getPixelClamped(x + 1, y - 1),
-                        framebuffer.getPixelClamped(x + 1, y + 1),
-                        0.5f
-                    ),
-                    0.5f
-                )
-            }
-
-            else -> {
-                framebuffer.getPixel(x, y)
-            }
+            xEven && !yEven -> return framebuffer.getPixelClamped(x - 1, y)
+            !xEven && yEven -> return framebuffer.getPixelClamped(x, y - 1)
+            xEven && yEven -> return framebuffer.getPixelClamped(x - 1, y - 1)
+            else -> null
         }
     }
 
