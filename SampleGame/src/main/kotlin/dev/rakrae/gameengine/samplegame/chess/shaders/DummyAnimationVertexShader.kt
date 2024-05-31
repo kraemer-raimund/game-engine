@@ -24,9 +24,9 @@ class DummyAnimationVertexShader : VertexShader {
         val modelMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_M)
         val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
 
-        val normalWorldSpace = modelMatrix * rotationMatrix * vertex.normal.toVec4()
-        val tangentWorldSpace = modelMatrix * rotationMatrix * vertex.tangent.toVec4()
-        val bitangentWorldSpace = modelMatrix * rotationMatrix * vertex.bitangent.toVec4()
+        val normalWorldSpace = modelMatrix * rotationMatrix * vertex.normal.normalized.toVec4(0f)
+        val tangentWorldSpace = modelMatrix * rotationMatrix * vertex.tangent.normalized.toVec4(0f)
+        val bitangentWorldSpace = modelMatrix * rotationMatrix * vertex.bitangent.normalized.toVec4(0f)
 
         val tbnMatrix = Mat4x4f(
             tangentWorldSpace,
