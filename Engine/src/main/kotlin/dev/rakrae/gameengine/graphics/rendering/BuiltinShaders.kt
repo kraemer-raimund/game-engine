@@ -10,6 +10,7 @@ import kotlin.math.sqrt
 object BuiltinShaders {
     object Material {
         val standardPBR: Shader = Shader(PBRVertexShader(), PBRFragmentShader())
+        val unlitTextured: Shader = Shader(UnlitTexturedVertexShader(), UnlitTexturedFragmentShader())
         val unlit: Shader = Shader(UnlitVertexShader(), UnlitFragmentShader())
     }
 
@@ -195,6 +196,45 @@ private class PBRFragmentShader : FragmentShader {
         // Normal maps use values between -1 and 1.
         val remapped = colorAsVector * 2f - Vec3f.one
         return remapped.normalized
+    }
+}
+
+private class UnlitTexturedVertexShader : VertexShader {
+
+    override fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput {
+        val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
+        return VertexShaderOutput(
+            position = mvpMatrix * vertex.position,
+            shaderVariables = ShaderVariables().apply {
+                setVector(
+                    "uv", ShaderVariables.VectorVariable(
+                        vertex.textureCoordinates,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+            }
+        )
+    }
+}
+
+
+private class UnlitTexturedFragmentShader : FragmentShader {
+
+    override fun process(inputFragment: InputFragment): OutputFragment {
+        val textureBitmap = (inputFragment.material.albedo as? BitmapTexture)?.bitmap
+            ?: Bitmap(1, 1, Color.black)
+
+        val uv = inputFragment.shaderVariables.getVector("uv").value
+        val uvOffset = inputFragment.material.uvOffset
+        val uvScale = inputFragment.material.uvScale
+
+        val textureSampler = TextureSampler(TextureSampler.Filter.NEAREST, uvOffset, uvScale)
+        val color = textureSampler.sample(textureBitmap, Vec2f(uv.x, uv.y))
+
+        return OutputFragment(
+            fragmentColor = color,
+            depth = inputFragment.fragPos.z
+        )
     }
 }
 
