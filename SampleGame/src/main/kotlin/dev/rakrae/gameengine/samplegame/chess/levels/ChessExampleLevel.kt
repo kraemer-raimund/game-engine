@@ -55,7 +55,7 @@ class ChessExampleLevel {
             val fragmentShader = when (i) {
                 else -> BuiltinShaders.Material.standardPBR.fragmentShader
             }
-            dev.rakrae.gameengine.scene.Node(
+            dev.rakrae.gameengine.scene.MeshNode(
                 RenderComponent(
                     mesh = mesh,
                     position = position,
@@ -72,7 +72,7 @@ class ChessExampleLevel {
         }
 
         val exampleObjects = listOf(
-            dev.rakrae.gameengine.scene.Node(
+            dev.rakrae.gameengine.scene.MeshNode(
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/plane.obj"),
                     position = Vec3f(0f, 0f, 0f),
@@ -92,7 +92,7 @@ class ChessExampleLevel {
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
             ),
-            dev.rakrae.gameengine.scene.Node(
+            dev.rakrae.gameengine.scene.MeshNode(
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/cube.obj"),
                     position = Vec3f(-10f, 2f, -10f),
@@ -112,7 +112,7 @@ class ChessExampleLevel {
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
             ),
-            dev.rakrae.gameengine.scene.Node(
+            dev.rakrae.gameengine.scene.MeshNode(
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/cube.obj"),
                     position = Vec3f(-10f, 1f, 0f),

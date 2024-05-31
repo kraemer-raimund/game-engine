@@ -3,4 +3,6 @@ package dev.rakrae.gameengine.scene
 /**
  * A node within the scene graph, representing an object in the scene.
  */
-class Node(val renderComponent: RenderComponent?)
+sealed class Node(val renderComponent: RenderComponent?)
+
+class MeshNode(renderComponent: RenderComponent?) : Node(renderComponent)
