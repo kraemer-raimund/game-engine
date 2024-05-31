@@ -9,6 +9,7 @@ import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
 import dev.rakrae.gameengine.samplegame.chess.shaders.DummyAnimationVertexShader
 import dev.rakrae.gameengine.scene.RenderComponent
+import kotlin.math.PI
 
 class ChessExampleLevel {
 
@@ -94,9 +95,10 @@ class ChessExampleLevel {
             ),
             dev.rakrae.gameengine.scene.MeshNode(
                 renderComponent = RenderComponent(
-                    mesh = AssetLoader().loadMesh("/assets/cube.obj"),
+                    mesh = AssetLoader().loadMesh("/assets/plane.obj"),
                     position = Vec3f(-10f, 2f, -10f),
-                    scale = Vec3f(2f, 2f, 0.1f),
+                    rotationEulerRad = Vec3f(0.5f * PI.toFloat(), 0f, 0f),
+                    scale = Vec3f(2f, 2f, 2f),
                     material = Material(
                         albedo = BitmapTexture(
                             "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_albedo.png",
@@ -106,7 +108,7 @@ class ChessExampleLevel {
                             "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_normal.png"
                         ),
                         glossiness = 1.5f,
-                        uvScale = Vec2f(10f, 10f)
+                        uvScale = Vec2f(2f, 2f)
                     ),
                     fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
