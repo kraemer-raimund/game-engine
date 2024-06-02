@@ -20,6 +20,7 @@ class Camera(
     var renderTexture: RenderTexture? = null
 
     val worldPos: Vec3f get() = loc
+    val worldRot: Vec3f get() = rot
 
     val postProcessingShaders: MutableList<PostProcessingShader> = mutableListOf()
 

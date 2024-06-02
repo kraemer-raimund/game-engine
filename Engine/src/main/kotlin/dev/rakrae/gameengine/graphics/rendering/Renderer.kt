@@ -74,6 +74,7 @@ internal class Renderer {
                         builtinMatrixVP = projectionMatrix * viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
+                        cameraRotWorld = camera.worldRot.toVec4(),
                         sunLightDirection = scene.sunLightDirection.toVec4(0f),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier
@@ -127,6 +128,7 @@ internal class Renderer {
                         builtinMatrixVP = projectionMatrix * viewMatrix,
                         builtinMatrixM = modelMatrix,
                         cameraPosWorld = camera.worldPos.toVec4(),
+                        cameraRotWorld = camera.worldRot.toVec4(),
                         sunLightDirection = scene.sunLightDirection.toVec4(0f),
                         ambientColor = scene.environmentAttributes.ambientColor,
                         ambientIntensityMultiplier = scene.environmentAttributes.ambientIntensityMultiplier

@@ -3,6 +3,7 @@ package dev.rakrae.gameengine.graphics.rendering
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.*
+import kotlin.math.PI
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -12,6 +13,7 @@ object BuiltinShaders {
         val standardPBR: Shader = Shader(PBRVertexShader(), PBRFragmentShader())
         val unlitTextured: Shader = Shader(UnlitTexturedVertexShader(), UnlitTexturedFragmentShader())
         val unlit: Shader = Shader(UnlitVertexShader(), UnlitFragmentShader())
+        val unlitSkybox: Shader = Shader(UnlitSkyboxVertexShader(), UnlitSkyboxFragmentShader())
     }
 
     object PostProcessing {
@@ -255,6 +257,64 @@ private class UnlitFragmentShader : FragmentShader {
     override fun process(inputFragment: InputFragment): OutputFragment {
         return OutputFragment(
             fragmentColor = inputFragment.material.color,
+            depth = inputFragment.fragPos.z
+        )
+    }
+}
+
+private class UnlitSkyboxVertexShader : VertexShader {
+
+    override fun process(vertex: Mesh.Vertex, uniforms: ShaderUniforms): VertexShaderOutput {
+        val mvpMatrix = uniforms.getMatrix(ShaderUniforms.BuiltinKeys.MATRIX_MVP)
+        return VertexShaderOutput(
+            position = mvpMatrix * vertex.position,
+            shaderVariables = ShaderVariables().apply {
+                setVector(
+                    "uv", ShaderVariables.VectorVariable(
+                        vertex.textureCoordinates,
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+                setVector(
+                    "vertexPosObjectSpace", ShaderVariables.VectorVariable(
+                        vertex.position.toVec3f(),
+                        ShaderVariables.Interpolation.PERSPECTIVE
+                    )
+                )
+            }
+        )
+    }
+}
+
+
+private class UnlitSkyboxFragmentShader : FragmentShader {
+
+    override fun process(inputFragment: InputFragment): OutputFragment {
+        val textureBitmap = (inputFragment.material.albedo as? BitmapTexture)?.bitmap
+            ?: Bitmap(1, 1, Color.black)
+
+        // Screen size/render resolution temporarily hardcoded. Should probably be shader uniforms.
+        val screenSize = Vec2f(1280f, 720f)
+        val camFov = 0.5f * PI.toFloat()
+
+        val camRot = inputFragment.shaderUniforms.getVector(ShaderUniforms.BuiltinKeys.CAMERA_ROT_WORLD)
+        val camRotHorizontal = camRot.y.mod(2 * PI.toFloat()) / (2 * PI.toFloat())
+        val camRotVertical = camRot.x.mod(PI.toFloat()) / PI.toFloat()
+        val uNormalized = inputFragment.fragPos.x / screenSize.x
+        val vNormalized = inputFragment.fragPos.y / screenSize.y
+        val fovNormalized = camFov / (2 * PI.toFloat())
+        val uv = Vec2f(
+            (-camRotHorizontal / fovNormalized + uNormalized) * fovNormalized + 0.15f,
+            1f - (camRotVertical / fovNormalized + vNormalized) * fovNormalized - 0.35f
+        )
+        val uvOffset = inputFragment.material.uvOffset
+        val uvScale = inputFragment.material.uvScale
+
+        val textureSampler = TextureSampler(TextureSampler.Filter.LINEAR, uvOffset, uvScale)
+        val color = textureSampler.sample(textureBitmap, uv)
+
+        return OutputFragment(
+            fragmentColor = color,
             depth = inputFragment.fragPos.z
         )
     }

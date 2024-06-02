@@ -61,7 +61,7 @@ class Chess : Game() {
         mainCamera.translate(Vec3f(1f, 0f, 0f) * forwardOffset)
         mainCamera.translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
 
-        val mouseSensitivity = 0.12f
+        val mouseSensitivity = 1f
         mainCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
         mainCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
     }

@@ -76,16 +76,12 @@ class ChessExampleLevel {
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/plane.obj"),
                     position = Vec3f(0f, 0f, 0f),
-                    scale = Vec3f(8f, 8f, 8f),
+                    scale = Vec3f(50f, 50f, 50f),
                     material = Material(
                         albedo = BitmapTexture(
                             "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_albedo.png"
                         ),
-                        normal = BitmapTexture(
-                            "/assets/textures/medieval-pavement/TCom_Pavement_Medieval_512_normal.png"
-                        ),
-                        glossiness = 8f,
-                        uvScale = Vec2f(8f, 8f)
+                        uvScale = Vec2f(20f, 20f)
                     ),
                     fragmentShader = BuiltinShaders.Material.unlitTextured.fragmentShader,
                     vertexShader = BuiltinShaders.Material.unlitTextured.vertexShader
@@ -126,6 +122,21 @@ class ChessExampleLevel {
                     ),
                     fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
+                )
+            ),
+            dev.rakrae.gameengine.scene.MeshNode(
+                renderComponent = RenderComponent(
+                    mesh = AssetLoader().loadMesh("/assets/cube.obj"),
+                    position = Vec3f(0f, 0f, 0f),
+                    scale = Vec3f(-20f, 20f, 20f),
+                    material = Material(
+                        albedo = BitmapTexture(
+                            "/assets/textures/environment-parking-garage/TCom_JapanParkingGarageB_8K_hdri_sphere_tone.jpg"
+                        ),
+                        uvScale = Vec2f(1f, 1f)
+                    ),
+                    fragmentShader = BuiltinShaders.Material.unlitSkybox.fragmentShader,
+                    vertexShader = BuiltinShaders.Material.unlitSkybox.vertexShader
                 )
             )
         )
