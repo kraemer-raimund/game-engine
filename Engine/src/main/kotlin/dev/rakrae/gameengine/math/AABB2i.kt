@@ -1,7 +1,9 @@
 package dev.rakrae.gameengine.math
 
+import dev.rakrae.gameengine.graphics.Triangle
 import kotlin.math.max
 import kotlin.math.min
+import kotlin.math.roundToInt
 
 /**
  * An axis-aligned bounding box (AABB) in 2 dimensions with integer coordinates, as used for
@@ -27,8 +29,9 @@ data class AABB2i(val min: Vec2i, val max: Vec2i) {
     }
 
     companion object {
-        fun calculateBoundingBox(triangle: Triangle2i): AABB2i {
-            val points = listOf(triangle.v1, triangle.v2, triangle.v3)
+        fun calculateBoundingBox(triangle: Triangle): AABB2i {
+            val points = listOf(triangle.vertexPos0, triangle.vertexPos1, triangle.vertexPos2)
+                .map { Vec2i(it.x.roundToInt(), it.y.roundToInt()) }
             return calculateBoundingBox(points)
         }
 

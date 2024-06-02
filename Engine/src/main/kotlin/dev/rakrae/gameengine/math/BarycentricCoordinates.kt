@@ -1,5 +1,7 @@
 package dev.rakrae.gameengine.math
 
+import dev.rakrae.gameengine.graphics.Triangle
+
 /**
  * Barycentric coordinates describe a point relative to a triangle's corners.
  * Intuitively, they assign a weight to each of the three vertices, where the resulting
@@ -24,11 +26,11 @@ data class BarycentricCoordinates(
     val isWithinTriangle = arrayOf(a1, a2, a3).all { it >= 0f }
 
     companion object {
-        fun of(point: Vec2i, triangle: Triangle2i): BarycentricCoordinates {
+        fun of(point: Vec2f, triangle: Triangle): BarycentricCoordinates {
             val p = point
-            val v1 = with(triangle.v1) { Vec2f(x.toFloat(), y.toFloat()) }
-            val v2 = with(triangle.v2) { Vec2f(x.toFloat(), y.toFloat()) }
-            val v3 = with(triangle.v3) { Vec2f(x.toFloat(), y.toFloat()) }
+            val v1 = triangle.vertexPos0
+            val v2 = triangle.vertexPos1
+            val v3 = triangle.vertexPos2
 
             val a1 = ((v2.y - v3.y) * (p.x - v3.x) + (v3.x - v2.x) * (p.y - v3.y)) /
                     ((v2.y - v3.y) * (v1.x - v3.x) + (v3.x - v2.x) * (v1.y - v3.y))

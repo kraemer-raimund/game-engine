@@ -17,19 +17,13 @@ internal class Rasterizer {
         renderContext: RenderContext
     ) {
         with(renderContext) {
-            val triangle2i = Triangle2i(
-                with(triangle.vertexPos0) { Vec2i(x.toInt(), y.toInt()) },
-                with(triangle.vertexPos1) { Vec2i(x.toInt(), y.toInt()) },
-                with(triangle.vertexPos2) { Vec2i(x.toInt(), y.toInt()) }
-            )
             val boundingBox = AABB2i
-                .calculateBoundingBox(triangle2i)
+                .calculateBoundingBox(triangle)
                 .clampWithin(framebuffer.imageBounds())
-
             // For each point within the triangle's AABB, render the point if it lies within the triangle.
             boundingBox.forEach { pixelPosition ->
                 val (x, y) = pixelPosition
-                val barycentricCoordinates = BarycentricCoordinates.of(Vec2i(x, y), triangle2i)
+                val barycentricCoordinates = BarycentricCoordinates.of(Vec2f(x.toFloat(), y.toFloat()), triangle)
                 if (barycentricCoordinates.isWithinTriangle) {
                     val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
                     if (interpolatedDepth < zBuffer.get(x, y)) {
