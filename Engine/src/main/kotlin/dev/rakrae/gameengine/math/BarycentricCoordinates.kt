@@ -23,7 +23,7 @@ data class BarycentricCoordinates(
     val a3: Float
 ) {
 
-    val isWithinTriangle = arrayOf(a1, a2, a3).all { it >= 0f }
+    val isWithinTriangle = a1 >= 0f && a2 >= 0f && a3 >= 0f
 
     companion object {
         fun of(point: Vec2f, triangle: Triangle): BarycentricCoordinates {
