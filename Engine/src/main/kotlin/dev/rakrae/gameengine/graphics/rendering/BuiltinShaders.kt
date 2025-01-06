@@ -483,6 +483,31 @@ class WavesPostProcessingShader : PostProcessingShader {
     }
 }
 
+class BlurPostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(
+        position: Vec2i,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f
+    ): Color {
+        fun clampInBuffer(position: Vec2i) = Vec2i(
+            min(framebuffer.width - 1, max(0, position.x)),
+            min(framebuffer.height - 1, max(0, position.y)),
+        )
+
+        val p1 = clampInBuffer(position + Vec2i(-2, -2))
+        val p2 = clampInBuffer(position + Vec2i(2, -2))
+        val p3 = clampInBuffer(position + Vec2i(2, -2))
+        val p4 = clampInBuffer(position + Vec2i(2, 2))
+
+        return Color.lerp(
+            Color.lerp(framebuffer.getPixel(p1.x, p1.y), framebuffer.getPixel(p2.x, p2.y), 0.5f),
+            Color.lerp(framebuffer.getPixel(p3.x, p3.y), framebuffer.getPixel(p4.x, p4.y), 0.5f),
+            0.5f
+        )
+    }
+}
+
 private class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
