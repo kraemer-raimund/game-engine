@@ -62,11 +62,7 @@ class ChessExampleLevel {
                     scale = Vec3f(1f, 1f, 1f),
                     material = material,
                     vertexShader = vertexShader,
-                    fragmentShader = fragmentShader,
-                    deferredShader = when (i) {
-                        5 -> BuiltinShaders.Deferred.outline(2, Color(255u, 255u, 0u, 255u))
-                        else -> null
-                    }
+                    fragmentShader = fragmentShader
                 )
             )
         }

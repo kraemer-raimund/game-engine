@@ -3,10 +3,7 @@ package dev.rakrae.gameengine.graphics.rendering
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.*
-import kotlin.math.PI
-import kotlin.math.abs
-import kotlin.math.pow
-import kotlin.math.sqrt
+import kotlin.math.*
 
 object BuiltinShaders {
     object Material {
@@ -460,6 +457,27 @@ class GreyscalePostProcessingShader : PostProcessingShader {
             b = mean.toInt(),
             a = color.a.toInt()
         )
+    }
+}
+
+class WavesPostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(
+        position: Vec2i,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f
+    ): Color {
+        val (x, y) = position
+
+        val periods = 2
+        val frequency = periods * (2 * PI) * (1 / framebuffer.width.toDouble())
+        val amplitude = 0.05 * framebuffer.height
+        val wave = sin(x.toDouble() * frequency) * amplitude
+        val sampledY = y + wave.toInt()
+
+        fun clamp(value: Int, min: Int, max: Int) = min(max, max(min, value))
+        val clampedY = clamp(sampledY, 0, framebuffer.height - 1)
+        return framebuffer.getPixel(x, clampedY)
     }
 }
 
