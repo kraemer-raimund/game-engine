@@ -3,7 +3,6 @@ package dev.rakrae.gameengine.samplegame.chess
 import dev.rakrae.gameengine.core.Game
 import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.Color
-import dev.rakrae.gameengine.graphics.rendering.BuiltinShaders
 import dev.rakrae.gameengine.input.Input
 import dev.rakrae.gameengine.math.Vec2f
 import dev.rakrae.gameengine.math.Vec3f
@@ -28,9 +27,7 @@ class Chess : Game() {
             Camera(
                 viewportOffsetNormalized = Vec2f(0f, 0.0f),
                 viewportScaleNormalized = Vec2f(1f, 1f)
-            ).apply {
-                postProcessingShaders.add(BuiltinShaders.PostProcessing.denoise)
-            }
+            )
         )
         Scene(
             EnvironmentAttributes(

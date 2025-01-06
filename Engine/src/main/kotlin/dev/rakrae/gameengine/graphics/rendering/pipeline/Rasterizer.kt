@@ -28,13 +28,6 @@ internal class Rasterizer {
                     val interpolatedDepth = interpolateDepth(triangle, barycentricCoordinates)
                     if (interpolatedDepth < zBuffer.get(x, y)) {
                         zBuffer.set(x, y, interpolatedDepth)
-                        if (x.mod(2) == 0 || y.mod(2) == 0) {
-                            // A performance hack: We rasterize only one in every four pixels
-                            // (except depth buffer) and then (optionally) denoise it in post-processing.
-                            // This leads to a slightly blurry image, but much higher frame rates,
-                            // which is arguably a good trade-off in a software renderer.
-                            return@forEach
-                        }
                         val interpolatedW = renderContext.wComponents.let {
                             val f0 = it.triangle1W
                             val f1 = it.triangle2W
