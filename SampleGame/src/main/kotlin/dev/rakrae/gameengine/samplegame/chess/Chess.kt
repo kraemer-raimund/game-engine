@@ -49,7 +49,7 @@ class Chess : Game() {
         startFpsCounterCoroutine()
 
         scene.cameras[0].apply {
-            translate(Vec3f(0f, 1.8f, 12f))
+            translate(Vec3f(-0.2f, 1.8f, 10f))
             rotate(Vec3f(0f, PI.toFloat(), 0f))
         }
     }

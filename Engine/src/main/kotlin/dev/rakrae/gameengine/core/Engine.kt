@@ -79,7 +79,7 @@ class Engine(private val game: Game) {
     }
 
     companion object {
-        private val renderResolution = ScreenSize(1280, 720)
+        private val renderResolution = ScreenSize(800, 800)
 
         private lateinit var window: Window
 
