@@ -55,16 +55,23 @@ class Chess : Game() {
     }
 
     override suspend fun onTick() {
+        val areCameraControlsDisabled = true
+        if (areCameraControlsDisabled) {
+            return
+        }
+
         val mainCamera = scene.cameras[0]
         val moveSpeed = 3f
         val forwardOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.x
         val sidewaysOffset = moveSpeed * GameTime.deltaTime * Input.axisPair1.y
-        mainCamera.translate(Vec3f(1f, 0f, 0f) * forwardOffset)
-        mainCamera.translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
 
-        val mouseSensitivity = 1f
-        mainCamera.rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
-        mainCamera.rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
+        mainCamera.apply {
+            translate(Vec3f(1f, 0f, 0f) * forwardOffset)
+            translate(Vec3f(0f, 0f, 1f) * sidewaysOffset)
+            val mouseSensitivity = 1f
+            rotate(Vec3f(0f, -1f, 0f) * (mouseSensitivity * Input.axisPair2.x))
+            rotate(Vec3f(-1f, 0f, 0f) * (mouseSensitivity * Input.axisPair2.y))
+        }
     }
 
     override suspend fun onPause() {
