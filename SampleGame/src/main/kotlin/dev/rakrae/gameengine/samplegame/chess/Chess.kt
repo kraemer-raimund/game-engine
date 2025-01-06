@@ -15,6 +15,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.coroutines.coroutineContext
+import kotlin.math.PI
 import kotlin.time.Duration.Companion.seconds
 
 class Chess : Game() {
@@ -47,7 +48,10 @@ class Chess : Game() {
 
         startFpsCounterCoroutine()
 
-        scene.cameras[0].translate(Vec3f(0f, 1.8f, 0f))
+        scene.cameras[0].apply {
+            translate(Vec3f(0f, 1.8f, 12f))
+            rotate(Vec3f(0f, PI.toFloat(), 0f))
+        }
     }
 
     override suspend fun onTick() {
