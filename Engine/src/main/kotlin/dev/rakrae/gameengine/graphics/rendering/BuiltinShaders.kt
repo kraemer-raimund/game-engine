@@ -1,5 +1,6 @@
 package dev.rakrae.gameengine.graphics.rendering
 
+import dev.rakrae.gameengine.core.GameTime
 import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.*
@@ -472,7 +473,8 @@ class WavesPostProcessingShader : PostProcessingShader {
         val periods = 2
         val frequency = periods * (2 * PI) * (1 / framebuffer.width.toDouble())
         val amplitude = 0.05 * framebuffer.height
-        val wave = sin(x.toDouble() * frequency) * amplitude
+        val offset = GameTime.frameTime
+        val wave = sin(x.toDouble() * frequency + offset) * amplitude
         val sampledY = y + wave.toInt()
 
         fun clamp(value: Int, min: Int, max: Int) = min(max, max(min, value))
