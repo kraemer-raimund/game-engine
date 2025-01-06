@@ -50,10 +50,10 @@ class ChessExampleLevel {
                 else -> Material.default
             }
             val vertexShader = when (i) {
-                else -> BuiltinShaders.Material.unlit.vertexShader
+                else -> BuiltinShaders.Material.standardPBR.vertexShader
             }
             val fragmentShader = when (i) {
-                else -> BuiltinShaders.Material.unlit.fragmentShader
+                else -> BuiltinShaders.Material.standardPBR.fragmentShader
             }
             dev.rakrae.gameengine.scene.MeshNode(
                 RenderComponent(

@@ -444,6 +444,25 @@ class ReplaceColorPostProcessingShader : PostProcessingShader {
     }
 }
 
+class GreyscalePostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(
+        position: Vec2i,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f
+    ): Color {
+        val (x, y) = position
+        val color = framebuffer.getPixel(x, y)
+        val mean = (color.r.toUInt() + color.g.toUInt() + color.b.toUInt()) / 3u
+        return Color(
+            r = mean.toInt(),
+            g = mean.toInt(),
+            b = mean.toInt(),
+            a = color.a.toInt()
+        )
+    }
+}
+
 private class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
