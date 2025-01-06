@@ -83,8 +83,8 @@ class ChessExampleLevel {
                         ),
                         uvScale = Vec2f(20f, 20f)
                     ),
-                    fragmentShader = BuiltinShaders.Material.unlitTextured.fragmentShader,
-                    vertexShader = BuiltinShaders.Material.unlitTextured.vertexShader
+                    fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
+                    vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
             ),
             dev.rakrae.gameengine.scene.MeshNode(
