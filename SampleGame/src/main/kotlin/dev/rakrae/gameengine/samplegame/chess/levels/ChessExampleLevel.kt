@@ -90,7 +90,7 @@ class ChessExampleLevel {
             dev.rakrae.gameengine.scene.MeshNode(
                 renderComponent = RenderComponent(
                     mesh = AssetLoader().loadMesh("/assets/plane.obj"),
-                    position = Vec3f(-10f, 2f, -10f),
+                    position = Vec3f(-2f, 2f, 2f),
                     rotationEulerRad = Vec3f(0.5f * PI.toFloat(), 0f, 0f),
                     scale = Vec3f(2f, 2f, 2f),
                     material = Material(
@@ -109,38 +109,28 @@ class ChessExampleLevel {
             ),
             dev.rakrae.gameengine.scene.MeshNode(
                 renderComponent = RenderComponent(
-                    mesh = AssetLoader().loadMesh("/assets/cube.obj"),
-                    position = Vec3f(-6f, 1f, 4f),
-                    scale = Vec3f(1f, 1f, 1f),
+                    mesh = AssetLoader().loadMesh("/assets/plane.obj"),
+                    position = Vec3f(2f, 2f, 2f),
+                    rotationEulerRad = Vec3f(0.5f * PI.toFloat(), 0f, 0f),
+                    scale = Vec3f(2f, 2f, 2f),
                     material = Material(
                         albedo = BitmapTexture(
-                            "/assets/textures/scifi-panel/TCom_Scifi_Panel_512_albedo.png"
+                            "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_albedo.png"
                         ),
-                        normal = BitmapTexture("/assets/textures/scifi-panel/TCom_Scifi_Panel_512_normal.png"),
-                        glossiness = 8f,
-                        uvScale = Vec2f(4f, 4f)
+                        normal = BitmapTexture(
+                            "/assets/textures/stone-wall/TCom_Wall_Stone3_2x2_512_normal.png"
+                        ),
+                        glossiness = 1.5f,
+                        uvScale = Vec2f(2f, 2f)
                     ),
                     fragmentShader = BuiltinShaders.Material.standardPBR.fragmentShader,
                     vertexShader = BuiltinShaders.Material.standardPBR.vertexShader
                 )
-            ),
-            dev.rakrae.gameengine.scene.MeshNode(
-                renderComponent = RenderComponent(
-                    mesh = AssetLoader().loadMesh("/assets/cube.obj"),
-                    position = Vec3f(0f, 0f, 0f),
-                    scale = Vec3f(-20f, 20f, 20f),
-                    material = Material(
-                        albedo = BitmapTexture(
-                            "/assets/textures/environment-parking-garage/TCom_JapanParkingGarageB_8K_hdri_sphere_tone.jpg"
-                        ),
-                        uvScale = Vec2f(1f, 1f)
-                    ),
-                    fragmentShader = BuiltinShaders.Material.unlitSkybox.fragmentShader,
-                    vertexShader = BuiltinShaders.Material.unlitSkybox.vertexShader
-                )
             )
         )
 
-        return@lazy chessNodes + exampleObjects + listOf(PointLight(Transform()))
+        val lights = listOf(PointLight(Transform(position = Vec3f(-4f, 4f, 1.5f))))
+
+        return@lazy chessNodes + exampleObjects + lights
     }
 }
