@@ -428,6 +428,22 @@ private class DepthDarkeningPostProcessingShader : PostProcessingShader {
     }
 }
 
+class ReplaceColorPostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(
+        position: Vec2i,
+        framebuffer: Bitmap,
+        zBuffer: Buffer2f
+    ): Color {
+        val (x, y) = position
+        return when (framebuffer.getPixel(x, y)) {
+            Color.red -> Color.blue
+            Color.black -> Color.white
+            else -> framebuffer.getPixel(x, y)
+        }
+    }
+}
+
 private class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
