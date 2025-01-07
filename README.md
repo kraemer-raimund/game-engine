@@ -11,6 +11,8 @@ in detail what happens between the player's input and the final image on
 the screen. Along with the game engine I'm developing a sample game to
 incrementally drive the engine's requirements and demo its features.
 
+![In-engine screenshot of example scene.](chess-sample-scene.png)
+
 This engine does many things in code running on the CPU that would normally
 happen in hardware, e.g., on the GPU. Also, it is implemented in Kotlin running
 in the JVM because of the educational focus, whereas a commercial game engine
