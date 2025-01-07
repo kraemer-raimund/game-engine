@@ -20,7 +20,7 @@ data class Color(
             (r.normalized() + color.r.normalized()).remapToColor(),
             (g.normalized() + color.g.normalized()).remapToColor(),
             (b.normalized() + color.b.normalized()).remapToColor(),
-            (a.normalized() + color.a.normalized()).remapToColor()
+            a
         )
     }
 
@@ -29,7 +29,7 @@ data class Color(
             (r.normalized() * color.r.normalized()).remapToColor(),
             (g.normalized() * color.g.normalized()).remapToColor(),
             (b.normalized() * color.b.normalized()).remapToColor(),
-            (a.normalized() * color.a.normalized()).remapToColor()
+            a
         )
     }
 
@@ -38,7 +38,7 @@ data class Color(
             (value * r.normalized()).remapToColor(),
             (value * g.normalized()).remapToColor(),
             (value * b.normalized()).remapToColor(),
-            (value * a.normalized()).remapToColor()
+            a
         )
     }
 
