@@ -476,9 +476,7 @@ class WavesPostProcessingShader : PostProcessingShader {
         val offset = GameTime.frameTime
         val wave = sin(x.toDouble() * frequency + offset) * amplitude
         val sampledY = y + wave.toInt()
-
-        fun clamp(value: Int, min: Int, max: Int) = min(max, max(min, value))
-        val clampedY = clamp(sampledY, 0, framebuffer.height - 1)
+        val clampedY = sampledY.coerceIn(0, framebuffer.height - 1)
         return framebuffer.getPixel(x, clampedY)
     }
 }
@@ -491,8 +489,8 @@ class BlurPostProcessingShader : PostProcessingShader {
         zBuffer: Buffer2f
     ): Color {
         fun clampInBuffer(position: Vec2i) = Vec2i(
-            min(framebuffer.width - 1, max(0, position.x)),
-            min(framebuffer.height - 1, max(0, position.y)),
+            position.x.coerceIn(0, framebuffer.width - 1),
+            position.y.coerceIn(0, framebuffer.height - 1),
         )
 
         val p1 = clampInBuffer(position + Vec2i(-2, -2))
