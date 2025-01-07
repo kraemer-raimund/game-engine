@@ -414,14 +414,12 @@ private class DepthOfFieldPostProcessingShader(
 
 }
 
-private class DepthDarkeningPostProcessingShader : PostProcessingShader {
+class DepthDarkeningPostProcessingShader : PostProcessingShader {
 
     override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
         val (x, y) = position
         val color = framebuffer.getPixel(x, y)
-        // We want to darken objects that are far away from the camera, and brighten those
-        // close to the camera.
-        val zBufferDarkening = 4 * (1f - zBuffer.get(x, y)).pow(2)
+        val zBufferDarkening = 40 * (1f - zBuffer.get(x, y)).pow(4.2f)
         return color * zBufferDarkening.coerceIn(0f, 1f)
     }
 }
