@@ -5,6 +5,7 @@ import dev.rakrae.gameengine.graphics.*
 import dev.rakrae.gameengine.graphics.rendering.pipeline.*
 import dev.rakrae.gameengine.math.*
 import kotlin.math.*
+import kotlin.random.Random
 
 object BuiltinShaders {
     object Material {
@@ -510,7 +511,8 @@ class NightVisionPostProcessingShader : PostProcessingShader {
         val (x, y) = position
         val (r, g, b) = framebuffer.getPixel(x, y)
         val brightness = listOf(r, g, b).max().toFloat() / 255f
-        return Color.green * (brightness + 0.3f).pow(1.8f)
+        val noise = 0.8f + Random.nextFloat() * 0.4f
+        return Color.green * (brightness + 0.3f).pow(1.8f) * noise
     }
 }
 
