@@ -516,6 +516,18 @@ class NightVisionPostProcessingShader : PostProcessingShader {
     }
 }
 
+class PixelArtPostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
+        val pixelSize = 4
+        val (x, y) = Vec2i(
+            position.x / pixelSize * pixelSize,
+            position.y / pixelSize * pixelSize
+        )
+        return framebuffer.getPixel(x, y)
+    }
+}
+
 class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
