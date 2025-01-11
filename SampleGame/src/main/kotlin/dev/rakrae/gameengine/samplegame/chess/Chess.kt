@@ -30,7 +30,7 @@ class Chess : Game() {
                 viewportOffsetNormalized = Vec2f(0f, 0.0f),
                 viewportScaleNormalized = Vec2f(1f, 1f)
             ).apply {
-                postProcessingShaders.add(DepthDarkeningPostProcessingShader())
+                postProcessingShaders.add(NightVisionPostProcessingShader())
             }
         )
         Scene(

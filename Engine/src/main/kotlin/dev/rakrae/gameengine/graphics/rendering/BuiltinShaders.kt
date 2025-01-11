@@ -504,6 +504,16 @@ class BlurPostProcessingShader : PostProcessingShader {
     }
 }
 
+class NightVisionPostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
+        val (x, y) = position
+        val (r, g, b) = framebuffer.getPixel(x, y)
+        val brightness = listOf(r, g, b).max().toFloat() / 255f
+        return Color.green * brightness
+    }
+}
+
 class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
