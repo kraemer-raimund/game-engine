@@ -510,7 +510,7 @@ class NightVisionPostProcessingShader : PostProcessingShader {
         val (x, y) = position
         val (r, g, b) = framebuffer.getPixel(x, y)
         val brightness = listOf(r, g, b).max().toFloat() / 255f
-        return Color.green * brightness
+        return Color.green * (brightness + 0.3f).pow(1.8f)
     }
 }
 
