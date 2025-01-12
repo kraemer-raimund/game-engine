@@ -528,6 +528,20 @@ class PixelArtPostProcessingShader : PostProcessingShader {
     }
 }
 
+class SonarPostProcessingShader : PostProcessingShader {
+
+    override fun postProcess(position: Vec2i, framebuffer: Bitmap, zBuffer: Buffer2f): Color {
+        val (x, y) = position
+        val color = framebuffer.getPixel(x, y)
+        val depth = zBuffer.get(x, y)
+        val currentSonarDepth = 0.4f + ((GameTime.frameTime * 0.5f) % 1f) * 0.6f
+        if (depth in currentSonarDepth..0.8f) {
+            return Color.lerp(color, Color.yellow, 0.4f)
+        }
+        return color
+    }
+}
+
 class OutlinePostProcessingShader(
     private val thickness: Int,
     private val threshold: Float,
